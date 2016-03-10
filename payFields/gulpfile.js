@@ -25,10 +25,19 @@ gulp.task('tdd', function (done) {
  * Concat JS files
  */
 gulp.task('scripts', function() {
-  return gulp.src(['./assets/js/helper.js', './assets/js/validate.js', './assets/js/cardCvv.js', 
-  					'./assets/js/cardExpiry.js', './assets/js/cardNumber.js', './assets/js/app.js'])
+  return gulp.src([ './assets/js/cc_input/model.js', 
+                    './assets/js/cc_input/view.js',
+                    './assets/js/cc_input/controller.js',
+                    './assets/js/cc_input/template.js',
+                    './assets/js/event.js',
+                    './assets/js/app.js'])
     .pipe(concat('script.js'))
     .pipe(gulp.dest('./assets/js/build/'));
 });
 
 gulp.task('default', ['tdd']);
+
+
+/*
+'./assets/js/helper.js', './assets/js/validate.js', './assets/js/ajaxHelper.js'
+*/

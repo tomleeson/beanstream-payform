@@ -1,97 +1,156 @@
-(function(){
 
-	function _cacheDom(e) {
-		// http://stackoverflow.com/a/22745553
-	    // there may be multiple forms in a page, get ref to current form
-	    var scripts = document.getElementsByTagName( 'script' );
-		this.script = scripts[ scripts.length - 1 ];
-		this.form = this.script.parentNode;
-		this.head = document.getElementsByTagName("head")[0];
-		
-		if(this.custom){
-			this.cardNumber = this.form.getElementsById('beanstream_cc_number');
-			this.cardCvv = this.form.getElementsById('beanstream_cc_expiry');
-			this.cardExpiry = this.form.getElementsById('beanstream_cc_cvv');
-		}
-	}
+(function() {
 
-	function _readAttributes() {
-		this.custom = this.script.getAttribute('data-custom');
-	}
+    var fields = {
+        cc_number: {
+            name: "cardnumber",
+            labelText: "Credit Card Number",
+            placeholder: "",
+            autocomplete: "cc-number"
+        },
+        cc_cvv: {
+            name: "cvc",
+            labelText: "CVC",
+            placeholder: "",
+            autocomplete: "cc-csc"
+        },
+        cc_exp: {
+            name: "cc-exp",
+            labelText: "Expires MM/YYYY",
+            placeholder: "",
+            autocomplete: "cc-exp"
+        }
+    };
 
-	function _attachListeners() {
 
-		window.onload = function(event) {
+    function cacheDom() {
+        // http://stackoverflow.com/a/22745553
+        // there may be multiple forms in a page, get ref to current form
+        var scripts = document.getElementsByTagName('script');
+        this.script = scripts[scripts.length - 1];
+        this.form = this.script.parentNode;
+        this.head = document.getElementsByTagName("head")[0];
+        this.domTargets = {};
 
-			this.submitBtn = this.form.querySelectorAll("input[type=submit]")[0];
+        this.domTargets.cc_number_input = this.form.querySelectorAll('[data-beanstream-target="cc_number_input"]')[0];
+        this.domTargets.cc_exp_input = this.form.querySelectorAll('[data-beanstream-target="cc_exp_input"]')[0];
+        this.domTargets.cc_cvv_input = this.form.querySelectorAll('[data-beanstream-target="cc_cvv_input"]')[0];
 
-			if (typeof this.submitBtn!="undefined"){
+        this.domTargets.cc_number_label = this.form.querySelectorAll('[data-beanstream-target="cc_number_label"]')[0];
+        this.domTargets.cc_exp_label = this.form.querySelectorAll('[data-beanstream-target="cc_exp_label"]')[0];
+        this.domTargets.cc_cvv_label = this.form.querySelectorAll('[data-beanstream-target="cc_cvv_label"]')[0];
 
-				// validate and get token before submit event
-		        this.submitBtn.addEventListener('click', function(event) {
-		        	event.preventDefault();
-		        	this.submitBtn.disabled = true;
-		        	
-		        	// toDo: add field validation
-		        	// toDo: add getToken
+        this.config.domTargetsFound = true;
+        for (t in this.domTargets) {
+            this.config.domTargetsFound = (this.domTargets[t] != undefined);
+            if (!this.config.domTargetsFound) break;
+        }
 
-		        	console.log("submit");
+        this.config.styled = true;
+    }
 
-		        	//this.form.submit();
-		        	this.submitBtn.disabled = false;
-				}.bind(this));
-		    }
+    function readAttributes() {
+        // Looks like we currently do not need any configuration
 
-		    var number_frag = document.getElementById("trnCardNumber");
-		    var exp_frag = document.getElementById("trnExpMonth");
+        //this.config.flag = (this.script.getAttribute('data-styled') === 'true');
+    }
 
-		};
-	}
+    function attachListeners() {
+        window.onload = function(event) {
+            // validate and get token before submit event
+            // button is below script tag, so we wait until it loads
+            this.submitBtn = this.form.querySelectorAll("input[type=submit]")[0];
+            if (!this.submitBtn) {
+                this.submitBtn = this.form.querySelectorAll("button[type=submit]")[0];
+            }
 
-	function _injectRawHtml() {
 
-		cardNumber.injectRawHtml(this.form);
-		cardExpiry.injectRawHtml(this.form);
-		cardCvv.injectRawHtml(this.form);
-	}
+            this.submitBtn.addEventListener("click", onSubmit, false);
+        };
 
-	function _injectStyles(filename){
+    }
 
-	    var fileref=document.createElement("link")
-	    fileref.setAttribute("rel", "stylesheet")
-	    fileref.setAttribute("type", "text/css")
-	    fileref.setAttribute("href", filename)
+    function onSubmit(event) {
+        console.log("onSubmit");
+        this.submitBtn = this.form.querySelectorAll("input[type=submit]")[0];
+        if (!this.submitBtn) {
+            this.submitBtn = this.form.querySelectorAll("button[type=submit]")[0];
+        }
 
-	    if (typeof fileref!="undefined"){
-	        this.head.appendChild(fileref);
-	    }
-	}
+        event.preventDefault();
+        this.submitBtn.disabled = true;
 
-	function _injectStyledHtml() {
+        // toDo: add field validation
+        // toDo: add getToken
 
-		cardNumber.injectStyledHtml(this.form);
-		cardExpiry.injectStyledHtml(this.form);
-		cardCvv.injectStyledHtml(this.form);
-	}
+        console.log("submit");
 
-	function _init() {
-		_cacheDom();
-		_readAttributes();
-		// todo: replace with to absolute link
-		_injectStyles("../assets/css/style.css");
+        //this.form.submit();
+        this.submitBtn.disabled = false;
+    }
 
-		if(this.custom){
-			_injectRawHtml();
-		} else {
-			_injectStyledHtml();
-		}
+    function injectStyles(filename) {
 
-		_attachListeners();
-	}
-	_init();
+        var fileref = document.createElement("link")
+        fileref.setAttribute("rel", "stylesheet")
+        fileref.setAttribute("type", "text/css")
+        fileref.setAttribute("href", filename)
+
+        if (typeof fileref != "undefined") {
+            this.head.appendChild(fileref);
+        }
+    }
+
+    function injectFields(filename) {
+        var config = this.config;
+
+        var fieldObjs = {};
+
+        for (field in fields) {
+            var domTargets = {};
+            if (this.config.domTargetsFound) {
+                domTargets.input = this.domTargets[field + "_input"];
+                domTargets.label = this.domTargets[field + "_label"];
+                console.log("domTargets.input " + field + "_input");
+                console.log("domTargets.label " + field + "_label");
+            }
+            domTargets.form = this.form;
+
+            config.id = field;
+            config.name = fields[field].name;
+            config.labelText = fields[field].labelText;
+            config.placeholder = fields[field].placeholder;
+            config.autocomplete = fields[field].autocomplete;
+            var f = {};
+            f.model = new beanstream.InputModel();
+            f.template = new beanstream.InputTemplate();
+            f.view = new beanstream.InputView(f.model, f.template, domTargets);
+            f.controller = new beanstream.InputController(f.model, f.view, config);
+
+            fieldObjs[field] = f;
+        }
+
+    }
+
+    function fireLoadedEvent() {
+        console.log("barr");
+        var event = new Event('beanstream_loaded');
+        document.dispatchEvent(event);
+
+    }
+
+    function init() {
+        this.config = {};
+
+        cacheDom();
+        attachListeners();
+
+        // todo: replace with to absolute link
+        injectStyles("../assets/css/style.css");
+        injectFields();
+
+        fireLoadedEvent();
+    }
+    init();
 
 })();
-
-
-
-

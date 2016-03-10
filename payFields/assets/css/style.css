@@ -1,2 +1,2 @@
-.w3-input{padding:8px;display:block;border:none;border-bottom:1px solid #808080;width:100%}
-.w3-input:not(:valid)~.w3-validate{color:#f44336}
+label{display:block;}
+input{display:block;}
