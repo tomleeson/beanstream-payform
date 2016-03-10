@@ -111,8 +111,6 @@
             if (this.config.domTargetsFound) {
                 domTargets.input = this.domTargets[field + "_input"];
                 domTargets.label = this.domTargets[field + "_label"];
-                console.log("domTargets.input " + field + "_input");
-                console.log("domTargets.label " + field + "_label");
             }
             domTargets.form = this.form;
 
@@ -133,7 +131,6 @@
     }
 
     function fireLoadedEvent() {
-        console.log("barr");
         var event = new Event('beanstream_loaded');
         document.dispatchEvent(event);
 

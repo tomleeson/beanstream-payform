@@ -7,51 +7,72 @@
      */
     function InputController(model, view, config) {
 
-        this._model = model;
-        this._view = view;
-        this._config = config;
+        var self = this;
+        self._model = model;
+        self._view = view;
+        self._config = config;
 
-        var _this = this;
 
         //notifier for view 
-        this._view.render("elements", this._config);
+        self._view.render("elements", self._config);
 
         //listen to view events
-        this._view.keydown.attach(function(e) {
-            //console.log("view.keydown");
-
-            // Don't override default functionality except for input
-            /*
-            if(helper.isNonInputKey(e)){
+        self._view.keydown.attach(function(sender, e) {
+            if(beanstream.Helper.isNonInputKey(e)){
+                // Don't override default functionality except for input
                 return;
-             }
+            }
             e.preventDefault();
-            */
 
-            _this.limitInput(event.keyCode);
+            var char = String.fromCharCode(e.keyCode);
+
+            var selectedText = {};
+            selectedText.start = e.target.selectionStart;
+            selectedText.end = e.target.selectionEnd;
+
+            console.log(self._config);
+            self.limitInput(char, selectedText);
         });
 
-        this._view.paste.attach(function(e) {
+        self._view.paste.attach(function(e) {
             //console.log("view.paste");
-            _this.limitPaste(e);
+            //_self.limitPaste(e);
         });
     }
 
     InputController.prototype = {
 
-        limitInput: function(keyCode) {
-            //console.log("InputController.limitInput");
+        limitInput: function(char, selectedText) {
+            if(isNaN(char)){
+                return;
+            }
 
-            // 1. verify keypress from relevant key
+            console.log(self);
+            console.log(self._config);
+            // Remove any text selected in ui
+            var currentStr = self._model.getValue();
+            currentStr =  currentStr.replace(
+                            currentStr.substring(
+                                selectedText.start, selectedText.end), "");
 
-            var newChar = String.fromCharCode(keyCode);
-            var str = this._model.getValue() + newChar;
+            var newStr = "";
 
-            // 2. validate new str
-
-            this._model.setValue(str);
-
-            //console.log(this._model.getValue());
+            console.log(self._config.autocomplete);
+            switch(self._config.autocomplete) {
+                case "cc-number":
+                    newStr = beanstream.Validator.formatCardNumber_onKeydown(currentStr, char);
+                    break;
+                case "cvc":
+                    newStr = (currentStr + char).substring(0,3);
+                    break;
+                case "cc-exp":
+                    newStr = beanstream.Validator.formatExpiry_onKeydown(currentStr, char);
+                    break;
+                default:
+                    newStr = currentStr + char;
+            }
+            
+            self._model.setValue(newStr);
         },
 
         limitPaste: function(e) {
