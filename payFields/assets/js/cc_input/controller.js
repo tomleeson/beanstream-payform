@@ -30,7 +30,6 @@
             selectedText.start = e.target.selectionStart;
             selectedText.end = e.target.selectionEnd;
 
-            console.log(self._config);
             self.limitInput(char, selectedText);
         });
 
@@ -43,30 +42,31 @@
     InputController.prototype = {
 
         limitInput: function(char, selectedText) {
+            var self = this;
+
             if(isNaN(char)){
                 return;
             }
 
-            console.log(self);
-            console.log(self._config);
             // Remove any text selected in ui
             var currentStr = self._model.getValue();
             currentStr =  currentStr.replace(
                             currentStr.substring(
                                 selectedText.start, selectedText.end), "");
 
-            var newStr = "";
+            var newStr = currentStr + char;
 
-            console.log(self._config.autocomplete);
             switch(self._config.autocomplete) {
                 case "cc-number":
-                    newStr = beanstream.Validator.formatCardNumber_onKeydown(currentStr, char);
+                    newStr = beanstream.Validator.formatCardNumber(newStr);
+
                     break;
-                case "cvc":
-                    newStr = (currentStr + char).substring(0,3);
+                case "cc-csc":
+                    // See note in Validator.limitLength
+                    //newStr = beanstream.Validator.limitLength(newStr, "cvcLength");
                     break;
                 case "cc-exp":
-                    newStr = beanstream.Validator.formatExpiry_onKeydown(currentStr, char);
+                    newStr = beanstream.Validator.formatExpiry(newStr);
                     break;
                 default:
                     newStr = currentStr + char;
@@ -76,6 +76,8 @@
         },
 
         limitPaste: function(e) {
+            var self = this;
+
             //console.log("InputController.limitInput");
         }
 

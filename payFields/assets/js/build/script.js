@@ -147,18 +147,7 @@
             return sum % 10 === 0;
         };
 
-        function formatCardNumber_onKeydown(str, newChar) {
-
-            var unformattedStr = str.replace(/\s+/g, '');
-
-            if ((unformattedStr.length != 0) && (unformattedStr.length % 4 == 0)) {
-                str += ' ';
-            }
-
-            return str += newChar;;
-        };
-
-        function formatCardNumber_onPaste(str) {
+        function formatCardNumber(str) {
 
             str = str.replace(/\s+/g, '');
             var formattedStr = '';
@@ -171,12 +160,13 @@
                 formattedStr += str[i];
             }
 
+            formattedStr = limitLength(formattedStr, "length");
+
             return formattedStr;
         };
 
-        function formatExpiry_onKeydown(str, newChar) {
+        function formatExpiry(str) {
 
-            str += newChar;
             var mon, parts, sep, year;
             parts = str.match(/^\D*(\d{1,2})(\D+)?(\d{1,4})?/);
             if (!parts) {
@@ -199,13 +189,46 @@
             return mon + sep + year;
         };
 
+        function limitLength(str, type) {
+
+            if(type != "length" && type != "cvcLength"){
+                console.log("returning early");
+                return str; 
+            }
+
+            for(var i=0; i<cards.length; i++){
+                var patterns = cards[i].patterns;
+                
+                for(var j=0; j<patterns.length; j++){
+
+                    var pos = str.indexOf(patterns[j]);
+                    if(pos === 0){
+                        
+                        // NOTE: We need to know the card type to validate CVC lengths.
+                        // We'll need the card number obj to fire an event for the form 
+                        // and the form to fire an event for the cvc field
+
+                        var lengths = cards[i][type]
+                        var max = Math.max.apply( Math, lengths );
+
+                        // hack to account for white space. must do better
+                        str = str.substring(0, max+3);
+                    }
+                }
+            }
+
+            return str; 
+        };
+
+
+
 
         return {
             getCardType: getCardType,
             getLuhnChecksum: getLuhnChecksum,
-            formatCardNumber_onKeydown: formatCardNumber_onKeydown,
-            formatCardNumber_onPaste: formatCardNumber_onPaste,
-            formatExpiry_onKeydown: formatExpiry_onKeydown
+            formatCardNumber: formatCardNumber,
+            formatExpiry: formatExpiry,
+            limitLength: limitLength
         }
 
     })();
@@ -375,7 +398,6 @@
             selectedText.start = e.target.selectionStart;
             selectedText.end = e.target.selectionEnd;
 
-            console.log(self._config);
             self.limitInput(char, selectedText);
         });
 
@@ -388,30 +410,31 @@
     InputController.prototype = {
 
         limitInput: function(char, selectedText) {
+            var self = this;
+
             if(isNaN(char)){
                 return;
             }
 
-            console.log(self);
-            console.log(self._config);
             // Remove any text selected in ui
             var currentStr = self._model.getValue();
             currentStr =  currentStr.replace(
                             currentStr.substring(
                                 selectedText.start, selectedText.end), "");
 
-            var newStr = "";
+            var newStr = currentStr + char;
 
-            console.log(self._config.autocomplete);
             switch(self._config.autocomplete) {
                 case "cc-number":
-                    newStr = beanstream.Validator.formatCardNumber_onKeydown(currentStr, char);
+                    newStr = beanstream.Validator.formatCardNumber(newStr);
+
                     break;
-                case "cvc":
-                    newStr = (currentStr + char).substring(0,3);
+                case "cc-csc":
+                    // See note in Validator.limitLength
+                    //newStr = beanstream.Validator.limitLength(newStr, "cvcLength");
                     break;
                 case "cc-exp":
-                    newStr = beanstream.Validator.formatExpiry_onKeydown(currentStr, char);
+                    newStr = beanstream.Validator.formatExpiry(newStr);
                     break;
                 default:
                     newStr = currentStr + char;
@@ -421,6 +444,8 @@
         },
 
         limitPaste: function(e) {
+            var self = this;
+
             //console.log("InputController.limitInput");
         }
 
@@ -534,7 +559,6 @@ Event.prototype = {
             if (!this.config.domTargetsFound) break;
         }
 
-        this.config.styled = true;
     }
 
     function readAttributes() {
@@ -590,7 +614,6 @@ Event.prototype = {
     }
 
     function injectFields(filename) {
-        var config = this.config;
 
         var fieldObjs = {};
 
@@ -602,6 +625,8 @@ Event.prototype = {
             }
             domTargets.form = this.form;
 
+            var config = new Object;
+            config.domTargetsFound = this.config.domTargetsFound;
             config.id = field;
             config.name = fields[field].name;
             config.labelText = fields[field].labelText;
@@ -615,6 +640,13 @@ Event.prototype = {
 
             fieldObjs[field] = f;
         }
+
+        /*
+        for (field in fields) {
+            console.log(field);
+            console.log(fieldObjs[field]);
+        }
+        */
 
     }
 

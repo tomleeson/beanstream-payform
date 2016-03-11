@@ -46,7 +46,6 @@
             if (!this.config.domTargetsFound) break;
         }
 
-        this.config.styled = true;
     }
 
     function readAttributes() {
@@ -102,7 +101,6 @@
     }
 
     function injectFields(filename) {
-        var config = this.config;
 
         var fieldObjs = {};
 
@@ -114,6 +112,8 @@
             }
             domTargets.form = this.form;
 
+            var config = new Object;
+            config.domTargetsFound = this.config.domTargetsFound;
             config.id = field;
             config.name = fields[field].name;
             config.labelText = fields[field].labelText;
@@ -127,6 +127,13 @@
 
             fieldObjs[field] = f;
         }
+
+        /*
+        for (field in fields) {
+            console.log(field);
+            console.log(fieldObjs[field]);
+        }
+        */
 
     }
 

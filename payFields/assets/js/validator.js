@@ -99,18 +99,7 @@
             return sum % 10 === 0;
         };
 
-        function formatCardNumber_onKeydown(str, newChar) {
-
-            var unformattedStr = str.replace(/\s+/g, '');
-
-            if ((unformattedStr.length != 0) && (unformattedStr.length % 4 == 0)) {
-                str += ' ';
-            }
-
-            return str += newChar;;
-        };
-
-        function formatCardNumber_onPaste(str) {
+        function formatCardNumber(str) {
 
             str = str.replace(/\s+/g, '');
             var formattedStr = '';
@@ -123,12 +112,13 @@
                 formattedStr += str[i];
             }
 
+            formattedStr = limitLength(formattedStr, "length");
+
             return formattedStr;
         };
 
-        function formatExpiry_onKeydown(str, newChar) {
+        function formatExpiry(str) {
 
-            str += newChar;
             var mon, parts, sep, year;
             parts = str.match(/^\D*(\d{1,2})(\D+)?(\d{1,4})?/);
             if (!parts) {
@@ -151,13 +141,46 @@
             return mon + sep + year;
         };
 
+        function limitLength(str, type) {
+
+            if(type != "length" && type != "cvcLength"){
+                console.log("returning early");
+                return str; 
+            }
+
+            for(var i=0; i<cards.length; i++){
+                var patterns = cards[i].patterns;
+                
+                for(var j=0; j<patterns.length; j++){
+
+                    var pos = str.indexOf(patterns[j]);
+                    if(pos === 0){
+                        
+                        // NOTE: We need to know the card type to validate CVC lengths.
+                        // We'll need the card number obj to fire an event for the form 
+                        // and the form to fire an event for the cvc field
+
+                        var lengths = cards[i][type]
+                        var max = Math.max.apply( Math, lengths );
+
+                        // hack to account for white space. must do better
+                        str = str.substring(0, max+3);
+                    }
+                }
+            }
+
+            return str; 
+        };
+
+
+
 
         return {
             getCardType: getCardType,
             getLuhnChecksum: getLuhnChecksum,
-            formatCardNumber_onKeydown: formatCardNumber_onKeydown,
-            formatCardNumber_onPaste: formatCardNumber_onPaste,
-            formatExpiry_onKeydown: formatExpiry_onKeydown
+            formatCardNumber: formatCardNumber,
+            formatExpiry: formatExpiry,
+            limitLength: limitLength
         }
 
     })();
