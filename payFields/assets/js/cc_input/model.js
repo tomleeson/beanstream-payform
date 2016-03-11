@@ -7,7 +7,7 @@
      */
     function InputModel() {
         this._value = "";
-        this._isValid = false;
+        this._isValid = true;
 
         this.valueChanged = new beanstream.Event(this);
         this.validityChanged = new beanstream.Event(this);
@@ -20,22 +20,28 @@
             return this._value;
         },
         setValue: function(value) {
-            this._value = value;
-            this.valueChanged.notify();
+            if(value != this._value){
+                this._value = value;
+                this.valueChanged.notify();
+            }
         },
         getIsValid: function() {
             return this._isValid;
         },
         setIsValid: function(valid) {
-            this._isValid = valid;
-            this.validityChanged.notify();
+            if(valid != this._isValid){
+                this._isValid = valid;
+                this.validityChanged.notify();
+            }
         },
         getCardType: function() {
             return this._cardType;
         },
         setCardType: function(cardType) {
-            this._cardType = cardType;
-            this.cardTypeChanged.notify();
+            if(cardType != this._cardType){
+                this._cardType = cardType;
+                this.cardTypeChanged.notify();
+            }
         }
     };
 

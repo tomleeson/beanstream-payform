@@ -29,7 +29,7 @@
             _this.render("cardType", "");
         });
         this._model.validityChanged.attach(function() {
-            //_this.render(errors, "");
+            _this.render("isValid", "");
         });
 
     }
@@ -66,6 +66,15 @@
                         _this._domElement.style.backgroundImage = 'url(../assets/css/images/' + cardType + '.png)';
                     } else{
                         _this._domElement.style.backgroundImage = "none";
+                    }
+                },
+                isValid: function() {
+                    var isValid = _this._model.getIsValid();
+                    if(isValid){
+                        // todo: apply class, not set color
+                        _this._domElement.style.borderColor = "black";
+                    } else{
+                        _this._domElement.style.borderColor = "red";
                     }
                 }
             };

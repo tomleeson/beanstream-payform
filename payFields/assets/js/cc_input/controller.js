@@ -37,9 +37,14 @@
         self._view.keyup.attach(function(sender, args) {
             if(args.event.keyCode === 8 || args.event.keyCode === 46){
                 //Update model directly from UI on delete
+                //keyup is only needed for deletion
                 self._model.setValue(args.inputValue);
-                var cardType = beanstream.Validator.getCardType(args.inputValue);
-                self.setCardType(cardType);
+                
+                if(self._config.autocomplete === "cc-number"){
+                    var cardType = beanstream.Validator.getCardType(args.inputValue);
+                    self.setCardType(cardType);
+                }
+
             }
         });
 
@@ -58,7 +63,6 @@
                 return;
             }
 
-            var cardType = "";
             // Remove any text selected in ui
             var currentStr = self._model.getValue();
             currentStr =  currentStr.replace(
@@ -70,8 +74,11 @@
             switch(self._config.autocomplete) {
                 case "cc-number":
                     newStr = beanstream.Validator.formatCardNumber(newStr);
-                    cardType = beanstream.Validator.getCardType(newStr);
+                    var cardType = beanstream.Validator.getCardType(newStr);
                     self.setCardType(cardType);
+                    var isValid = beanstream.Validator.getLuhnChecksum(newStr);
+                    self._model.setIsValid(isValid);
+                    console.log("isValid: "+isValid);
                     break;
                 case "cc-csc":
                     // See note in Validator.limitLength
@@ -80,6 +87,8 @@
                     break;
                 case "cc-exp":
                     newStr = beanstream.Validator.formatExpiry(newStr);
+                    var isValid = beanstream.Validator.isValidExpiryDate(newStr, new Date());
+                    self._model.setIsValid(isValid);
                     break;
                 default:
                     newStr = currentStr + char;
@@ -95,12 +104,13 @@
         },
 
         setCardType: function(cardType) {
-            var self = this;        
-            self._model.setCardType(cardType); // update model for viey
-            self.cardTypeChanged.notify(cardType); //emit event for form
-
+            var self = this;  
+            var currentType = self._model.setCardType(cardType);   
+            if(cardType != currentType ){   
+                self._model.setCardType(cardType); // update model for viey
+                self.cardTypeChanged.notify(cardType); //emit event for form
+            }
         }
-
     };
 
 

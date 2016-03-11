@@ -65,6 +65,8 @@
         }];
 
         function getLuhnChecksum(num_str) {
+
+            num_str = num_str.replace(/\s+/g, '');
             var digit;
             var sum = 0;
             var num_array = num_str.split('').reverse();
@@ -151,6 +153,22 @@
             return str; 
         };
 
+        function isValidExpiryDate(str, currentDate) {
+
+            // expects str in format "mm/yyyy"
+            var arr = str.split("/");
+            //JavaScript counts months from 0 to 11
+            var month = arr[0];
+            if(month) month = month.trim() -1;
+            var year = arr[1];
+            if(year) year = year.trim();
+            var expiryDate = new Date(year, month);
+
+            if (expiryDate >= currentDate) {
+                return true;
+            }
+            return false;
+        };
 
         function getCardType(str) {
             var cardType = "";
@@ -171,14 +189,13 @@
         };
 
 
-
-
         return {
             getCardType: getCardType,
             getLuhnChecksum: getLuhnChecksum,
             formatCardNumber: formatCardNumber,
             formatExpiry: formatExpiry,
-            limitLength: limitLength
+            limitLength: limitLength,
+            isValidExpiryDate: isValidExpiryDate
         }
 
     })();

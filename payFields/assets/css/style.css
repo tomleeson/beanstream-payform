@@ -8,3 +8,10 @@ input{display:block;}
     background-origin: content-box;
 }
 
+[data-beanstream-id="cc_cvv"] {
+    background-position: right center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-origin: content-box;
+    background-image: url("./images/cvc_hint.png");
+}

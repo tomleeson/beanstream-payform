@@ -1,49 +1,47 @@
-describe('greeter', function () {
+describe('Validator', function () {
 
 	var defaultFormat = /(\d{1,4})/g;
-    var cards = [{
-	      type: 'visaelectron',
-	      patterns: [4026, 417500, 4405, 4508, 4844, 4913, 4917],
-	      format: defaultFormat,
-	      length: [16],
-	      cvcLength: [3],
-	      luhn: true
-	    }, {
-	      type: 'maestro',
-	      patterns: [5018, 502, 503, 56, 58, 639, 6220, 67],
-	      format: defaultFormat,
-	      length: [12, 13, 14, 15, 16, 17, 18, 19],
-	      cvcLength: [3],
-	      luhn: true
-	    }];
 
   it('should get card type', function () {
 
-    expect(validate.getCardType(5018, cards)).toEqual('maestro');
+    expect(beanstream.Validator.getCardType('5018')).toEqual('maestro');
   });
 
   it('should pass valid luhn number', function () {
 
-    expect(validate.getLuhnChecksum('1234567890123452')).toBe(true);
+    expect(beanstream.Validator.getLuhnChecksum('1234567890123452')).toBe(true);
   });
 
   it('should fail invalid luhn number', function () {
 
-    expect(validate.getLuhnChecksum('1234567890123451')).toBe(false);
+    expect(beanstream.Validator.getLuhnChecksum('1234567890123451')).toBe(false);
   });
 
   it('should add space before 5th chars onKwydown', function () {
 
-  	expect(validate.formatCardNumber_onKeydown('123', '4')).toBe('1234');
-  	expect(validate.formatCardNumber_onKeydown('1234', '5')).toBe('1234 5');
-    expect(validate.formatCardNumber_onKeydown('1234 5678', '9')).toBe('1234 5678 9');
-    // formatCardNumber_onPaste
+  	expect(beanstream.Validator.formatCardNumber('1234')).toBe('1234');
+  	expect(beanstream.Validator.formatCardNumber('12345')).toBe('1234 5');
+    expect(beanstream.Validator.formatCardNumber('1234 56789 ')).toBe('1234 5678 9');
   });
 
-  it('should add space every 4th char onPaste', function () {
+  it('should reject expired dates', function () {
 
-    expect(validate.formatCardNumber_onPaste('123456789')).toBe('1234 5678 9');
-    expect(validate.formatCardNumber_onPaste('1 234  56789')).toBe('1234 5678 9');
+    //JavaScript counts months from 0 to 11
+    //'01/2016' = Jan, Date(2016, 1) = Feb
+    expect(beanstream.Validator.isValidExpiryDate('01/2016', new Date(2016, 1))).toBe(false);
   });
+
+   it('should accept valid dates', function () {
+
+    //'02/2016' = Feb, Date(2016, 1) = Feb
+    expect(beanstream.Validator.isValidExpiryDate('02/2016', new Date(2016, 1))).toBe(true);
+    //'04/2016' = Apr, Date(2016, 2) = Mar
+    expect(beanstream.Validator.isValidExpiryDate('04/2016', new Date(2016, 2))).toBe(true);
+  });
+
+
+
 
 });
+
+//useful: list of card no's for testing: http://www.freeformatter.com/credit-card-number-generator-validator.html

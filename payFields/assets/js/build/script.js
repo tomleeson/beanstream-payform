@@ -113,6 +113,8 @@
         }];
 
         function getLuhnChecksum(num_str) {
+
+            num_str = num_str.replace(/\s+/g, '');
             var digit;
             var sum = 0;
             var num_array = num_str.split('').reverse();
@@ -199,6 +201,22 @@
             return str; 
         };
 
+        function isValidExpiryDate(str, currentDate) {
+
+            // expects str in format "mm/yyyy"
+            var arr = str.split("/");
+            //JavaScript counts months from 0 to 11
+            var month = arr[0];
+            if(month) month = month.trim() -1;
+            var year = arr[1];
+            if(year) year = year.trim();
+            var expiryDate = new Date(year, month);
+
+            if (expiryDate >= currentDate) {
+                return true;
+            }
+            return false;
+        };
 
         function getCardType(str) {
             var cardType = "";
@@ -219,14 +237,13 @@
         };
 
 
-
-
         return {
             getCardType: getCardType,
             getLuhnChecksum: getLuhnChecksum,
             formatCardNumber: formatCardNumber,
             formatExpiry: formatExpiry,
-            limitLength: limitLength
+            limitLength: limitLength,
+            isValidExpiryDate: isValidExpiryDate
         }
 
     })();
@@ -244,7 +261,7 @@
      */
     function InputModel() {
         this._value = "";
-        this._isValid = false;
+        this._isValid = true;
 
         this.valueChanged = new beanstream.Event(this);
         this.validityChanged = new beanstream.Event(this);
@@ -257,22 +274,28 @@
             return this._value;
         },
         setValue: function(value) {
-            this._value = value;
-            this.valueChanged.notify();
+            if(value != this._value){
+                this._value = value;
+                this.valueChanged.notify();
+            }
         },
         getIsValid: function() {
             return this._isValid;
         },
         setIsValid: function(valid) {
-            this._isValid = valid;
-            this.validityChanged.notify();
+            if(valid != this._isValid){
+                this._isValid = valid;
+                this.validityChanged.notify();
+            }
         },
         getCardType: function() {
             return this._cardType;
         },
         setCardType: function(cardType) {
-            this._cardType = cardType;
-            this.cardTypeChanged.notify();
+            if(cardType != this._cardType){
+                this._cardType = cardType;
+                this.cardTypeChanged.notify();
+            }
         }
     };
 
@@ -312,7 +335,7 @@
             _this.render("cardType", "");
         });
         this._model.validityChanged.attach(function() {
-            //_this.render(errors, "");
+            _this.render("isValid", "");
         });
 
     }
@@ -349,6 +372,15 @@
                         _this._domElement.style.backgroundImage = 'url(../assets/css/images/' + cardType + '.png)';
                     } else{
                         _this._domElement.style.backgroundImage = "none";
+                    }
+                },
+                isValid: function() {
+                    var isValid = _this._model.getIsValid();
+                    if(isValid){
+                        // todo: apply class, not set color
+                        _this._domElement.style.borderColor = "black";
+                    } else{
+                        _this._domElement.style.borderColor = "red";
                     }
                 }
             };
@@ -428,9 +460,14 @@
         self._view.keyup.attach(function(sender, args) {
             if(args.event.keyCode === 8 || args.event.keyCode === 46){
                 //Update model directly from UI on delete
+                //keyup is only needed for deletion
                 self._model.setValue(args.inputValue);
-                var cardType = beanstream.Validator.getCardType(args.inputValue);
-                self.setCardType(cardType);
+                
+                if(self._config.autocomplete === "cc-number"){
+                    var cardType = beanstream.Validator.getCardType(args.inputValue);
+                    self.setCardType(cardType);
+                }
+
             }
         });
 
@@ -449,7 +486,6 @@
                 return;
             }
 
-            var cardType = "";
             // Remove any text selected in ui
             var currentStr = self._model.getValue();
             currentStr =  currentStr.replace(
@@ -461,8 +497,11 @@
             switch(self._config.autocomplete) {
                 case "cc-number":
                     newStr = beanstream.Validator.formatCardNumber(newStr);
-                    cardType = beanstream.Validator.getCardType(newStr);
+                    var cardType = beanstream.Validator.getCardType(newStr);
                     self.setCardType(cardType);
+                    var isValid = beanstream.Validator.getLuhnChecksum(newStr);
+                    self._model.setIsValid(isValid);
+                    console.log("isValid: "+isValid);
                     break;
                 case "cc-csc":
                     // See note in Validator.limitLength
@@ -471,6 +510,8 @@
                     break;
                 case "cc-exp":
                     newStr = beanstream.Validator.formatExpiry(newStr);
+                    var isValid = beanstream.Validator.isValidExpiryDate(newStr, new Date());
+                    self._model.setIsValid(isValid);
                     break;
                 default:
                     newStr = currentStr + char;
@@ -486,12 +527,13 @@
         },
 
         setCardType: function(cardType) {
-            var self = this;        
-            self._model.setCardType(cardType); // update model for viey
-            self.cardTypeChanged.notify(cardType); //emit event for form
-
+            var self = this;  
+            var currentType = self._model.setCardType(cardType);   
+            if(cardType != currentType ){   
+                self._model.setCardType(cardType); // update model for viey
+                self.cardTypeChanged.notify(cardType); //emit event for form
+            }
         }
-
     };
 
 
