@@ -54,7 +54,7 @@
         //this.config.flag = (this.script.getAttribute('data-styled') === 'true');
     }
 
-    function attachListeners() {
+    function attachDomListeners() {
         window.onload = function(event) {
             // validate and get token before submit event
             // button is below script tag, so we wait until it loads
@@ -102,7 +102,7 @@
 
     function injectFields(filename) {
 
-        var fieldObjs = {};
+        this.fieldObjs = [];
 
         for (field in fields) {
             var domTargets = {};
@@ -125,16 +125,31 @@
             f.view = new beanstream.InputView(f.model, f.template, domTargets);
             f.controller = new beanstream.InputController(f.model, f.view, config);
 
-            fieldObjs[field] = f;
+            this.fieldObjs.push(f);
         }
 
-        /*
-        for (field in fields) {
-            console.log(field);
-            console.log(fieldObjs[field]);
-        }
-        */
+        // register listener on controller for cardType changed
+        var field = this.fieldObjs.filter(function( f ) {
+              return f.controller._config.id === "cc_number";
+            });
+        field = field[0];
 
+        if(field){
+            field.controller.cardTypeChanged.attach(function(sender, cardType) {
+                setCardType(cardType)
+            });
+        }
+    }
+
+    function setCardType(cardType) {
+        var field = this.fieldObjs.filter(function( f ) {
+              return f.controller._config.id === "cc_cvv";
+            });
+        field = field[0];
+
+        if(field){
+            field.controller._config.cardType = cardType;
+        }
     }
 
     function fireLoadedEvent() {
@@ -147,7 +162,7 @@
         this.config = {};
 
         cacheDom();
-        attachListeners();
+        attachDomListeners();
 
         // todo: replace with to absolute link
         injectStyles("../assets/css/style.css");

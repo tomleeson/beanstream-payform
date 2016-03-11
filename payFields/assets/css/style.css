@@ -1,2 +1,10 @@
 label{display:block;}
 input{display:block;}
+
+[data-beanstream-id="cc_number"] {
+    background-position: right center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-origin: content-box;
+}
+

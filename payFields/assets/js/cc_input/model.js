@@ -11,6 +11,7 @@
 
         this.valueChanged = new beanstream.Event(this);
         this.validityChanged = new beanstream.Event(this);
+        this.cardTypeChanged = new beanstream.Event(this);
     }
 
     InputModel.prototype = {
@@ -28,6 +29,13 @@
         setIsValid: function(valid) {
             this._isValid = valid;
             this.validityChanged.notify();
+        },
+        getCardType: function() {
+            return this._cardType;
+        },
+        setCardType: function(cardType) {
+            this._cardType = cardType;
+            this.cardTypeChanged.notify();
         }
     };
 

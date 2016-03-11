@@ -16,6 +16,7 @@
         }
 
         this.keydown = new beanstream.Event(this);
+        this.keyup = new beanstream.Event(this);
         this.paste = new beanstream.Event(this);
 
         var _this = this;
@@ -23,6 +24,9 @@
         // attach model Inputeners
         this._model.valueChanged.attach(function() {
             _this.render("value", "");
+        });
+        this._model.cardTypeChanged.attach(function() {
+            _this.render("cardType", "");
         });
         this._model.validityChanged.attach(function() {
             //_this.render(errors, "");
@@ -53,6 +57,16 @@
                 },
                 value: function() {
                     _this._domElement.value = _this._model.getValue();
+                },
+                cardType: function() {
+                    var cardType = _this._model.getCardType();
+                    if(cardType){
+                        if(cardType === "maestro") cardType = "mastercard";
+                        if(cardType === "visaelectron")  cardType = "visa";
+                        _this._domElement.style.backgroundImage = 'url(../assets/css/images/' + cardType + '.png)';
+                    } else{
+                        _this._domElement.style.backgroundImage = "none";
+                    }
                 }
             };
 
@@ -68,7 +82,10 @@
             this._domElement.addEventListener('keydown', function(e) {
                 _this.keydown.notify(e);
             }, false);
-
+            this._domElement.addEventListener('keyup', function(e) {
+                var args = {event: e, inputValue: _this._domElement.value};
+                _this.keyup.notify(args);
+            }, false);
             this._domElement.addEventListener('paste', function(e) {
                 _this.paste.notify(e);
             }, false);

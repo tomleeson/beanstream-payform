@@ -112,20 +112,6 @@
             luhn: true
         }];
 
-
-        function getCardType(number, card) {
-
-            for (var i = 0; i < cards.length; i++) {
-                var patterns = cards[i].patterns;
-                for (var j = 0; j < patterns.length; j++) {
-                    if (number.toString().substring(0, patterns[j].length) === patterns[j].toString()) {
-                        return cards[i].type;
-                    }
-                }
-            }
-        };
-
-
         function getLuhnChecksum(num_str) {
             var digit;
             var sum = 0;
@@ -160,7 +146,8 @@
                 formattedStr += str[i];
             }
 
-            formattedStr = limitLength(formattedStr, "length");
+            var cardType = getCardType(formattedStr);
+            formattedStr = limitLength(formattedStr, "length", cardType);
 
             return formattedStr;
         };
@@ -189,35 +176,46 @@
             return mon + sep + year;
         };
 
-        function limitLength(str, type) {
+        function limitLength(str, fieldType, cardType) {
 
-            if(type != "length" && type != "cvcLength"){
-                console.log("returning early");
+            if((fieldType != "length" && fieldType != "cvcLength") || cardType === undefined || cardType === ""){
                 return str; 
             }
 
-            for(var i=0; i<cards.length; i++){
-                var patterns = cards[i].patterns;
-                
-                for(var j=0; j<patterns.length; j++){
+            var card = cards.filter(function( c ) {
+              return c.type === cardType;
+            });
+            card = card[0];
+                      
+            var lengths = card[fieldType]
+            var max = Math.max.apply( Math, lengths );
 
+            // adjust for whitespacing in creditcard str
+            var whiteSpacing = (str.match(new RegExp(" ", "g")) || []).length;
+
+            // trim() is needed to remove final white space
+            str = str.substring(0, max+whiteSpacing).trim();
+
+            return str; 
+        };
+
+
+        function getCardType(str) {
+            var cardType = "";
+
+            loop1:
+            for(var i=0; i<cards.length; i++){
+                var patterns = cards[i].patterns;               
+                loop2:
+                for(var j=0; j<patterns.length; j++){
                     var pos = str.indexOf(patterns[j]);
                     if(pos === 0){
-                        
-                        // NOTE: We need to know the card type to validate CVC lengths.
-                        // We'll need the card number obj to fire an event for the form 
-                        // and the form to fire an event for the cvc field
-
-                        var lengths = cards[i][type]
-                        var max = Math.max.apply( Math, lengths );
-
-                        // hack to account for white space. must do better
-                        str = str.substring(0, max+3);
+                       cardType = cards[i].type;
+                       break loop1;
                     }
                 }
             }
-
-            return str; 
+            return cardType; 
         };
 
 
@@ -250,6 +248,7 @@
 
         this.valueChanged = new beanstream.Event(this);
         this.validityChanged = new beanstream.Event(this);
+        this.cardTypeChanged = new beanstream.Event(this);
     }
 
     InputModel.prototype = {
@@ -267,6 +266,13 @@
         setIsValid: function(valid) {
             this._isValid = valid;
             this.validityChanged.notify();
+        },
+        getCardType: function() {
+            return this._cardType;
+        },
+        setCardType: function(cardType) {
+            this._cardType = cardType;
+            this.cardTypeChanged.notify();
         }
     };
 
@@ -293,6 +299,7 @@
         }
 
         this.keydown = new beanstream.Event(this);
+        this.keyup = new beanstream.Event(this);
         this.paste = new beanstream.Event(this);
 
         var _this = this;
@@ -300,6 +307,9 @@
         // attach model Inputeners
         this._model.valueChanged.attach(function() {
             _this.render("value", "");
+        });
+        this._model.cardTypeChanged.attach(function() {
+            _this.render("cardType", "");
         });
         this._model.validityChanged.attach(function() {
             //_this.render(errors, "");
@@ -330,6 +340,16 @@
                 },
                 value: function() {
                     _this._domElement.value = _this._model.getValue();
+                },
+                cardType: function() {
+                    var cardType = _this._model.getCardType();
+                    if(cardType){
+                        if(cardType === "maestro") cardType = "mastercard";
+                        if(cardType === "visaelectron")  cardType = "visa";
+                        _this._domElement.style.backgroundImage = 'url(../assets/css/images/' + cardType + '.png)';
+                    } else{
+                        _this._domElement.style.backgroundImage = "none";
+                    }
                 }
             };
 
@@ -345,7 +365,10 @@
             this._domElement.addEventListener('keydown', function(e) {
                 _this.keydown.notify(e);
             }, false);
-
+            this._domElement.addEventListener('keyup', function(e) {
+                var args = {event: e, inputValue: _this._domElement.value};
+                _this.keyup.notify(args);
+            }, false);
             this._domElement.addEventListener('paste', function(e) {
                 _this.paste.notify(e);
             }, false);
@@ -380,6 +403,7 @@
         self._view = view;
         self._config = config;
 
+        self.cardTypeChanged = new beanstream.Event(this);
 
         //notifier for view 
         self._view.render("elements", self._config);
@@ -401,6 +425,15 @@
             self.limitInput(char, selectedText);
         });
 
+        self._view.keyup.attach(function(sender, args) {
+            if(args.event.keyCode === 8 || args.event.keyCode === 46){
+                //Update model directly from UI on delete
+                self._model.setValue(args.inputValue);
+                var cardType = beanstream.Validator.getCardType(args.inputValue);
+                self.setCardType(cardType);
+            }
+        });
+
         self._view.paste.attach(function(e) {
             //console.log("view.paste");
             //_self.limitPaste(e);
@@ -416,6 +449,7 @@
                 return;
             }
 
+            var cardType = "";
             // Remove any text selected in ui
             var currentStr = self._model.getValue();
             currentStr =  currentStr.replace(
@@ -427,11 +461,13 @@
             switch(self._config.autocomplete) {
                 case "cc-number":
                     newStr = beanstream.Validator.formatCardNumber(newStr);
-
+                    cardType = beanstream.Validator.getCardType(newStr);
+                    self.setCardType(cardType);
                     break;
                 case "cc-csc":
                     // See note in Validator.limitLength
-                    //newStr = beanstream.Validator.limitLength(newStr, "cvcLength");
+                    console.log();
+                    newStr = beanstream.Validator.limitLength(newStr, "cvcLength", self._config.cardType);
                     break;
                 case "cc-exp":
                     newStr = beanstream.Validator.formatExpiry(newStr);
@@ -447,6 +483,13 @@
             var self = this;
 
             //console.log("InputController.limitInput");
+        },
+
+        setCardType: function(cardType) {
+            var self = this;        
+            self._model.setCardType(cardType); // update model for viey
+            self.cardTypeChanged.notify(cardType); //emit event for form
+
         }
 
     };
@@ -567,7 +610,7 @@ Event.prototype = {
         //this.config.flag = (this.script.getAttribute('data-styled') === 'true');
     }
 
-    function attachListeners() {
+    function attachDomListeners() {
         window.onload = function(event) {
             // validate and get token before submit event
             // button is below script tag, so we wait until it loads
@@ -615,7 +658,7 @@ Event.prototype = {
 
     function injectFields(filename) {
 
-        var fieldObjs = {};
+        this.fieldObjs = [];
 
         for (field in fields) {
             var domTargets = {};
@@ -638,16 +681,31 @@ Event.prototype = {
             f.view = new beanstream.InputView(f.model, f.template, domTargets);
             f.controller = new beanstream.InputController(f.model, f.view, config);
 
-            fieldObjs[field] = f;
+            this.fieldObjs.push(f);
         }
 
-        /*
-        for (field in fields) {
-            console.log(field);
-            console.log(fieldObjs[field]);
-        }
-        */
+        // register listener on controller for cardType changed
+        var field = this.fieldObjs.filter(function( f ) {
+              return f.controller._config.id === "cc_number";
+            });
+        field = field[0];
 
+        if(field){
+            field.controller.cardTypeChanged.attach(function(sender, cardType) {
+                setCardType(cardType)
+            });
+        }
+    }
+
+    function setCardType(cardType) {
+        var field = this.fieldObjs.filter(function( f ) {
+              return f.controller._config.id === "cc_cvv";
+            });
+        field = field[0];
+
+        if(field){
+            field.controller._config.cardType = cardType;
+        }
     }
 
     function fireLoadedEvent() {
@@ -660,7 +718,7 @@ Event.prototype = {
         this.config = {};
 
         cacheDom();
-        attachListeners();
+        attachDomListeners();
 
         // todo: replace with to absolute link
         injectStyles("../assets/css/style.css");

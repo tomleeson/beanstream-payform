@@ -12,6 +12,7 @@
         self._view = view;
         self._config = config;
 
+        self.cardTypeChanged = new beanstream.Event(this);
 
         //notifier for view 
         self._view.render("elements", self._config);
@@ -33,6 +34,15 @@
             self.limitInput(char, selectedText);
         });
 
+        self._view.keyup.attach(function(sender, args) {
+            if(args.event.keyCode === 8 || args.event.keyCode === 46){
+                //Update model directly from UI on delete
+                self._model.setValue(args.inputValue);
+                var cardType = beanstream.Validator.getCardType(args.inputValue);
+                self.setCardType(cardType);
+            }
+        });
+
         self._view.paste.attach(function(e) {
             //console.log("view.paste");
             //_self.limitPaste(e);
@@ -48,6 +58,7 @@
                 return;
             }
 
+            var cardType = "";
             // Remove any text selected in ui
             var currentStr = self._model.getValue();
             currentStr =  currentStr.replace(
@@ -59,11 +70,13 @@
             switch(self._config.autocomplete) {
                 case "cc-number":
                     newStr = beanstream.Validator.formatCardNumber(newStr);
-
+                    cardType = beanstream.Validator.getCardType(newStr);
+                    self.setCardType(cardType);
                     break;
                 case "cc-csc":
                     // See note in Validator.limitLength
-                    //newStr = beanstream.Validator.limitLength(newStr, "cvcLength");
+                    console.log();
+                    newStr = beanstream.Validator.limitLength(newStr, "cvcLength", self._config.cardType);
                     break;
                 case "cc-exp":
                     newStr = beanstream.Validator.formatExpiry(newStr);
@@ -79,6 +92,13 @@
             var self = this;
 
             //console.log("InputController.limitInput");
+        },
+
+        setCardType: function(cardType) {
+            var self = this;        
+            self._model.setCardType(cardType); // update model for viey
+            self.cardTypeChanged.notify(cardType); //emit event for form
+
         }
 
     };

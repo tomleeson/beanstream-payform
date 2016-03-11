@@ -64,20 +64,6 @@
             luhn: true
         }];
 
-
-        function getCardType(number, card) {
-
-            for (var i = 0; i < cards.length; i++) {
-                var patterns = cards[i].patterns;
-                for (var j = 0; j < patterns.length; j++) {
-                    if (number.toString().substring(0, patterns[j].length) === patterns[j].toString()) {
-                        return cards[i].type;
-                    }
-                }
-            }
-        };
-
-
         function getLuhnChecksum(num_str) {
             var digit;
             var sum = 0;
@@ -112,7 +98,8 @@
                 formattedStr += str[i];
             }
 
-            formattedStr = limitLength(formattedStr, "length");
+            var cardType = getCardType(formattedStr);
+            formattedStr = limitLength(formattedStr, "length", cardType);
 
             return formattedStr;
         };
@@ -141,35 +128,46 @@
             return mon + sep + year;
         };
 
-        function limitLength(str, type) {
+        function limitLength(str, fieldType, cardType) {
 
-            if(type != "length" && type != "cvcLength"){
-                console.log("returning early");
+            if((fieldType != "length" && fieldType != "cvcLength") || cardType === undefined || cardType === ""){
                 return str; 
             }
 
-            for(var i=0; i<cards.length; i++){
-                var patterns = cards[i].patterns;
-                
-                for(var j=0; j<patterns.length; j++){
+            var card = cards.filter(function( c ) {
+              return c.type === cardType;
+            });
+            card = card[0];
+                      
+            var lengths = card[fieldType]
+            var max = Math.max.apply( Math, lengths );
 
+            // adjust for whitespacing in creditcard str
+            var whiteSpacing = (str.match(new RegExp(" ", "g")) || []).length;
+
+            // trim() is needed to remove final white space
+            str = str.substring(0, max+whiteSpacing).trim();
+
+            return str; 
+        };
+
+
+        function getCardType(str) {
+            var cardType = "";
+
+            loop1:
+            for(var i=0; i<cards.length; i++){
+                var patterns = cards[i].patterns;               
+                loop2:
+                for(var j=0; j<patterns.length; j++){
                     var pos = str.indexOf(patterns[j]);
                     if(pos === 0){
-                        
-                        // NOTE: We need to know the card type to validate CVC lengths.
-                        // We'll need the card number obj to fire an event for the form 
-                        // and the form to fire an event for the cvc field
-
-                        var lengths = cards[i][type]
-                        var max = Math.max.apply( Math, lengths );
-
-                        // hack to account for white space. must do better
-                        str = str.substring(0, max+3);
+                       cardType = cards[i].type;
+                       break loop1;
                     }
                 }
             }
-
-            return str; 
+            return cardType; 
         };
 
 
