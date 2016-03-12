@@ -109,7 +109,7 @@
         function formatExpiry(str) {
 
             var mon, parts, sep, year;
-            parts = str.match(/^\D*(\d{1,2})(\D+)?(\d{1,4})?/);
+            parts = str.match(/^\D*(\d{1,2})(\D+)?(\d{1,2})?/);
             if (!parts) {
                 return '';
             }
@@ -136,13 +136,7 @@
                 return str; 
             }
 
-            var card = cards.filter(function( c ) {
-              return c.type === cardType;
-            });
-            card = card[0];
-                      
-            var lengths = card[fieldType]
-            var max = Math.max.apply( Math, lengths );
+            var max = getMaxLength(fieldType, cardType);
 
             // adjust for whitespacing in creditcard str
             var whiteSpacing = (str.match(new RegExp(" ", "g")) || []).length;
@@ -153,6 +147,17 @@
             return str; 
         };
 
+        function getMaxLength(fieldType, cardType){
+            var card = cards.filter(function( c ) {
+              return c.type === cardType;
+            });
+            card = card[0];
+                      
+            var lengths = card[fieldType]
+            var max = Math.max.apply( Math, lengths );
+            return max;
+        };
+
         function isValidExpiryDate(str, currentDate) {
 
             // expects str in format "mm/yyyy"
@@ -161,13 +166,20 @@
             var month = arr[0];
             if(month) month = month.trim() -1;
             var year = arr[1];
-            if(year) year = year.trim();
-            var expiryDate = new Date(year, month);
+            if(year){
 
-            if (expiryDate >= currentDate) {
-                return true;
-            }
-            return false;
+                year = year.trim();
+                if(year.length === 2){
+                    year = "20" + year; 
+
+                    var expiryDate = new Date(year, month);
+                    if (expiryDate < currentDate) {
+                        return false;
+                    }
+                }  
+            } 
+ 
+            return true;
         };
 
         function getCardType(str) {
@@ -188,6 +200,26 @@
             return cardType; 
         };
 
+        function isValidCardNumber(str, onBlur) {
+
+            var cardType = getCardType(str);
+
+            if(cardType === ""){
+                return true; // Unknown card type. Default to true
+            }
+            
+            var max = getMaxLength("length", cardType);
+            str = str.replace(/\s+/g, '');
+
+            if(str.length === max){
+                return getLuhnChecksum(str);
+            } else if(onBlur){
+                return false; // if onBlur and str not complete
+            }
+
+            return true; // Report valid while user is inputting str
+        };
+
 
         return {
             getCardType: getCardType,
@@ -195,7 +227,8 @@
             formatCardNumber: formatCardNumber,
             formatExpiry: formatExpiry,
             limitLength: limitLength,
-            isValidExpiryDate: isValidExpiryDate
+            isValidExpiryDate: isValidExpiryDate,
+            isValidCardNumber: isValidCardNumber
         }
 
     })();

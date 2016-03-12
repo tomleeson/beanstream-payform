@@ -173,7 +173,7 @@
         function formatExpiry(str) {
 
             var mon, parts, sep, year;
-            parts = str.match(/^\D*(\d{1,2})(\D+)?(\d{1,4})?/);
+            parts = str.match(/^\D*(\d{1,2})(\D+)?(\d{1,2})?/);
             if (!parts) {
                 return '';
             }
@@ -200,13 +200,7 @@
                 return str; 
             }
 
-            var card = cards.filter(function( c ) {
-              return c.type === cardType;
-            });
-            card = card[0];
-                      
-            var lengths = card[fieldType]
-            var max = Math.max.apply( Math, lengths );
+            var max = getMaxLength(fieldType, cardType);
 
             // adjust for whitespacing in creditcard str
             var whiteSpacing = (str.match(new RegExp(" ", "g")) || []).length;
@@ -217,6 +211,17 @@
             return str; 
         };
 
+        function getMaxLength(fieldType, cardType){
+            var card = cards.filter(function( c ) {
+              return c.type === cardType;
+            });
+            card = card[0];
+                      
+            var lengths = card[fieldType]
+            var max = Math.max.apply( Math, lengths );
+            return max;
+        };
+
         function isValidExpiryDate(str, currentDate) {
 
             // expects str in format "mm/yyyy"
@@ -225,13 +230,20 @@
             var month = arr[0];
             if(month) month = month.trim() -1;
             var year = arr[1];
-            if(year) year = year.trim();
-            var expiryDate = new Date(year, month);
+            if(year){
 
-            if (expiryDate >= currentDate) {
-                return true;
-            }
-            return false;
+                year = year.trim();
+                if(year.length === 2){
+                    year = "20" + year; 
+
+                    var expiryDate = new Date(year, month);
+                    if (expiryDate < currentDate) {
+                        return false;
+                    }
+                }  
+            } 
+ 
+            return true;
         };
 
         function getCardType(str) {
@@ -252,6 +264,26 @@
             return cardType; 
         };
 
+        function isValidCardNumber(str, onBlur) {
+
+            var cardType = getCardType(str);
+
+            if(cardType === ""){
+                return true; // Unknown card type. Default to true
+            }
+            
+            var max = getMaxLength("length", cardType);
+            str = str.replace(/\s+/g, '');
+
+            if(str.length === max){
+                return getLuhnChecksum(str);
+            } else if(onBlur){
+                return false; // if onBlur and str not complete
+            }
+
+            return true; // Report valid while user is inputting str
+        };
+
 
         return {
             getCardType: getCardType,
@@ -259,7 +291,8 @@
             formatCardNumber: formatCardNumber,
             formatExpiry: formatExpiry,
             limitLength: limitLength,
-            isValidExpiryDate: isValidExpiryDate
+            isValidExpiryDate: isValidExpiryDate,
+            isValidCardNumber: isValidCardNumber
         }
 
     })();
@@ -589,7 +622,7 @@
                 if(self._config.autocomplete === "cc-number"){
                     var cardType = beanstream.Validator.getCardType(args.inputValue);
                     self.setCardType(cardType);
-                    var isValid = beanstream.Validator.getLuhnChecksum(newStr);
+                    var isValid = beanstream.Validator.isValidCardNumber(args.inputValue);
                     self._model.setIsValid(isValid);
                 }
                 if(self._config.autocomplete === "cc-exp"){
@@ -636,7 +669,7 @@
                     newStr = beanstream.Validator.formatCardNumber(newStr);
                     var cardType = beanstream.Validator.getCardType(newStr);
                     self.setCardType(cardType);
-                    var isValid = beanstream.Validator.getLuhnChecksum(newStr);
+                    var isValid = beanstream.Validator.isValidCardNumber(newStr);
                     self._model.setIsValid(isValid);
                     break;
                 case "cc-csc":
@@ -745,7 +778,7 @@ Event.prototype = {
         },
         cc_exp: {
             name: "cc-exp",
-            labelText: "Expires MM/YYYY",
+            labelText: "Expires MM/YY",
             placeholder: "",
             autocomplete: "cc-exp"
         }
@@ -863,7 +896,7 @@ Event.prototype = {
                         var str = fieldObjs[i].controller._model.getValue();
                         var arr = str.split("/");
                         data.expiry_month = arr[0].trim();
-                        data.expiry_year = arr[1].trim();
+                        data.expiry_year = "20" + arr[1].trim();
                         break;
                     default:
                         break;

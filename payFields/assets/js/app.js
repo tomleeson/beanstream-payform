@@ -17,7 +17,7 @@
         },
         cc_exp: {
             name: "cc-exp",
-            labelText: "Expires MM/YYYY",
+            labelText: "Expires MM/YY",
             placeholder: "",
             autocomplete: "cc-exp"
         }
@@ -135,7 +135,7 @@
                         var str = fieldObjs[i].controller._model.getValue();
                         var arr = str.split("/");
                         data.expiry_month = arr[0].trim();
-                        data.expiry_year = arr[1].trim();
+                        data.expiry_year = "20" + arr[1].trim();
                         break;
                     default:
                         break;

@@ -28,15 +28,15 @@ describe('Validator', function () {
 
     //JavaScript counts months from 0 to 11
     //'01/2016' = Jan, Date(2016, 1) = Feb
-    expect(beanstream.Validator.isValidExpiryDate('01/2016', new Date(2016, 1))).toBe(false);
+    expect(beanstream.Validator.isValidExpiryDate('01/16', new Date(2016, 1))).toBe(false);
   });
 
    it('should accept valid dates', function () {
 
     //'02/2016' = Feb, Date(2016, 1) = Feb
-    expect(beanstream.Validator.isValidExpiryDate('02/2016', new Date(2016, 1))).toBe(true);
+    expect(beanstream.Validator.isValidExpiryDate('02/16', new Date(2016, 1))).toBe(true);
     //'04/2016' = Apr, Date(2016, 2) = Mar
-    expect(beanstream.Validator.isValidExpiryDate('04/2016', new Date(2016, 2))).toBe(true);
+    expect(beanstream.Validator.isValidExpiryDate('04/16', new Date(2016, 2))).toBe(true);
   });
 
 

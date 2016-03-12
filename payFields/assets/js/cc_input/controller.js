@@ -43,7 +43,7 @@
                 if(self._config.autocomplete === "cc-number"){
                     var cardType = beanstream.Validator.getCardType(args.inputValue);
                     self.setCardType(cardType);
-                    var isValid = beanstream.Validator.getLuhnChecksum(newStr);
+                    var isValid = beanstream.Validator.isValidCardNumber(args.inputValue);
                     self._model.setIsValid(isValid);
                 }
                 if(self._config.autocomplete === "cc-exp"){
@@ -90,7 +90,7 @@
                     newStr = beanstream.Validator.formatCardNumber(newStr);
                     var cardType = beanstream.Validator.getCardType(newStr);
                     self.setCardType(cardType);
-                    var isValid = beanstream.Validator.getLuhnChecksum(newStr);
+                    var isValid = beanstream.Validator.isValidCardNumber(newStr);
                     self._model.setIsValid(isValid);
                     break;
                 case "cc-csc":
