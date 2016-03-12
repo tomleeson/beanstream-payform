@@ -35,11 +35,27 @@
             return frag;
         }
 
+        function isEmpty(obj) {
+
+            // http://stackoverflow.com/a/4994244/6011159
+            if (obj == null) return true;
+            if (obj.length > 0) return false;
+            if (obj.length === 0) return true;
+
+            for (var key in obj) {
+                if (hasOwnProperty.call(obj, key)) return false;
+            }
+
+            return true;
+        }
+
         return {
             isNonInputKey: isNonInputKey,
             deleteSelectedText: deleteSelectedText,
-            createDocFrag: createDocFrag
+            createDocFrag: createDocFrag,
+            isEmpty: isEmpty
         }
+
     })();
 
     // Export to window
@@ -280,32 +296,75 @@
             xhttp.setRequestHeader("Authorization", auth);
             xhttp.send(JSON.stringify(data));
         },
-
         getToken: function(data, listenter) {
         	console.log("getToken");
             var self = this;
             self._listener = listenter;
+            
+            var url = "https://www.beanstream.com/scripts/tokenization/tokens";
+            data = JSON.stringify(data);
 
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-            if (xhttp.readyState == 4 && xhttp.status == 200) {
-                    console.log(xhttp.responseText);
-                    self._listener(xhttp.responseText);
-                }
-            }.bind(self);
+            if (window.XMLHttpRequest) {
+	            var xhttp = new XMLHttpRequest();
+	            xhttp.onreadystatechange = function() {
+	            if (xhttp.readyState == 4 && xhttp.status == 200) {
+	                    self._listener(self.parseResponse(xhttp.responseText));
+	                }
+	            }.bind(self);
 
-        	var url = "https://www.beanstream.com/scripts/tokenization/tokens?";
-        	var querystring = self.encodeQueryData(data);
-        	xhttp.open('url', url+querystring);
-        	xhttp.send();
-        	//console.log("url+querystring: "+url+querystring);
+	        	xhttp.open("POST", url, true);
+	            xhttp.send(data);
+        	} else if(window.XDomainRequest){
+        		//https required for POST CORS requests in XDomainRequest
+        		//XDomainRequest required to support  IE 8 and 9
+        		//https://developer.mozilla.org/en-US/docs/Web/API/XDomainRequest
+        		//https required for POST CORS requests in XDomainRequest
+
+        		if(window.location.protocol == "https:"){
+	        		var xdr = new XDomainRequest();
+	        		xdr.open("get", url);
+
+	        		xdr.onload = function() {
+						self._listener(self.parseResponse(xdr.responseText));
+					}
+
+					setTimeout(function () {
+					    xdr.send(data);
+					}, 0);
+				} else{
+					var response = new self.formattedResponse();
+					response.code = 5;
+					response.message = "HTTPS connection required in Internet Explorer 9 and below";
+					self._listener(response);
+				}
+        	} else {
+	            var response = new self.formattedResponse();
+				response.code = 6;
+				response.message = "Unsupported browser";
+				self._listener(response);
+	        }
+
         },
-        encodeQueryData: function(data){
-		   var ret = [];
-		   for (var d in data)
-		      ret.push(encodeURIComponent(d) + "=" + encodeURIComponent(data[d]));
-		   return ret.join("&");
+		formattedResponse: function() {
+			var self = this;
+			self.code = "";
+		    self.message = "";
+		    self.token = "";
+		    self.success = false;
+		},
+		parseResponse: function(obj) {
+			var self = this;
+		    obj = JSON.parse(obj);
+		    var response = new self.formattedResponse();
+		    if (obj.code == 1) {
+		        response.success = true;
+		        response.token = obj.token;
+		    } else {
+		        response.message = obj.message;
+		    }
+		    return response;
 		}
+
 
     };
 
@@ -315,14 +374,7 @@
     window.beanstream.AjaxHelper = AjaxHelper;
 })(window);
 
-/*
-{
-  "number": "string",
-  "expiry_month": "string",
-  "expiry_year": "string",
-  "cvd": "string"
-}
-*/
+
 
 (function(window) {
     'use strict';
@@ -459,7 +511,7 @@
             viewCommands[viewCmd]();
         },
         cacheDom: function(id) {
-            this._domElement = this._domParentElements.form.querySelectorAll('[data-beanstream-id=' + id + ']')[0];
+            this._domElement = this._domParentElements.form.querySelector('[data-beanstream-id=' + id + ']');
 
         },
         attachDomListeners: function() {
@@ -674,8 +726,9 @@ Event.prototype = {
     window.beanstream.Event = Event;
 })(window);
 
-
 (function() {
+
+    // ToDo: Refactor App logic along MVC pattern for clarity and testibility
 
     var fields = {
         cc_number: {
@@ -708,13 +761,13 @@ Event.prototype = {
         this.head = document.getElementsByTagName("head")[0];
         this.domTargets = {};
 
-        this.domTargets.cc_number_input = this.form.querySelectorAll('[data-beanstream-target="cc_number_input"]')[0];
-        this.domTargets.cc_exp_input = this.form.querySelectorAll('[data-beanstream-target="cc_exp_input"]')[0];
-        this.domTargets.cc_cvv_input = this.form.querySelectorAll('[data-beanstream-target="cc_cvv_input"]')[0];
+        this.domTargets.cc_number_input = this.form.querySelector('[data-beanstream-target="cc_number_input"]');
+        this.domTargets.cc_exp_input = this.form.querySelector('[data-beanstream-target="cc_exp_input"]');
+        this.domTargets.cc_cvv_input = this.form.querySelector('[data-beanstream-target="cc_cvv_input"]');
 
-        this.domTargets.cc_number_label = this.form.querySelectorAll('[data-beanstream-target="cc_number_label"]')[0];
-        this.domTargets.cc_exp_label = this.form.querySelectorAll('[data-beanstream-target="cc_exp_label"]')[0];
-        this.domTargets.cc_cvv_label = this.form.querySelectorAll('[data-beanstream-target="cc_cvv_label"]')[0];
+        this.domTargets.cc_number_label = this.form.querySelector('[data-beanstream-target="cc_number_label"]');
+        this.domTargets.cc_exp_label = this.form.querySelector('[data-beanstream-target="cc_exp_label"]');
+        this.domTargets.cc_cvv_label = this.form.querySelector('[data-beanstream-target="cc_cvv_label"]');
 
         this.config.domTargetsFound = true;
         for (t in this.domTargets) {
@@ -724,21 +777,14 @@ Event.prototype = {
 
     }
 
-    function readAttributes() {
-        // Looks like we currently do not need any configuration
-
-        //this.config.flag = (this.script.getAttribute('data-styled') === 'true');
-    }
-
     function attachDomListeners() {
         window.onload = function(event) {
             // validate and get token before submit event
             // button is below script tag, so we wait until it loads
-            this.submitBtn = this.form.querySelectorAll("input[type=submit]")[0];
+            this.submitBtn = this.form.querySelector("input[type=submit]");
             if (!this.submitBtn) {
-                this.submitBtn = this.form.querySelectorAll("button[type=submit]")[0];
+                this.submitBtn = this.form.querySelector("button[type=submit]");
             }
-
 
             this.submitBtn.addEventListener("click", onSubmit, false);
         };
@@ -747,35 +793,95 @@ Event.prototype = {
 
     function onSubmit(event) {
         console.log("onSubmit");
-        this.submitBtn = this.form.querySelectorAll("input[type=submit]")[0];
+        var self = this;
+
+        this.submitBtn = this.form.querySelector("input[type=submit]");
         if (!this.submitBtn) {
-            this.submitBtn = this.form.querySelectorAll("button[type=submit]")[0];
+            this.submitBtn = this.form.querySelector("button[type=submit]");
         }
 
         event.preventDefault();
         this.submitBtn.disabled = true;
 
-        // toDo: add check for field validation
+        var data = getFieldValues();
+        if(!beanstream.Helper.isEmpty(data)){
 
-        // dummy data while testing the rest api call
-        var data = {
-                    "number":"5100000010001004",
-                    "expiry_month":"02",
-                    "expiry_year":"14",
-                    "cvd":"642"
-                    }
-        var ajaxHelper = new beanstream.AjaxHelper();
-        ajaxHelper.getToken(data, function(args) {
-            console.log("app. token response: "+args);
-        });
+            var ajaxHelper = new beanstream.AjaxHelper();
+            ajaxHelper.getToken(data, function(args) {
+                
+                appendToken(self.form, args.token);
+                setFeedback_demoOnly(args.token);
 
+                //Disabling custom form event for demo
+                //this.form.submit();
 
+                console.log("submit");
+            }.bind(self));
+        }
 
-
-        console.log("submit");
-
-        //this.form.submit();
         this.submitBtn.disabled = false;
+    }
+
+    function appendToken(form, value) {
+
+        var input = form.querySelector("input[name=singleUseToken]");
+
+        if(input){
+            input.value = value;
+        } else{
+            input = document.createElement('input');
+            input.type = "hidden";
+            input.name = "singleUseToken";
+            input.value = value;
+            form.appendChild(input);
+        }
+    }
+
+    function getFieldValues() {
+
+        var data = {};
+
+        var invalidFields = fieldObjs.filter(function( f ) {
+              return f.controller._model.getIsValid() === false;
+            });
+
+        var emptyFields = fieldObjs.filter(function( f ) {
+              return f.controller._model.getValue() === "";
+            });
+
+        if(invalidFields.length === 0 && emptyFields.length === 0) {
+            for(var i=0; i<fieldObjs.length; i++){
+
+                switch(fieldObjs[i].controller._config.id) {
+                    case "cc_number":
+                        data.number = fieldObjs[i].controller._model.getValue();
+                        break;
+                    case "cc_cvv":
+                        data.cvd = fieldObjs[i].controller._model.getValue();;
+                        break;
+                    case "cc_exp":
+                        var str = fieldObjs[i].controller._model.getValue();
+                        var arr = str.split("/");
+                        data.expiry_month = arr[0].trim();
+                        data.expiry_year = arr[1].trim();
+                        break;
+                    default:
+                        break;
+                }
+
+                fieldObjs[i].controller._model.setValue("");
+            }
+        }
+
+        return data;
+    }
+
+    function setFeedback_demoOnly(token) {
+
+        var responsePanel = document.getElementById("response");
+        var responsePanel_token = document.getElementById("token");
+        responsePanel_token.innerText = token;
+        responsePanel.style.display = "block";
     }
 
     function injectStyles(filename) {

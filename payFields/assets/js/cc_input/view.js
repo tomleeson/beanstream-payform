@@ -82,7 +82,7 @@
             viewCommands[viewCmd]();
         },
         cacheDom: function(id) {
-            this._domElement = this._domParentElements.form.querySelectorAll('[data-beanstream-id=' + id + ']')[0];
+            this._domElement = this._domParentElements.form.querySelector('[data-beanstream-id=' + id + ']');
 
         },
         attachDomListeners: function() {
