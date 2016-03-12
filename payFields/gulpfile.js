@@ -26,7 +26,8 @@ gulp.task('tdd', function (done) {
  */
 gulp.task('scripts', function() {
   return gulp.src([ './assets/js/helper.js', 
-                    './assets/js/validator.js', 
+                    './assets/js/validator.js',
+                    './assets/js/ajaxHelper.js', 
                     './assets/js/cc_input/model.js', 
                     './assets/js/cc_input/view.js',
                     './assets/js/cc_input/controller.js',

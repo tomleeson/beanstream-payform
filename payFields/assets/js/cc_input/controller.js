@@ -43,23 +43,37 @@
                 if(self._config.autocomplete === "cc-number"){
                     var cardType = beanstream.Validator.getCardType(args.inputValue);
                     self.setCardType(cardType);
+                    var isValid = beanstream.Validator.getLuhnChecksum(newStr);
+                    self._model.setIsValid(isValid);
                 }
-
+                if(self._config.autocomplete === "cc-exp"){
+                    var isValid = beanstream.Validator.isValidExpiryDate(args.inputValue, new Date());
+                    self._model.setIsValid(isValid);
+                }
             }
         });
 
-        self._view.paste.attach(function(e) {
-            //console.log("view.paste");
-            //_self.limitPaste(e);
+        self._view.paste.attach(function(sender, e) {
+            e.preventDefault();
+
+            var pastedStr = e.clipboardData.getData('text/plain');
+
+            var selectedText = {};
+            selectedText.start = e.target.selectionStart;
+            selectedText.end = e.target.selectionEnd;
+
+            self.limitInput(pastedStr, selectedText);
         });
     }
 
     InputController.prototype = {
 
-        limitInput: function(char, selectedText) {
+        limitInput: function(str, selectedText) {
             var self = this;
 
-            if(isNaN(char)){
+            str = str.replace(/\D/g,''); // remove non ints from string
+
+            if(!str.length){
                 return;
             }
 
@@ -69,7 +83,7 @@
                             currentStr.substring(
                                 selectedText.start, selectedText.end), "");
 
-            var newStr = currentStr + char;
+            var newStr = currentStr + str;
 
             switch(self._config.autocomplete) {
                 case "cc-number":
@@ -78,7 +92,6 @@
                     self.setCardType(cardType);
                     var isValid = beanstream.Validator.getLuhnChecksum(newStr);
                     self._model.setIsValid(isValid);
-                    console.log("isValid: "+isValid);
                     break;
                 case "cc-csc":
                     // See note in Validator.limitLength
@@ -91,16 +104,10 @@
                     self._model.setIsValid(isValid);
                     break;
                 default:
-                    newStr = currentStr + char;
+                    break;
             }
             
             self._model.setValue(newStr);
-        },
-
-        limitPaste: function(e) {
-            var self = this;
-
-            //console.log("InputController.limitInput");
         },
 
         setCardType: function(cardType) {

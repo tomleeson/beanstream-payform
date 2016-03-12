@@ -256,6 +256,77 @@
 (function(window) {
     'use strict';
 
+    function AjaxHelper() {
+    }
+
+    AjaxHelper.prototype = {
+
+        makePayment: function(auth, data, listenter) {
+            var self = this;
+            self._listener = listenter;
+
+            var url = "https://www.beanstream.com/api/v1/payments";
+
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+            if (xhttp.readyState == 4 && xhttp.status == 200) {
+            	console.log(xhttp.responseText);
+                  self._listener(xhttp.responseText);
+                }
+            }.bind(self);
+
+            xhttp.open("POST", url, true);
+            xhttp.setRequestHeader("Content-type", "application/json");
+            xhttp.setRequestHeader("Authorization", auth);
+            xhttp.send(JSON.stringify(data));
+        },
+
+        getToken: function(data, listenter) {
+        	console.log("getToken");
+            var self = this;
+            self._listener = listenter;
+
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+            if (xhttp.readyState == 4 && xhttp.status == 200) {
+                    console.log(xhttp.responseText);
+                    self._listener(xhttp.responseText);
+                }
+            }.bind(self);
+
+        	var url = "https://www.beanstream.com/scripts/tokenization/tokens?";
+        	var querystring = self.encodeQueryData(data);
+        	xhttp.open('url', url+querystring);
+        	xhttp.send();
+        	//console.log("url+querystring: "+url+querystring);
+        },
+        encodeQueryData: function(data){
+		   var ret = [];
+		   for (var d in data)
+		      ret.push(encodeURIComponent(d) + "=" + encodeURIComponent(data[d]));
+		   return ret.join("&");
+		}
+
+    };
+
+
+    // Export to window
+    window.beanstream = window.beanstream || {};
+    window.beanstream.AjaxHelper = AjaxHelper;
+})(window);
+
+/*
+{
+  "number": "string",
+  "expiry_month": "string",
+  "expiry_year": "string",
+  "cvd": "string"
+}
+*/
+
+(function(window) {
+    'use strict';
+
     /**
      * The Model stores data and notifies the View of changes.
      */
@@ -466,23 +537,37 @@
                 if(self._config.autocomplete === "cc-number"){
                     var cardType = beanstream.Validator.getCardType(args.inputValue);
                     self.setCardType(cardType);
+                    var isValid = beanstream.Validator.getLuhnChecksum(newStr);
+                    self._model.setIsValid(isValid);
                 }
-
+                if(self._config.autocomplete === "cc-exp"){
+                    var isValid = beanstream.Validator.isValidExpiryDate(args.inputValue, new Date());
+                    self._model.setIsValid(isValid);
+                }
             }
         });
 
-        self._view.paste.attach(function(e) {
-            //console.log("view.paste");
-            //_self.limitPaste(e);
+        self._view.paste.attach(function(sender, e) {
+            e.preventDefault();
+
+            var pastedStr = e.clipboardData.getData('text/plain');
+
+            var selectedText = {};
+            selectedText.start = e.target.selectionStart;
+            selectedText.end = e.target.selectionEnd;
+
+            self.limitInput(pastedStr, selectedText);
         });
     }
 
     InputController.prototype = {
 
-        limitInput: function(char, selectedText) {
+        limitInput: function(str, selectedText) {
             var self = this;
 
-            if(isNaN(char)){
+            str = str.replace(/\D/g,''); // remove non ints from string
+
+            if(!str.length){
                 return;
             }
 
@@ -492,7 +577,7 @@
                             currentStr.substring(
                                 selectedText.start, selectedText.end), "");
 
-            var newStr = currentStr + char;
+            var newStr = currentStr + str;
 
             switch(self._config.autocomplete) {
                 case "cc-number":
@@ -501,7 +586,6 @@
                     self.setCardType(cardType);
                     var isValid = beanstream.Validator.getLuhnChecksum(newStr);
                     self._model.setIsValid(isValid);
-                    console.log("isValid: "+isValid);
                     break;
                 case "cc-csc":
                     // See note in Validator.limitLength
@@ -514,16 +598,10 @@
                     self._model.setIsValid(isValid);
                     break;
                 default:
-                    newStr = currentStr + char;
+                    break;
             }
             
             self._model.setValue(newStr);
-        },
-
-        limitPaste: function(e) {
-            var self = this;
-
-            //console.log("InputController.limitInput");
         },
 
         setCardType: function(cardType) {
@@ -677,8 +755,22 @@ Event.prototype = {
         event.preventDefault();
         this.submitBtn.disabled = true;
 
-        // toDo: add field validation
-        // toDo: add getToken
+        // toDo: add check for field validation
+
+        // dummy data while testing the rest api call
+        var data = {
+                    "number":"5100000010001004",
+                    "expiry_month":"02",
+                    "expiry_year":"14",
+                    "cvd":"642"
+                    }
+        var ajaxHelper = new beanstream.AjaxHelper();
+        ajaxHelper.getToken(data, function(args) {
+            console.log("app. token response: "+args);
+        });
+
+
+
 
         console.log("submit");
 

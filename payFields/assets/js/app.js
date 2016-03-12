@@ -79,8 +79,22 @@
         event.preventDefault();
         this.submitBtn.disabled = true;
 
-        // toDo: add field validation
-        // toDo: add getToken
+        // toDo: add check for field validation
+
+        // dummy data while testing the rest api call
+        var data = {
+                    "number":"5100000010001004",
+                    "expiry_month":"02",
+                    "expiry_year":"14",
+                    "cvd":"642"
+                    }
+        var ajaxHelper = new beanstream.AjaxHelper();
+        ajaxHelper.getToken(data, function(args) {
+            console.log("app. token response: "+args);
+        });
+
+
+
 
         console.log("submit");
 
