@@ -173,7 +173,6 @@
             if(year){
                 year = year.trim();
                 if(year.length === 2){
-                    console.log("year.length");
                     year = "20" + year; 
 
                     var expiryDate = new Date(year, month);
@@ -186,11 +185,14 @@
             }  
             if(onBlur){
                 console.log("blur");
-                year = 0;
+                if(year){
+                    year = year.trim();
+                    year = "20" + year; 
+                } else {
+                    year = 0;
+                }
+                
                 var expiryDate = new Date(year, month);
-
-                console.log("currentDate: "+currentDate);
-                console.log("expiryDate: "+expiryDate);
 
                 if (expiryDate < currentDate) {
                     return false;
