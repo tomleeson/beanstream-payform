@@ -222,7 +222,11 @@
             return max;
         };
 
-        function isValidExpiryDate(str, currentDate) {
+        function isValidExpiryDate(str, currentDate, onBlur) {
+
+            if(onBlur && str === ""){
+                return false; // Validate onBlur as required field
+            }
 
             // expects str in format "mm/yyyy"
             var arr = str.split("/");
@@ -231,16 +235,30 @@
             if(month) month = month.trim() -1;
             var year = arr[1];
             if(year){
-
                 year = year.trim();
                 if(year.length === 2){
+                    console.log("year.length");
                     year = "20" + year; 
 
                     var expiryDate = new Date(year, month);
                     if (expiryDate < currentDate) {
                         return false;
                     }
-                }  
+                } else if(onBlur){
+                    return false; // Validate onBlur as required field
+                }
+            }  
+            if(onBlur){
+                console.log("blur");
+                year = 0;
+                var expiryDate = new Date(year, month);
+
+                console.log("currentDate: "+currentDate);
+                console.log("expiryDate: "+expiryDate);
+
+                if (expiryDate < currentDate) {
+                    return false;
+                }
             } 
  
             return true;
@@ -268,6 +286,9 @@
 
             var cardType = getCardType(str);
 
+            if(onBlur && str.length === 0){
+                return false; // Validate onBlur as required field
+            }
             if(cardType === ""){
                 return true; // Unknown card type. Default to true
             }
@@ -284,6 +305,25 @@
             return true; // Report valid while user is inputting str
         };
 
+        function isValidCvc(str, onBlur) {
+
+            var cardType = getCardType(str);
+
+            if(onBlur && str.length === 0){
+                return false; // Validate onBlur as required field
+            }
+            if(cardType === ""){
+                return true; // Unknown card type. Default to true
+            }
+            
+            var max = getMaxLength("cvcLength", cardType);
+            if(str.length < max && onBlur === true){
+                return false;
+            }
+
+            return true;
+        };
+
 
         return {
             getCardType: getCardType,
@@ -292,7 +332,8 @@
             formatExpiry: formatExpiry,
             limitLength: limitLength,
             isValidExpiryDate: isValidExpiryDate,
-            isValidCardNumber: isValidCardNumber
+            isValidCardNumber: isValidCardNumber,
+            isValidCvc: isValidCvc
         }
 
     })();
@@ -480,6 +521,7 @@
         this.keydown = new beanstream.Event(this);
         this.keyup = new beanstream.Event(this);
         this.paste = new beanstream.Event(this);
+        this.blur = new beanstream.Event(this);
 
         var _this = this;
 
@@ -534,9 +576,11 @@
                     var isValid = _this._model.getIsValid();
                     if(isValid){
                         // todo: apply class, not set color
-                        _this._domElement.style.borderColor = "black";
+                        //_this._domElement.style.borderColor = "black";
+                        _this._domElement.className = _this._domElement.className.replace(" beanstream_invalid", "");
                     } else{
-                        _this._domElement.style.borderColor = "red";
+                        //_this._domElement.style.borderColor = "red";  
+                        _this._domElement.className += " beanstream_invalid";
                     }
                 }
             };
@@ -559,6 +603,9 @@
             }, false);
             this._domElement.addEventListener('paste', function(e) {
                 _this.paste.notify(e);
+            }, false);
+            this._domElement.addEventListener('blur', function(e) {
+                _this.blur.notify(e);
             }, false);
         },
         createDocFrag: function(htmlStr) {
@@ -629,6 +676,13 @@
                     var isValid = beanstream.Validator.isValidExpiryDate(args.inputValue, new Date());
                     self._model.setIsValid(isValid);
                 }
+
+                if(self._config.autocomplete === "cc-csc"){
+                    var isValid = beanstream.Validator.isValidCvc(args.inputValue);
+                    self._model.setIsValid(isValid);
+                }
+
+
             }
         });
 
@@ -642,6 +696,29 @@
             selectedText.end = e.target.selectionEnd;
 
             self.limitInput(pastedStr, selectedText);
+        });
+
+        self._view.blur.attach(function(sender, e) {
+            var onBlur = true;
+            var str = self._model.getValue();
+
+            switch(self._config.autocomplete) {
+                case "cc-number":
+                    var isValid = beanstream.Validator.isValidCardNumber(str, onBlur);
+                    self._model.setIsValid(isValid);
+                    break;
+                case "cc-csc":
+                    var isValid = beanstream.Validator.isValidCvc(str, onBlur);
+                    self._model.setIsValid(isValid);
+                    break;
+                case "cc-exp":
+                    var isValid = beanstream.Validator.isValidExpiryDate(str, new Date(), onBlur);
+                    self._model.setIsValid(isValid);
+                    break;
+                default:
+                    break;
+            }
+
         });
     }
 
@@ -673,9 +750,9 @@
                     self._model.setIsValid(isValid);
                     break;
                 case "cc-csc":
-                    // See note in Validator.limitLength
-                    console.log();
                     newStr = beanstream.Validator.limitLength(newStr, "cvcLength", self._config.cardType);
+                    var isValid = beanstream.Validator.isValidCvc(newStr);
+                    self._model.setIsValid(isValid);
                     break;
                 case "cc-exp":
                     newStr = beanstream.Validator.formatExpiry(newStr);

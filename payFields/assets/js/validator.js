@@ -158,7 +158,11 @@
             return max;
         };
 
-        function isValidExpiryDate(str, currentDate) {
+        function isValidExpiryDate(str, currentDate, onBlur) {
+
+            if(onBlur && str === ""){
+                return false; // Validate onBlur as required field
+            }
 
             // expects str in format "mm/yyyy"
             var arr = str.split("/");
@@ -167,16 +171,30 @@
             if(month) month = month.trim() -1;
             var year = arr[1];
             if(year){
-
                 year = year.trim();
                 if(year.length === 2){
+                    console.log("year.length");
                     year = "20" + year; 
 
                     var expiryDate = new Date(year, month);
                     if (expiryDate < currentDate) {
                         return false;
                     }
-                }  
+                } else if(onBlur){
+                    return false; // Validate onBlur as required field
+                }
+            }  
+            if(onBlur){
+                console.log("blur");
+                year = 0;
+                var expiryDate = new Date(year, month);
+
+                console.log("currentDate: "+currentDate);
+                console.log("expiryDate: "+expiryDate);
+
+                if (expiryDate < currentDate) {
+                    return false;
+                }
             } 
  
             return true;
@@ -204,6 +222,9 @@
 
             var cardType = getCardType(str);
 
+            if(onBlur && str.length === 0){
+                return false; // Validate onBlur as required field
+            }
             if(cardType === ""){
                 return true; // Unknown card type. Default to true
             }
@@ -220,6 +241,25 @@
             return true; // Report valid while user is inputting str
         };
 
+        function isValidCvc(str, onBlur) {
+
+            var cardType = getCardType(str);
+
+            if(onBlur && str.length === 0){
+                return false; // Validate onBlur as required field
+            }
+            if(cardType === ""){
+                return true; // Unknown card type. Default to true
+            }
+            
+            var max = getMaxLength("cvcLength", cardType);
+            if(str.length < max && onBlur === true){
+                return false;
+            }
+
+            return true;
+        };
+
 
         return {
             getCardType: getCardType,
@@ -228,7 +268,8 @@
             formatExpiry: formatExpiry,
             limitLength: limitLength,
             isValidExpiryDate: isValidExpiryDate,
-            isValidCardNumber: isValidCardNumber
+            isValidCardNumber: isValidCardNumber,
+            isValidCvc: isValidCvc
         }
 
     })();

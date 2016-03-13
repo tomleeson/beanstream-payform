@@ -18,6 +18,7 @@
         this.keydown = new beanstream.Event(this);
         this.keyup = new beanstream.Event(this);
         this.paste = new beanstream.Event(this);
+        this.blur = new beanstream.Event(this);
 
         var _this = this;
 
@@ -72,9 +73,11 @@
                     var isValid = _this._model.getIsValid();
                     if(isValid){
                         // todo: apply class, not set color
-                        _this._domElement.style.borderColor = "black";
+                        //_this._domElement.style.borderColor = "black";
+                        _this._domElement.className = _this._domElement.className.replace(" beanstream_invalid", "");
                     } else{
-                        _this._domElement.style.borderColor = "red";
+                        //_this._domElement.style.borderColor = "red";  
+                        _this._domElement.className += " beanstream_invalid";
                     }
                 }
             };
@@ -97,6 +100,9 @@
             }, false);
             this._domElement.addEventListener('paste', function(e) {
                 _this.paste.notify(e);
+            }, false);
+            this._domElement.addEventListener('blur', function(e) {
+                _this.blur.notify(e);
             }, false);
         },
         createDocFrag: function(htmlStr) {

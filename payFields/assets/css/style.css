@@ -15,3 +15,7 @@ input{display:block;}
     background-origin: content-box;
     background-image: url("./images/cvc_hint.png");
 }
+
+.beanstream_invalid{
+	border-color: #e9322d !important;
+}

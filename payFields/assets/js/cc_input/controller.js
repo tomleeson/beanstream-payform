@@ -50,6 +50,13 @@
                     var isValid = beanstream.Validator.isValidExpiryDate(args.inputValue, new Date());
                     self._model.setIsValid(isValid);
                 }
+
+                if(self._config.autocomplete === "cc-csc"){
+                    var isValid = beanstream.Validator.isValidCvc(args.inputValue);
+                    self._model.setIsValid(isValid);
+                }
+
+
             }
         });
 
@@ -63,6 +70,29 @@
             selectedText.end = e.target.selectionEnd;
 
             self.limitInput(pastedStr, selectedText);
+        });
+
+        self._view.blur.attach(function(sender, e) {
+            var onBlur = true;
+            var str = self._model.getValue();
+
+            switch(self._config.autocomplete) {
+                case "cc-number":
+                    var isValid = beanstream.Validator.isValidCardNumber(str, onBlur);
+                    self._model.setIsValid(isValid);
+                    break;
+                case "cc-csc":
+                    var isValid = beanstream.Validator.isValidCvc(str, onBlur);
+                    self._model.setIsValid(isValid);
+                    break;
+                case "cc-exp":
+                    var isValid = beanstream.Validator.isValidExpiryDate(str, new Date(), onBlur);
+                    self._model.setIsValid(isValid);
+                    break;
+                default:
+                    break;
+            }
+
         });
     }
 
@@ -94,9 +124,9 @@
                     self._model.setIsValid(isValid);
                     break;
                 case "cc-csc":
-                    // See note in Validator.limitLength
-                    console.log();
                     newStr = beanstream.Validator.limitLength(newStr, "cvcLength", self._config.cardType);
+                    var isValid = beanstream.Validator.isValidCvc(newStr);
+                    self._model.setIsValid(isValid);
                     break;
                 case "cc-exp":
                     newStr = beanstream.Validator.formatExpiry(newStr);
