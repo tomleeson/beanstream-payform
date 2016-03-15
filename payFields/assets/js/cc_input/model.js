@@ -8,6 +8,8 @@
     function InputModel() {
         this._value = "";
         this._isValid = true;
+        this._cardType = "";
+        this._fieldType = "";
 
         this.valueChanged = new beanstream.Event(this);
         this.validityChanged = new beanstream.Event(this);
@@ -42,6 +44,12 @@
                 this._cardType = cardType;
                 this.cardTypeChanged.notify();
             }
+        },
+        getFieldType: function() {
+            return this._fieldType;
+        },
+        setFieType: function(fieldType) {
+            this._fieldType = fieldType;
         }
     };
 

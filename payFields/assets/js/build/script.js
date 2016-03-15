@@ -154,20 +154,32 @@
         function formatCardNumber(str) {
 
             str = str.replace(/\s+/g, '');
-            var formattedStr = '';
+            var cardType = getCardType(str);
 
-            for (var i = 0; i < str.length; i++) {
-                // Add a space after every 4 characters.
-                if ((i != 0) && (i % 4 == 0)) {
-                    formattedStr += ' ';
+            var card = cards.filter(function( c ) {
+              return c.type === cardType;
+            });
+
+            console.log("cardType: "+cardType);
+
+            card = card[0];
+
+            if(card){
+                var format = card["format"]
+                
+                if (format.global) {
+                    var arr = str.match(format).join(' ');
+                    str = limitLength(arr, "length", cardType);                    
+                } 
+                else{
+                    var arr = format.exec(str);
+                    arr.shift(); // remove entire string match
+                    str = arr.join(' ');
                 }
-                formattedStr += str[i];
-            }
 
-            var cardType = getCardType(formattedStr);
-            formattedStr = limitLength(formattedStr, "length", cardType);
-
-            return formattedStr;
+            } 
+            
+            return str;
         };
 
         function formatExpiry(str) {
@@ -212,11 +224,12 @@
         };
 
         function getMaxLength(fieldType, cardType){
+            
             var card = cards.filter(function( c ) {
               return c.type === cardType;
             });
             card = card[0];
-                      
+
             var lengths = card[fieldType]
             var max = Math.max.apply( Math, lengths );
             return max;
@@ -335,7 +348,8 @@
             limitLength: limitLength,
             isValidExpiryDate: isValidExpiryDate,
             isValidCardNumber: isValidCardNumber,
-            isValidCvc: isValidCvc
+            isValidCvc: isValidCvc,
+            getMaxLength: getMaxLength
         }
 
     })();
@@ -461,6 +475,8 @@
     function InputModel() {
         this._value = "";
         this._isValid = true;
+        this._cardType = "";
+        this._fieldType = "";
 
         this.valueChanged = new beanstream.Event(this);
         this.validityChanged = new beanstream.Event(this);
@@ -495,6 +511,12 @@
                 this._cardType = cardType;
                 this.cardTypeChanged.notify();
             }
+        },
+        getFieldType: function() {
+            return this._fieldType;
+        },
+        setFieType: function(fieldType) {
+            this._fieldType = fieldType;
         }
     };
 
@@ -565,23 +587,24 @@
                     _this._domElement.value = _this._model.getValue();
                 },
                 cardType: function() {
-                    var cardType = _this._model.getCardType();
-                    if(cardType){
-                        if(cardType === "maestro") cardType = "mastercard";
-                        if(cardType === "visaelectron")  cardType = "visa";
-                        _this._domElement.style.backgroundImage = 'url(../assets/css/images/' + cardType + '.png)';
-                    } else{
-                        _this._domElement.style.backgroundImage = "none";
+                    var fieldType = _this._model.getFieldType();
+                    if(fieldType == "cc-number"){
+                        var cardType = _this._model.getCardType();
+
+                        if(cardType){
+                            if(cardType === "maestro") cardType = "mastercard";
+                            if(cardType === "visaelectron")  cardType = "visa";
+                            _this._domElement.style.backgroundImage = 'url(../assets/css/images/' + cardType + '.png)';
+                        } else{
+                            _this._domElement.style.backgroundImage = "none";
+                        }
                     }
                 },
                 isValid: function() {
                     var isValid = _this._model.getIsValid();
                     if(isValid){
-                        // todo: apply class, not set color
-                        //_this._domElement.style.borderColor = "black";
                         _this._domElement.className = _this._domElement.className.replace(" beanstream_invalid", "");
                     } else{
-                        //_this._domElement.style.borderColor = "red";  
                         _this._domElement.className += " beanstream_invalid";
                     }
                 }
@@ -640,7 +663,10 @@
         self._view = view;
         self._config = config;
 
+        self._model.setFieType(self._config.autocomplete);
+
         self.cardTypeChanged = new beanstream.Event(this);
+        self.inputComplete = new beanstream.Event(this);
 
         //notifier for view 
         self._view.render("elements", self._config);
@@ -668,18 +694,18 @@
                 //keyup is only needed for deletion
                 self._model.setValue(args.inputValue);
                 
-                if(self._config.autocomplete === "cc-number"){
+                if(self._model.getFieldType() === "cc-number"){
                     var cardType = beanstream.Validator.getCardType(args.inputValue);
                     self.setCardType(cardType);
                     var isValid = beanstream.Validator.isValidCardNumber(args.inputValue);
                     self._model.setIsValid(isValid);
                 }
-                if(self._config.autocomplete === "cc-exp"){
+                if(self._model.getFieldType() === "cc-exp"){
                     var isValid = beanstream.Validator.isValidExpiryDate(args.inputValue, new Date());
                     self._model.setIsValid(isValid);
                 }
 
-                if(self._config.autocomplete === "cc-csc"){
+                if(self._model.getFieldType() === "cc-csc"){
                     var isValid = beanstream.Validator.isValidCvc(args.inputValue);
                     self._model.setIsValid(isValid);
                 }
@@ -704,7 +730,7 @@
             var onBlur = true;
             var str = self._model.getValue();
 
-            switch(self._config.autocomplete) {
+            switch(self._model.getFieldType()) {
                 case "cc-number":
                     var isValid = beanstream.Validator.isValidCardNumber(str, onBlur);
                     self._model.setIsValid(isValid);
@@ -743,7 +769,7 @@
 
             var newStr = currentStr + str;
 
-            switch(self._config.autocomplete) {
+            switch(self._model.getFieldType()) {
                 case "cc-number":
                     newStr = beanstream.Validator.formatCardNumber(newStr);
                     var cardType = beanstream.Validator.getCardType(newStr);
@@ -752,7 +778,7 @@
                     self._model.setIsValid(isValid);
                     break;
                 case "cc-csc":
-                    newStr = beanstream.Validator.limitLength(newStr, "cvcLength", self._config.cardType);
+                    newStr = beanstream.Validator.limitLength(newStr, "cvcLength", self._model.getCardType());
                     var isValid = beanstream.Validator.isValidCvc(newStr);
                     self._model.setIsValid(isValid);
                     break;
@@ -766,6 +792,13 @@
             }
             
             self._model.setValue(newStr);
+            
+            if(self._model.getIsValid()){
+                var cardType = self._model.getCardType();
+                if(cardType != "" || self._model.getFieldType() === "cc-exp" ){
+                    self.updateFocus(newStr, self._model.getCardType());
+                }
+            }   
         },
 
         setCardType: function(cardType) {
@@ -775,6 +808,32 @@
                 self._model.setCardType(cardType); // update model for viey
                 self.cardTypeChanged.notify(cardType); //emit event for form
             }
+        },
+
+        updateFocus: function(str, cardType) {
+            var self = this;
+            var max;
+            str = str.replace(/\s+/g, ''); //remove white spaces from string
+            var len = str.length;
+
+            switch(self._model.getFieldType()) {
+                case "cc-number":
+                    max = beanstream.Validator.getMaxLength("length", cardType);
+                    break;
+                case "cc-csc":
+                    max = beanstream.Validator.getMaxLength("cvcLength", cardType);
+                    break;
+                case "cc-exp":
+                    max = 5; //Format: "MM / YY", minus white spacing
+                    break;
+                default:
+                    break;
+            }
+
+            if(max === len){
+                self.inputComplete.notify();
+            }
+
         }
     };
 
@@ -1047,6 +1106,14 @@ Event.prototype = {
                 setCardType(cardType)
             });
         }
+
+        for (field in this.fieldObjs) {
+
+            this.fieldObjs[field].controller.inputComplete.attach(function(sender) {
+                setFocusNext(sender);
+            });
+        }
+
     }
 
     function setCardType(cardType) {
@@ -1056,7 +1123,29 @@ Event.prototype = {
         field = field[0];
 
         if(field){
-            field.controller._config.cardType = cardType;
+            field.controller._model.setCardType(cardType);
+
+        }
+    }
+
+    function setFocusNext(sender) {
+
+        var currentEl_id = sender._config.id;
+        var inputs = form.getElementsByTagName("input");
+
+        var currentInput = getIndexById(inputs, currentEl_id);
+        if(inputs[currentInput+1]){
+            inputs[currentInput+1].focus();
+        } else{
+            this.submitBtn.focus();
+        }
+    }
+
+    function getIndexById(source, id) {
+        for (var i = 0; i < source.length; i++) {
+            if (source[i].id === id) {
+                return i;
+            }
         }
     }
 

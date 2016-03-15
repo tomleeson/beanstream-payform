@@ -207,6 +207,14 @@
                 setCardType(cardType)
             });
         }
+
+        for (field in this.fieldObjs) {
+
+            this.fieldObjs[field].controller.inputComplete.attach(function(sender) {
+                setFocusNext(sender);
+            });
+        }
+
     }
 
     function setCardType(cardType) {
@@ -216,7 +224,29 @@
         field = field[0];
 
         if(field){
-            field.controller._config.cardType = cardType;
+            field.controller._model.setCardType(cardType);
+
+        }
+    }
+
+    function setFocusNext(sender) {
+
+        var currentEl_id = sender._config.id;
+        var inputs = form.getElementsByTagName("input");
+
+        var currentInput = getIndexById(inputs, currentEl_id);
+        if(inputs[currentInput+1]){
+            inputs[currentInput+1].focus();
+        } else{
+            this.submitBtn.focus();
+        }
+    }
+
+    function getIndexById(source, id) {
+        for (var i = 0; i < source.length; i++) {
+            if (source[i].id === id) {
+                return i;
+            }
         }
     }
 

@@ -12,7 +12,10 @@
         self._view = view;
         self._config = config;
 
+        self._model.setFieType(self._config.autocomplete);
+
         self.cardTypeChanged = new beanstream.Event(this);
+        self.inputComplete = new beanstream.Event(this);
 
         //notifier for view 
         self._view.render("elements", self._config);
@@ -40,18 +43,18 @@
                 //keyup is only needed for deletion
                 self._model.setValue(args.inputValue);
                 
-                if(self._config.autocomplete === "cc-number"){
+                if(self._model.getFieldType() === "cc-number"){
                     var cardType = beanstream.Validator.getCardType(args.inputValue);
                     self.setCardType(cardType);
                     var isValid = beanstream.Validator.isValidCardNumber(args.inputValue);
                     self._model.setIsValid(isValid);
                 }
-                if(self._config.autocomplete === "cc-exp"){
+                if(self._model.getFieldType() === "cc-exp"){
                     var isValid = beanstream.Validator.isValidExpiryDate(args.inputValue, new Date());
                     self._model.setIsValid(isValid);
                 }
 
-                if(self._config.autocomplete === "cc-csc"){
+                if(self._model.getFieldType() === "cc-csc"){
                     var isValid = beanstream.Validator.isValidCvc(args.inputValue);
                     self._model.setIsValid(isValid);
                 }
@@ -76,7 +79,7 @@
             var onBlur = true;
             var str = self._model.getValue();
 
-            switch(self._config.autocomplete) {
+            switch(self._model.getFieldType()) {
                 case "cc-number":
                     var isValid = beanstream.Validator.isValidCardNumber(str, onBlur);
                     self._model.setIsValid(isValid);
@@ -115,7 +118,7 @@
 
             var newStr = currentStr + str;
 
-            switch(self._config.autocomplete) {
+            switch(self._model.getFieldType()) {
                 case "cc-number":
                     newStr = beanstream.Validator.formatCardNumber(newStr);
                     var cardType = beanstream.Validator.getCardType(newStr);
@@ -124,7 +127,7 @@
                     self._model.setIsValid(isValid);
                     break;
                 case "cc-csc":
-                    newStr = beanstream.Validator.limitLength(newStr, "cvcLength", self._config.cardType);
+                    newStr = beanstream.Validator.limitLength(newStr, "cvcLength", self._model.getCardType());
                     var isValid = beanstream.Validator.isValidCvc(newStr);
                     self._model.setIsValid(isValid);
                     break;
@@ -138,6 +141,13 @@
             }
             
             self._model.setValue(newStr);
+            
+            if(self._model.getIsValid()){
+                var cardType = self._model.getCardType();
+                if(cardType != "" || self._model.getFieldType() === "cc-exp" ){
+                    self.updateFocus(newStr, self._model.getCardType());
+                }
+            }   
         },
 
         setCardType: function(cardType) {
@@ -147,6 +157,32 @@
                 self._model.setCardType(cardType); // update model for viey
                 self.cardTypeChanged.notify(cardType); //emit event for form
             }
+        },
+
+        updateFocus: function(str, cardType) {
+            var self = this;
+            var max;
+            str = str.replace(/\s+/g, ''); //remove white spaces from string
+            var len = str.length;
+
+            switch(self._model.getFieldType()) {
+                case "cc-number":
+                    max = beanstream.Validator.getMaxLength("length", cardType);
+                    break;
+                case "cc-csc":
+                    max = beanstream.Validator.getMaxLength("cvcLength", cardType);
+                    break;
+                case "cc-exp":
+                    max = 5; //Format: "MM / YY", minus white spacing
+                    break;
+                default:
+                    break;
+            }
+
+            if(max === len){
+                self.inputComplete.notify();
+            }
+
         }
     };
 

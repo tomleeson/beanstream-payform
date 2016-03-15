@@ -90,20 +90,31 @@
         function formatCardNumber(str) {
 
             str = str.replace(/\s+/g, '');
-            var formattedStr = '';
+            var cardType = getCardType(str);
 
-            for (var i = 0; i < str.length; i++) {
-                // Add a space after every 4 characters.
-                if ((i != 0) && (i % 4 == 0)) {
-                    formattedStr += ' ';
+            var card = cards.filter(function( c ) {
+              return c.type === cardType;
+            });
+
+            console.log("cardType: "+cardType);
+
+            card = card[0];
+
+            if(card){
+                var format = card["format"]
+                
+                if (format.global) {
+                    var arr = str.match(format).join(' ');
+                    str = limitLength(arr, "length", cardType);                    
+                } 
+                else{
+                    var arr = format.exec(str);
+                    arr.shift(); // remove first element which contains the full matched text 
+                    str = arr.join(' ');
                 }
-                formattedStr += str[i];
-            }
+            } 
 
-            var cardType = getCardType(formattedStr);
-            formattedStr = limitLength(formattedStr, "length", cardType);
-
-            return formattedStr;
+            return str;
         };
 
         function formatExpiry(str) {
@@ -148,11 +159,12 @@
         };
 
         function getMaxLength(fieldType, cardType){
+            
             var card = cards.filter(function( c ) {
               return c.type === cardType;
             });
             card = card[0];
-                      
+
             var lengths = card[fieldType]
             var max = Math.max.apply( Math, lengths );
             return max;
@@ -271,7 +283,8 @@
             limitLength: limitLength,
             isValidExpiryDate: isValidExpiryDate,
             isValidCardNumber: isValidCardNumber,
-            isValidCvc: isValidCvc
+            isValidCvc: isValidCvc,
+            getMaxLength: getMaxLength
         }
 
     })();

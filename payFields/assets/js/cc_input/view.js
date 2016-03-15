@@ -60,23 +60,24 @@
                     _this._domElement.value = _this._model.getValue();
                 },
                 cardType: function() {
-                    var cardType = _this._model.getCardType();
-                    if(cardType){
-                        if(cardType === "maestro") cardType = "mastercard";
-                        if(cardType === "visaelectron")  cardType = "visa";
-                        _this._domElement.style.backgroundImage = 'url(../assets/css/images/' + cardType + '.png)';
-                    } else{
-                        _this._domElement.style.backgroundImage = "none";
+                    var fieldType = _this._model.getFieldType();
+                    if(fieldType == "cc-number"){
+                        var cardType = _this._model.getCardType();
+
+                        if(cardType){
+                            if(cardType === "maestro") cardType = "mastercard";
+                            if(cardType === "visaelectron")  cardType = "visa";
+                            _this._domElement.style.backgroundImage = 'url(../assets/css/images/' + cardType + '.png)';
+                        } else{
+                            _this._domElement.style.backgroundImage = "none";
+                        }
                     }
                 },
                 isValid: function() {
                     var isValid = _this._model.getIsValid();
                     if(isValid){
-                        // todo: apply class, not set color
-                        //_this._domElement.style.borderColor = "black";
                         _this._domElement.className = _this._domElement.className.replace(" beanstream_invalid", "");
                     } else{
-                        //_this._domElement.style.borderColor = "red";  
                         _this._domElement.className += " beanstream_invalid";
                     }
                 }

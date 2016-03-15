@@ -17,11 +17,12 @@ describe('Validator', function () {
     expect(beanstream.Validator.getLuhnChecksum('1234567890123451')).toBe(false);
   });
 
-  it('should add space before 5th chars onKwydown', function () {
+  it('should format string by adding white spaces onKwydown', function () {
 
   	expect(beanstream.Validator.formatCardNumber('1234')).toBe('1234');
-  	expect(beanstream.Validator.formatCardNumber('12345')).toBe('1234 5');
-    expect(beanstream.Validator.formatCardNumber('1234 56789 ')).toBe('1234 5678 9');
+  	expect(beanstream.Validator.formatCardNumber('12345')).toBe('12345'); // Unknown card
+    expect(beanstream.Validator.formatCardNumber('525937661')).toBe('5259 3766 1'); // mastercard
+    expect(beanstream.Validator.formatCardNumber('34747265365192099')).toBe('3474 726536 51920'); // amex
   });
 
   it('should reject expired dates', function () {
