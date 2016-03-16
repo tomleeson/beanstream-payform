@@ -1,13 +1,14 @@
 var gulp = require('gulp');
 var Server = require('karma').Server;
 var concat = require('gulp-concat');
+var gulpProtractorAngular = require('gulp-angular-protractor');
 
 /**
  * Run test once and exit
  */
 gulp.task('test', function (done) {
   new Server({
-    configFile: __dirname + '/karma.conf.js',
+    configFile: __dirname + '/tests/karma.conf.js',
     singleRun: true
   }, done).start();
 });
@@ -17,7 +18,7 @@ gulp.task('test', function (done) {
  */
 gulp.task('tdd', function (done) {
   new Server({
-    configFile: __dirname + '/karma.conf.js'
+    configFile: __dirname + '/tests/karma.conf.js'
   }, done).start();
 });
  
@@ -40,7 +41,17 @@ gulp.task('scripts', function() {
 
 gulp.task('default', ['tdd']);
 
-
-/*
-  toDo reassess design of helper & validator
-*/
+ 
+gulp.task('protractor', function(callback) {
+    gulp
+        .src(['./tests/e2e/spec.js'])
+        .pipe(gulpProtractorAngular({
+            'configFile': './tests/protractor.conf.js',
+            'debug': false,
+            'autoStartStopServer': true
+        }))
+        .on('error', function(e) {
+            console.log(e);
+        })
+        .on('end', callback);
+});

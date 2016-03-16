@@ -3,8 +3,8 @@ module.exports = function(config) {
     browsers: ['Chrome'],
     frameworks: ['jasmine'],
     files: [
-      'assets/js/build/**/*.js',
-      'tests/**/*.spec.js'
+      '../assets/js/build/**/*.js',
+      './unit/**/*.spec.js'
     ]
   });
 };
