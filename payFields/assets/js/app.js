@@ -33,18 +33,27 @@
         this.head = document.getElementsByTagName("head")[0];
         this.domTargets = {};
 
-        this.domTargets.cc_number_input = this.form.querySelector('[data-beanstream-target="cc_number_input"]');
-        this.domTargets.cc_exp_input = this.form.querySelector('[data-beanstream-target="cc_exp_input"]');
-        this.domTargets.cc_cvv_input = this.form.querySelector('[data-beanstream-target="cc_cvv_input"]');
+        this.config.domTargetsFound_input = true;
+        this.config.domTargetsFound_error = true;
 
-        this.domTargets.cc_number_label = this.form.querySelector('[data-beanstream-target="cc_number_label"]');
-        this.domTargets.cc_exp_label = this.form.querySelector('[data-beanstream-target="cc_exp_label"]');
-        this.domTargets.cc_cvv_label = this.form.querySelector('[data-beanstream-target="cc_cvv_label"]');
+        for (field in fields) {
 
-        this.config.domTargetsFound = true;
-        for (t in this.domTargets) {
-            this.config.domTargetsFound = (this.domTargets[t] != undefined);
-            if (!this.config.domTargetsFound) break;
+            var input = field + "_input";
+            var error = field + "_error";
+            
+            this.domTargets[input] 
+                = this.form.querySelector('[data-beanstream-target="'+input+'"]');
+
+            this.domTargets[error] 
+                = this.form.querySelector('[data-beanstream-target="'+error+'"]');
+
+            // Set flags. If target missing for any input, ignore all input targets
+            if(this.domTargets[input] === null){
+                this.config.domTargetsFound_input = false;
+            }
+            if(this.domTargets[error] === null){
+                this.config.domTargetsFound_error = false;
+            }
         }
 
     }
@@ -64,7 +73,6 @@
     }
 
     function onSubmit(event) {
-        console.log("onSubmit");
         var self = this;
 
         this.submitBtn = this.form.querySelector("input[type=submit]");
@@ -82,12 +90,12 @@
             ajaxHelper.getToken(data, function(args) {
                 
                 appendToken(self.form, args.token);
-                setFeedback_demoOnly(args.token);
 
-                //Disabling custom form event for demo
-                //this.form.submit();
-
-                console.log("submit");
+                if(this.submitForm){
+                    this.form.submit();
+                } else{
+                    fireEvent('beanstream_tokenUpdated');
+                }
             }.bind(self));
         }
 
@@ -148,14 +156,6 @@
         return data;
     }
 
-    function setFeedback_demoOnly(token) {
-
-        var responsePanel = document.getElementById("response");
-        var responsePanel_token = document.getElementById("token");
-        responsePanel_token.innerText = token;
-        responsePanel.style.display = "block";
-    }
-
     function injectStyles(filename) {
 
         var fileref = document.createElement("link")
@@ -174,14 +174,17 @@
 
         for (field in fields) {
             var domTargets = {};
-            if (this.config.domTargetsFound) {
+            if (this.config.domTargetsFound_input) {
                 domTargets.input = this.domTargets[field + "_input"];
-                domTargets.label = this.domTargets[field + "_label"];
+            }
+            if (this.config.domTargetsFound_error) {
+                domTargets.error = this.domTargets[field + "_error"];
             }
             domTargets.form = this.form;
 
             var config = new Object;
-            config.domTargetsFound = this.config.domTargetsFound;
+            config.domTargetsFound_input = this.config.domTargetsFound_input;
+            config.domTargetsFound_error = this.config.domTargetsFound_error;
             config.id = field;
             config.name = fields[field].name;
             config.labelText = fields[field].labelText;
@@ -202,6 +205,7 @@
             });
         field = field[0];
 
+        //attach listeners to new field
         if(field){
             field.controller.cardTypeChanged.attach(function(sender, cardType) {
                 setCardType(cardType)
@@ -212,6 +216,9 @@
 
             this.fieldObjs[field].controller.inputComplete.attach(function(sender) {
                 setFocusNext(sender);
+            });
+            this.fieldObjs[field].controller.inputValidityChanged.attach(function(sender, args) {
+                inputValidityChanged(args)
             });
         }
 
@@ -225,8 +232,11 @@
 
         if(field){
             field.controller._model.setCardType(cardType);
-
         }
+    }
+
+    function inputValidityChanged(args) {
+        fireEvent('beanstream_inputValidityChanged', args);
     }
 
     function setFocusNext(sender) {
@@ -244,29 +254,39 @@
 
     function getIndexById(source, id) {
         for (var i = 0; i < source.length; i++) {
-            if (source[i].id === id) {
+            
+            if (source[i].getAttribute('data-beanstream-id') === id) {
                 return i;
             }
         }
     }
 
-    function fireLoadedEvent() {
-        var event = new Event('beanstream_loaded');
+    function fireEvent(title, eventDetail) {
+        var event = new CustomEvent(title);
+        event.eventDetail = eventDetail;
         document.dispatchEvent(event);
+    }
 
+    function readAttributes() {
+        this.submitForm = this.script.getAttribute('data-submit-form');
+
+        if(this.submitForm === null || this.submitForm === ""){
+            this.submitForm = true;
+        }
     }
 
     function init() {
         this.config = {};
 
         cacheDom();
+        readAttributes();
         attachDomListeners();
 
         // todo: replace with to absolute link
         injectStyles("../assets/css/style.css");
         injectFields();
 
-        fireLoadedEvent();
+        fireEvent('beanstream_loaded');
     }
     init();
 

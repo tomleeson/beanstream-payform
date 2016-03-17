@@ -1,5 +1,11 @@
-label{display:block;}
-input{display:block;}
+label[data-beanstream-id]{
+    margin-top: 10px;
+    display: block;
+}
+
+input[data-beanstream-id]{
+    display: block;
+}
 
 [data-beanstream-id="cc_number"] {
     background-position: right center;

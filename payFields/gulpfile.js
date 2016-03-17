@@ -6,7 +6,7 @@ var gulpProtractorAngular = require('gulp-angular-protractor');
 /**
  * Run test once and exit
  */
-gulp.task('test', function (done) {
+gulp.task('unit', function (done) {
   new Server({
     configFile: __dirname + '/tests/karma.conf.js',
     singleRun: true
@@ -42,7 +42,7 @@ gulp.task('scripts', function() {
 gulp.task('default', ['tdd']);
 
  
-gulp.task('protractor', function(callback) {
+gulp.task('e2e', function(callback) {
     gulp
         .src(['./tests/e2e/spec.js'])
         .pipe(gulpProtractorAngular({

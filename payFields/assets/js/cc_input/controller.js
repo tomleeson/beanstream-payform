@@ -16,6 +16,7 @@
 
         self.cardTypeChanged = new beanstream.Event(this);
         self.inputComplete = new beanstream.Event(this);
+        self.inputValidityChanged = new beanstream.Event(this);
 
         //notifier for view 
         self._view.render("elements", self._config);
@@ -47,16 +48,17 @@
                     var cardType = beanstream.Validator.getCardType(args.inputValue);
                     self.setCardType(cardType);
                     var isValid = beanstream.Validator.isValidCardNumber(args.inputValue);
-                    self._model.setIsValid(isValid);
+                    self.setInputValidity(isValid);
                 }
                 if(self._model.getFieldType() === "cc-exp"){
                     var isValid = beanstream.Validator.isValidExpiryDate(args.inputValue, new Date());
-                    self._model.setIsValid(isValid);
+                    self.setInputValidity(isValid);
                 }
 
                 if(self._model.getFieldType() === "cc-csc"){
-                    var isValid = beanstream.Validator.isValidCvc(args.inputValue);
-                    self._model.setIsValid(isValid);
+                    var cardType = self._model.getCardType();
+                    var isValid = beanstream.Validator.isValidCvc(cardType, args.inputValue);
+                    self.setInputValidity(isValid);
                 }
 
 
@@ -82,15 +84,16 @@
             switch(self._model.getFieldType()) {
                 case "cc-number":
                     var isValid = beanstream.Validator.isValidCardNumber(str, onBlur);
-                    self._model.setIsValid(isValid);
+                    self.setInputValidity(isValid);
                     break;
                 case "cc-csc":
-                    var isValid = beanstream.Validator.isValidCvc(str, onBlur);
-                    self._model.setIsValid(isValid);
+                    var cardType = self._model.getCardType();
+                    var isValid = beanstream.Validator.isValidCvc(cardType, str, onBlur);
+                    self.setInputValidity(isValid);
                     break;
                 case "cc-exp":
                     var isValid = beanstream.Validator.isValidExpiryDate(str, new Date(), onBlur);
-                    self._model.setIsValid(isValid);
+                    self.setInputValidity(isValid);
                     break;
                 default:
                     break;
@@ -124,17 +127,18 @@
                     var cardType = beanstream.Validator.getCardType(newStr);
                     self.setCardType(cardType);
                     var isValid = beanstream.Validator.isValidCardNumber(newStr);
-                    self._model.setIsValid(isValid);
+                    self.setInputValidity(isValid);
                     break;
                 case "cc-csc":
+                    var cardType = self._model.getCardType();
                     newStr = beanstream.Validator.limitLength(newStr, "cvcLength", self._model.getCardType());
-                    var isValid = beanstream.Validator.isValidCvc(newStr);
-                    self._model.setIsValid(isValid);
+                    var isValid = beanstream.Validator.isValidCvc(cardType, newStr);
+                    self.setInputValidity(isValid);
                     break;
                 case "cc-exp":
                     newStr = beanstream.Validator.formatExpiry(newStr);
                     var isValid = beanstream.Validator.isValidExpiryDate(newStr, new Date());
-                    self._model.setIsValid(isValid);
+                    self.setInputValidity(isValid);
                     break;
                 default:
                     break;
@@ -157,6 +161,13 @@
                 self._model.setCardType(cardType); // update model for viey
                 self.cardTypeChanged.notify(cardType); //emit event for form
             }
+        },
+
+        setInputValidity: function(args) {
+            var self = this;     
+            self._model.setError(args.error); 
+            self._model.setIsValid(args.isValid);
+            self.inputValidityChanged.notify(args);
         },
 
         updateFocus: function(str, cardType) {

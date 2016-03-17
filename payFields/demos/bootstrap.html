@@ -12,36 +12,52 @@
 
 
 <script>
+  function onSubmit(){
+    event.preventDefault();
+
+    var responsePanel = document.getElementById("response");
+    var responsePanel_token = document.getElementById("token");
+    responsePanel_token.innerText = document.getElementsByName("singleUseToken")[0].value;
+    responsePanel.style.display = "block";
+  }
+
   function addClass(){
-    //console.log("addClass");
     var inputs = document.getElementsByTagName("input"); 
     for (var i = 0; i < inputs.length; i++) { 
         inputs[i].className += " form-control";
     } 
   }
 
+  function onValidityChanged(args){
+    // If you want to display your own error messaegs
+    //console.log("onValidityChanged: "+args.eventDetail.isValid+", "+args.eventDetail.error);
+  }
+
   document.addEventListener("beanstream_loaded", addClass);
+  document.addEventListener("beanstream_tokenUpdated", onSubmit);
+  document.addEventListener("beanstream_inputValidityChanged", onValidityChanged);
 </script>
 
 
 <div class="container">
   <h2>Payfields in a Bootstrap styled form</h2>
-  <form role="form">
+  <form role="form" onsubmit="onSubmit()">
 
     <div class="form-group">
-      <div data-beanstream-target="cc_number_label"></div>
-      <div data-beanstream-target="cc_number_input"></div>
+    <div data-beanstream-target="cc_number_input"></div>
+      <div data-beanstream-target="cc_number_error" class="help-block"></div>
     </div>
     <div class="form-group">
-      <div data-beanstream-target="cc_exp_label"></div>
       <div data-beanstream-target="cc_exp_input"></div>
+      <div data-beanstream-target="cc_exp_error" class="help-block"></div>
     </div>
     <div class="form-group">
-      <div data-beanstream-target="cc_cvv_label"></div>
       <div data-beanstream-target="cc_cvv_input"></div>
+      <div data-beanstream-target="cc_cvv_error" class="help-block"></div>
     </div>
 
-    <script src="../assets/js/build/script.js"></script>
+    <script src="../assets/js/build/script.js"
+            data-submit-form="false"></script>
 
     <button type="submit" class="btn btn-default">Submit</button>
   </form>
@@ -50,7 +66,6 @@
 <div class="container" id="response" style="display:none;">
   <h2>Success!</h2>
   <p>Token: <span id="token"></span></p>
-
 </div>
 
 

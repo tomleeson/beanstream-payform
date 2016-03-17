@@ -7,12 +7,46 @@
 
 <body>
 
-<form action="/charge" method="POST">
+<script>
+  function onSubmit(){
+    event.preventDefault();
+
+    var responsePanel = document.getElementById("response");
+    var responsePanel_token = document.getElementById("token");
+    responsePanel_token.innerText = document.getElementsByName("singleUseToken")[0].value;
+    responsePanel.style.display = "block";
+  }
+
+  function addClass(){
+    var inputs = document.getElementsByTagName("input"); 
+    for (var i = 0; i < inputs.length; i++) { 
+        inputs[i].className += " form-control";
+    } 
+  }
+
+  function onValidityChanged(args){
+    // If you want to display your own error messaegs
+    //console.log("onValidityChanged: "+args.eventDetail.isValid+", "+args.eventDetail.error);
+  }
+
+  document.addEventListener("beanstream_loaded", addClass);
+  document.addEventListener("beanstream_tokenUpdated", onSubmit);
+  document.addEventListener("beanstream_inputValidityChanged", onValidityChanged);
+</script>
+
+<form onsubmit="onSubmit()">
     
-    <script src="../assets/js/build/script.js"></script>
+    <script src="../assets/js/build/script.js"
+            data-submit-form="false"></script>
 
   	<input type="submit"></input>
 </form>
+
+<div class="container" id="response" style="display:none;">
+  <h2>Success!</h2>
+  <p>Token: <span id="token"></span></p>
+</div>
+
 
 </body>
 </html>

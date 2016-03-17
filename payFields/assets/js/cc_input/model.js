@@ -10,6 +10,7 @@
         this._isValid = true;
         this._cardType = "";
         this._fieldType = "";
+        this._error = "";
 
         this.valueChanged = new beanstream.Event(this);
         this.validityChanged = new beanstream.Event(this);
@@ -50,6 +51,12 @@
         },
         setFieType: function(fieldType) {
             this._fieldType = fieldType;
+        },
+        getError: function() {
+            return this._error;
+        },
+        setError: function(error) {
+            this._error = error;
         }
     };
 

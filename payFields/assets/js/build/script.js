@@ -160,8 +160,6 @@
               return c.type === cardType;
             });
 
-            console.log("cardType: "+cardType);
-
             card = card[0];
 
             if(card){
@@ -173,12 +171,11 @@
                 } 
                 else{
                     var arr = format.exec(str);
-                    arr.shift(); // remove entire string match
+                    arr.shift(); // remove first element which contains the full matched text 
                     str = arr.join(' ');
                 }
-
             } 
-            
+
             return str;
         };
 
@@ -238,7 +235,7 @@
         function isValidExpiryDate(str, currentDate, onBlur) {
 
             if(onBlur && str === ""){
-                return false; // Validate onBlur as required field
+                 return {isValid: false, error: "This is a required field."}; // Validate onBlur as required field
             }
 
             // expects str in format "mm/yyyy"
@@ -254,14 +251,13 @@
 
                     var expiryDate = new Date(year, month);
                     if (expiryDate < currentDate) {
-                        return false;
+                        return {isValid: false, error: "This date is past. Your card has expired."};
                     }
                 } else if(onBlur){
-                    return false; // Validate onBlur as required field
+                    return {isValid: false, error: "This is a required field."}; // Validate onBlur as required field
                 }
             }  
             if(onBlur){
-                console.log("blur");
                 if(year){
                     year = year.trim();
                     year = "20" + year; 
@@ -272,11 +268,11 @@
                 var expiryDate = new Date(year, month);
 
                 if (expiryDate < currentDate) {
-                    return false;
+                    return {isValid: false, error: "This date is past. Your card has expired."};
                 }
             } 
  
-            return true;
+            return {isValid: true, error: ""};
         };
 
         function getCardType(str) {
@@ -299,44 +295,62 @@
 
         function isValidCardNumber(str, onBlur) {
 
-            var cardType = getCardType(str);
+            str = str.replace(/\s+/g, '');
+            var cardType = "";
+            var max = 0;
 
-            if(onBlur && str.length === 0){
-                return false; // Validate onBlur as required field
-            }
-            if(cardType === ""){
-                return true; // Unknown card type. Default to true
+            if(str.length > 0){
+                cardType = getCardType(str);
+                if(cardType){
+                    max = getMaxLength("length", cardType);
+                }
             }
             
-            var max = getMaxLength("length", cardType);
-            str = str.replace(/\s+/g, '');
+            if(onBlur){
+                if(str.length === 0 || cardType === "") {
+                    return {isValid: false, error: "This is a required field."}; // Validate onBlur as required field
+                } else if(str.length != max){
+                    return {isValid: false, error: "This card numer is too short."}; // if onBlur and str not complete
+                } else{
+                    var luhn = getLuhnChecksum(str);
+                    if(luhn){
+                        return {isValid: true, error: ""};
+                    } else{
+                        return {isValid: false, error: "This is an invalid card number."};
+                    }
+                }
 
-            if(str.length === max){
-                return getLuhnChecksum(str);
-            } else if(onBlur){
-                return false; // if onBlur and str not complete
+            } else{
+                if(str.length === max){
+                    var luhn = getLuhnChecksum(str);
+                    if(luhn){
+                        return {isValid: true, error: ""};
+                    } else{
+                        return {isValid: false, error: "This is an invalid card number."};
+                    }
+                }
+
             }
-
-            return true; // Report valid while user is inputting str
+            
+            return {isValid: true, error: ""}; // Report valid while user is inputting str
         };
 
-        function isValidCvc(str, onBlur) {
+        function isValidCvc(cardType, str, onBlur) {
 
-            var cardType = getCardType(str);
 
             if(onBlur && str.length === 0){
-                return false; // Validate onBlur as required field
+                return {isValid: false, error: "This is a required field."};
             }
             if(cardType === ""){
-                return true; // Unknown card type. Default to true
+                return {isValid: true, error: ""}; // Unknown card type. Default to true
             }
             
             var max = getMaxLength("cvcLength", cardType);
             if(str.length < max && onBlur === true){
-                return false;
+                return {isValid: false, error: "This card numer is too short."};
             }
 
-            return true;
+            return {isValid: true, error: ""};
         };
 
 
@@ -477,6 +491,7 @@
         this._isValid = true;
         this._cardType = "";
         this._fieldType = "";
+        this._error = "";
 
         this.valueChanged = new beanstream.Event(this);
         this.validityChanged = new beanstream.Event(this);
@@ -517,6 +532,12 @@
         },
         setFieType: function(fieldType) {
             this._fieldType = fieldType;
+        },
+        getError: function() {
+            return this._error;
+        },
+        setError: function(error) {
+            this._error = error;
         }
     };
 
@@ -549,7 +570,7 @@
 
         var _this = this;
 
-        // attach model Inputeners
+        // attach model Listeners
         this._model.valueChanged.attach(function() {
             _this.render("value", "");
         });
@@ -571,20 +592,29 @@
                     var template = _this._template.show(parameter);
                     var inputFrag = _this.createDocFrag(template.input);
                     var labelFrag = _this.createDocFrag(template.label);
+                    var errorFrag = _this.createDocFrag(template.error);
 
-                    if (!parameter.domTargetsFound) {
-                        _this._domParentElements.form.appendChild(labelFrag);
-                        _this._domParentElements.form.appendChild(inputFrag);
-                    } else {
+                    if (parameter.domTargetsFound_input) {
+                        // If a dom target is found do not append label
                         _this._domParentElements.input.appendChild(inputFrag);
-                        _this._domParentElements.label.appendChild(labelFrag);
+                    } else {
+                        _this._domParentElements.form.appendChild(labelFrag);
+                        _this._domParentElements.form.appendChild(inputFrag);                       
                     }
 
+                    if(parameter.domTargetsFound_error){
+                        _this._domParentElements.error.appendChild(errorFrag);
+                    } else if (!parameter.domTargetsFound_error && parameter.domTargetsFound_input) {
+                        _this._domParentElements.input.appendChild(errorFrag);
+                    } else {
+                        _this._domParentElements.form.appendChild(errorFrag);
+                    }
                     _this.cacheDom(parameter.id);
+
                     _this.attachDomListeners();
                 },
                 value: function() {
-                    _this._domElement.value = _this._model.getValue();
+                    _this._domInputElement.value = _this._model.getValue();
                 },
                 cardType: function() {
                     var fieldType = _this._model.getFieldType();
@@ -594,42 +624,44 @@
                         if(cardType){
                             if(cardType === "maestro") cardType = "mastercard";
                             if(cardType === "visaelectron")  cardType = "visa";
-                            _this._domElement.style.backgroundImage = 'url(../assets/css/images/' + cardType + '.png)';
+                            _this._domInputElement.style.backgroundImage = 'url(../assets/css/images/' + cardType + '.png)';
                         } else{
-                            _this._domElement.style.backgroundImage = "none";
+                            _this._domInputElement.style.backgroundImage = "none";
                         }
                     }
                 },
                 isValid: function() {
                     var isValid = _this._model.getIsValid();
                     if(isValid){
-                        _this._domElement.className = _this._domElement.className.replace(" beanstream_invalid", "");
+                        _this._domInputElement.className = _this._domInputElement.className.replace(" beanstream_invalid", "");
                     } else{
-                        _this._domElement.className += " beanstream_invalid";
+                        _this._domInputElement.className += " beanstream_invalid";
                     }
+                    _this._domErrorElement.innerHTML = _this._model.getError();
                 }
             };
 
             viewCommands[viewCmd]();
         },
         cacheDom: function(id) {
-            this._domElement = this._domParentElements.form.querySelector('[data-beanstream-id=' + id + ']');
 
+            this._domInputElement = this._domParentElements.form.querySelector('[data-beanstream-id=' + id + ']');
+            this._domErrorElement = this._domParentElements.form.querySelector('[data-beanstream-id="' + id + '_error"]');
         },
         attachDomListeners: function() {
             var _this = this;
 
-            this._domElement.addEventListener('keydown', function(e) {
+            this._domInputElement.addEventListener('keydown', function(e) {
                 _this.keydown.notify(e);
             }, false);
-            this._domElement.addEventListener('keyup', function(e) {
-                var args = {event: e, inputValue: _this._domElement.value};
+            this._domInputElement.addEventListener('keyup', function(e) {
+                var args = {event: e, inputValue: _this._domInputElement.value};
                 _this.keyup.notify(args);
             }, false);
-            this._domElement.addEventListener('paste', function(e) {
+            this._domInputElement.addEventListener('paste', function(e) {
                 _this.paste.notify(e);
             }, false);
-            this._domElement.addEventListener('blur', function(e) {
+            this._domInputElement.addEventListener('blur', function(e) {
                 _this.blur.notify(e);
             }, false);
         },
@@ -667,6 +699,7 @@
 
         self.cardTypeChanged = new beanstream.Event(this);
         self.inputComplete = new beanstream.Event(this);
+        self.inputValidityChanged = new beanstream.Event(this);
 
         //notifier for view 
         self._view.render("elements", self._config);
@@ -698,16 +731,17 @@
                     var cardType = beanstream.Validator.getCardType(args.inputValue);
                     self.setCardType(cardType);
                     var isValid = beanstream.Validator.isValidCardNumber(args.inputValue);
-                    self._model.setIsValid(isValid);
+                    self.setInputValidity(isValid);
                 }
                 if(self._model.getFieldType() === "cc-exp"){
                     var isValid = beanstream.Validator.isValidExpiryDate(args.inputValue, new Date());
-                    self._model.setIsValid(isValid);
+                    self.setInputValidity(isValid);
                 }
 
                 if(self._model.getFieldType() === "cc-csc"){
-                    var isValid = beanstream.Validator.isValidCvc(args.inputValue);
-                    self._model.setIsValid(isValid);
+                    var cardType = self._model.getCardType();
+                    var isValid = beanstream.Validator.isValidCvc(cardType, args.inputValue);
+                    self.setInputValidity(isValid);
                 }
 
 
@@ -733,15 +767,16 @@
             switch(self._model.getFieldType()) {
                 case "cc-number":
                     var isValid = beanstream.Validator.isValidCardNumber(str, onBlur);
-                    self._model.setIsValid(isValid);
+                    self.setInputValidity(isValid);
                     break;
                 case "cc-csc":
-                    var isValid = beanstream.Validator.isValidCvc(str, onBlur);
-                    self._model.setIsValid(isValid);
+                    var cardType = self._model.getCardType();
+                    var isValid = beanstream.Validator.isValidCvc(cardType, str, onBlur);
+                    self.setInputValidity(isValid);
                     break;
                 case "cc-exp":
                     var isValid = beanstream.Validator.isValidExpiryDate(str, new Date(), onBlur);
-                    self._model.setIsValid(isValid);
+                    self.setInputValidity(isValid);
                     break;
                 default:
                     break;
@@ -775,17 +810,18 @@
                     var cardType = beanstream.Validator.getCardType(newStr);
                     self.setCardType(cardType);
                     var isValid = beanstream.Validator.isValidCardNumber(newStr);
-                    self._model.setIsValid(isValid);
+                    self.setInputValidity(isValid);
                     break;
                 case "cc-csc":
+                    var cardType = self._model.getCardType();
                     newStr = beanstream.Validator.limitLength(newStr, "cvcLength", self._model.getCardType());
-                    var isValid = beanstream.Validator.isValidCvc(newStr);
-                    self._model.setIsValid(isValid);
+                    var isValid = beanstream.Validator.isValidCvc(cardType, newStr);
+                    self.setInputValidity(isValid);
                     break;
                 case "cc-exp":
                     newStr = beanstream.Validator.formatExpiry(newStr);
                     var isValid = beanstream.Validator.isValidExpiryDate(newStr, new Date());
-                    self._model.setIsValid(isValid);
+                    self.setInputValidity(isValid);
                     break;
                 default:
                     break;
@@ -808,6 +844,13 @@
                 self._model.setCardType(cardType); // update model for viey
                 self.cardTypeChanged.notify(cardType); //emit event for form
             }
+        },
+
+        setInputValidity: function(args) {
+            var self = this;     
+            self._model.setError(args.error); 
+            self._model.setIsValid(args.isValid);
+            self.inputValidityChanged.notify(args);
         },
 
         updateFocus: function(str, cardType) {
@@ -847,9 +890,11 @@
     'use strict';
 
     function InputTemplate() {
-        this.inputTemplate = '<input id="{{id}}" data-beanstream-id="{{id}}" placeholder="{{placeholder}}" autocomplete="{{autocomplete}}"></input>';
+        this.inputTemplate = '<input data-beanstream-id="{{id}}" placeholder="{{placeholder}}" autocomplete="{{autocomplete}}"></input>';
 
-        this.labelTemplate = '<label for="{{id}}">{{labelText}}</label>';
+        this.labelTemplate = '<label data-beanstream-id="" for="{{id}}">{{labelText}}</label>';
+
+        this.errorTemplate = '<div data-beanstream-id="{{id}}_error"></div>';
     }
 
     InputTemplate.prototype.show = function(parameter) {
@@ -857,12 +902,14 @@
         var template = {};
         template.label = this.labelTemplate;
         template.input = this.inputTemplate;
+        template.error = this.errorTemplate;
 
         template.label = template.label.replace('{{id}}', parameter.id);
         template.label = template.label.replace('{{labelText}}', parameter.labelText);
         template.input = template.input.replace(/{{id}}/gi, parameter.id);
         template.input = template.input.replace('{{placeholder}}', parameter.placeholder);
         template.input = template.input.replace('{{autocomplete}}', parameter.autocomplete);
+        template.error = template.error.replace('{{id}}', parameter.id);
 
         return template;
     };
@@ -932,18 +979,27 @@ Event.prototype = {
         this.head = document.getElementsByTagName("head")[0];
         this.domTargets = {};
 
-        this.domTargets.cc_number_input = this.form.querySelector('[data-beanstream-target="cc_number_input"]');
-        this.domTargets.cc_exp_input = this.form.querySelector('[data-beanstream-target="cc_exp_input"]');
-        this.domTargets.cc_cvv_input = this.form.querySelector('[data-beanstream-target="cc_cvv_input"]');
+        this.config.domTargetsFound_input = true;
+        this.config.domTargetsFound_error = true;
 
-        this.domTargets.cc_number_label = this.form.querySelector('[data-beanstream-target="cc_number_label"]');
-        this.domTargets.cc_exp_label = this.form.querySelector('[data-beanstream-target="cc_exp_label"]');
-        this.domTargets.cc_cvv_label = this.form.querySelector('[data-beanstream-target="cc_cvv_label"]');
+        for (field in fields) {
 
-        this.config.domTargetsFound = true;
-        for (t in this.domTargets) {
-            this.config.domTargetsFound = (this.domTargets[t] != undefined);
-            if (!this.config.domTargetsFound) break;
+            var input = field + "_input";
+            var error = field + "_error";
+            
+            this.domTargets[input] 
+                = this.form.querySelector('[data-beanstream-target="'+input+'"]');
+
+            this.domTargets[error] 
+                = this.form.querySelector('[data-beanstream-target="'+error+'"]');
+
+            // Set flags. If target missing for any input, ignore all input targets
+            if(this.domTargets[input] === null){
+                this.config.domTargetsFound_input = false;
+            }
+            if(this.domTargets[error] === null){
+                this.config.domTargetsFound_error = false;
+            }
         }
 
     }
@@ -963,7 +1019,6 @@ Event.prototype = {
     }
 
     function onSubmit(event) {
-        console.log("onSubmit");
         var self = this;
 
         this.submitBtn = this.form.querySelector("input[type=submit]");
@@ -981,12 +1036,12 @@ Event.prototype = {
             ajaxHelper.getToken(data, function(args) {
                 
                 appendToken(self.form, args.token);
-                setFeedback_demoOnly(args.token);
 
-                //Disabling custom form event for demo
-                //this.form.submit();
-
-                console.log("submit");
+                if(this.submitForm){
+                    this.form.submit();
+                } else{
+                    fireEvent('beanstream_tokenUpdated');
+                }
             }.bind(self));
         }
 
@@ -1047,14 +1102,6 @@ Event.prototype = {
         return data;
     }
 
-    function setFeedback_demoOnly(token) {
-
-        var responsePanel = document.getElementById("response");
-        var responsePanel_token = document.getElementById("token");
-        responsePanel_token.innerText = token;
-        responsePanel.style.display = "block";
-    }
-
     function injectStyles(filename) {
 
         var fileref = document.createElement("link")
@@ -1073,14 +1120,17 @@ Event.prototype = {
 
         for (field in fields) {
             var domTargets = {};
-            if (this.config.domTargetsFound) {
+            if (this.config.domTargetsFound_input) {
                 domTargets.input = this.domTargets[field + "_input"];
-                domTargets.label = this.domTargets[field + "_label"];
+            }
+            if (this.config.domTargetsFound_error) {
+                domTargets.error = this.domTargets[field + "_error"];
             }
             domTargets.form = this.form;
 
             var config = new Object;
-            config.domTargetsFound = this.config.domTargetsFound;
+            config.domTargetsFound_input = this.config.domTargetsFound_input;
+            config.domTargetsFound_error = this.config.domTargetsFound_error;
             config.id = field;
             config.name = fields[field].name;
             config.labelText = fields[field].labelText;
@@ -1101,6 +1151,7 @@ Event.prototype = {
             });
         field = field[0];
 
+        //attach listeners to new field
         if(field){
             field.controller.cardTypeChanged.attach(function(sender, cardType) {
                 setCardType(cardType)
@@ -1111,6 +1162,9 @@ Event.prototype = {
 
             this.fieldObjs[field].controller.inputComplete.attach(function(sender) {
                 setFocusNext(sender);
+            });
+            this.fieldObjs[field].controller.inputValidityChanged.attach(function(sender, args) {
+                inputValidityChanged(args)
             });
         }
 
@@ -1124,8 +1178,11 @@ Event.prototype = {
 
         if(field){
             field.controller._model.setCardType(cardType);
-
         }
+    }
+
+    function inputValidityChanged(args) {
+        fireEvent('beanstream_inputValidityChanged', args);
     }
 
     function setFocusNext(sender) {
@@ -1143,29 +1200,39 @@ Event.prototype = {
 
     function getIndexById(source, id) {
         for (var i = 0; i < source.length; i++) {
-            if (source[i].id === id) {
+            
+            if (source[i].getAttribute('data-beanstream-id') === id) {
                 return i;
             }
         }
     }
 
-    function fireLoadedEvent() {
-        var event = new Event('beanstream_loaded');
+    function fireEvent(title, eventDetail) {
+        var event = new CustomEvent(title);
+        event.eventDetail = eventDetail;
         document.dispatchEvent(event);
+    }
 
+    function readAttributes() {
+        this.submitForm = this.script.getAttribute('data-submit-form');
+
+        if(this.submitForm === null || this.submitForm === ""){
+            this.submitForm = true;
+        }
     }
 
     function init() {
         this.config = {};
 
         cacheDom();
+        readAttributes();
         attachDomListeners();
 
         // todo: replace with to absolute link
         injectStyles("../assets/css/style.css");
         injectFields();
 
-        fireLoadedEvent();
+        fireEvent('beanstream_loaded');
     }
     init();
 

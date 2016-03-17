@@ -22,7 +22,7 @@
 
         var _this = this;
 
-        // attach model Inputeners
+        // attach model Listeners
         this._model.valueChanged.attach(function() {
             _this.render("value", "");
         });
@@ -44,20 +44,29 @@
                     var template = _this._template.show(parameter);
                     var inputFrag = _this.createDocFrag(template.input);
                     var labelFrag = _this.createDocFrag(template.label);
+                    var errorFrag = _this.createDocFrag(template.error);
 
-                    if (!parameter.domTargetsFound) {
-                        _this._domParentElements.form.appendChild(labelFrag);
-                        _this._domParentElements.form.appendChild(inputFrag);
-                    } else {
+                    if (parameter.domTargetsFound_input) {
+                        // If a dom target is found do not append label
                         _this._domParentElements.input.appendChild(inputFrag);
-                        _this._domParentElements.label.appendChild(labelFrag);
+                    } else {
+                        _this._domParentElements.form.appendChild(labelFrag);
+                        _this._domParentElements.form.appendChild(inputFrag);                       
                     }
 
+                    if(parameter.domTargetsFound_error){
+                        _this._domParentElements.error.appendChild(errorFrag);
+                    } else if (!parameter.domTargetsFound_error && parameter.domTargetsFound_input) {
+                        _this._domParentElements.input.appendChild(errorFrag);
+                    } else {
+                        _this._domParentElements.form.appendChild(errorFrag);
+                    }
                     _this.cacheDom(parameter.id);
+
                     _this.attachDomListeners();
                 },
                 value: function() {
-                    _this._domElement.value = _this._model.getValue();
+                    _this._domInputElement.value = _this._model.getValue();
                 },
                 cardType: function() {
                     var fieldType = _this._model.getFieldType();
@@ -67,42 +76,44 @@
                         if(cardType){
                             if(cardType === "maestro") cardType = "mastercard";
                             if(cardType === "visaelectron")  cardType = "visa";
-                            _this._domElement.style.backgroundImage = 'url(../assets/css/images/' + cardType + '.png)';
+                            _this._domInputElement.style.backgroundImage = 'url(../assets/css/images/' + cardType + '.png)';
                         } else{
-                            _this._domElement.style.backgroundImage = "none";
+                            _this._domInputElement.style.backgroundImage = "none";
                         }
                     }
                 },
                 isValid: function() {
                     var isValid = _this._model.getIsValid();
                     if(isValid){
-                        _this._domElement.className = _this._domElement.className.replace(" beanstream_invalid", "");
+                        _this._domInputElement.className = _this._domInputElement.className.replace(" beanstream_invalid", "");
                     } else{
-                        _this._domElement.className += " beanstream_invalid";
+                        _this._domInputElement.className += " beanstream_invalid";
                     }
+                    _this._domErrorElement.innerHTML = _this._model.getError();
                 }
             };
 
             viewCommands[viewCmd]();
         },
         cacheDom: function(id) {
-            this._domElement = this._domParentElements.form.querySelector('[data-beanstream-id=' + id + ']');
 
+            this._domInputElement = this._domParentElements.form.querySelector('[data-beanstream-id=' + id + ']');
+            this._domErrorElement = this._domParentElements.form.querySelector('[data-beanstream-id="' + id + '_error"]');
         },
         attachDomListeners: function() {
             var _this = this;
 
-            this._domElement.addEventListener('keydown', function(e) {
+            this._domInputElement.addEventListener('keydown', function(e) {
                 _this.keydown.notify(e);
             }, false);
-            this._domElement.addEventListener('keyup', function(e) {
-                var args = {event: e, inputValue: _this._domElement.value};
+            this._domInputElement.addEventListener('keyup', function(e) {
+                var args = {event: e, inputValue: _this._domInputElement.value};
                 _this.keyup.notify(args);
             }, false);
-            this._domElement.addEventListener('paste', function(e) {
+            this._domInputElement.addEventListener('paste', function(e) {
                 _this.paste.notify(e);
             }, false);
-            this._domElement.addEventListener('blur', function(e) {
+            this._domInputElement.addEventListener('blur', function(e) {
                 _this.blur.notify(e);
             }, false);
         },

@@ -96,8 +96,6 @@
               return c.type === cardType;
             });
 
-            console.log("cardType: "+cardType);
-
             card = card[0];
 
             if(card){
@@ -173,7 +171,7 @@
         function isValidExpiryDate(str, currentDate, onBlur) {
 
             if(onBlur && str === ""){
-                return false; // Validate onBlur as required field
+                 return {isValid: false, error: "This is a required field."}; // Validate onBlur as required field
             }
 
             // expects str in format "mm/yyyy"
@@ -189,14 +187,13 @@
 
                     var expiryDate = new Date(year, month);
                     if (expiryDate < currentDate) {
-                        return false;
+                        return {isValid: false, error: "This date is past. Your card has expired."};
                     }
                 } else if(onBlur){
-                    return false; // Validate onBlur as required field
+                    return {isValid: false, error: "This is a required field."}; // Validate onBlur as required field
                 }
             }  
             if(onBlur){
-                console.log("blur");
                 if(year){
                     year = year.trim();
                     year = "20" + year; 
@@ -207,11 +204,11 @@
                 var expiryDate = new Date(year, month);
 
                 if (expiryDate < currentDate) {
-                    return false;
+                    return {isValid: false, error: "This date is past. Your card has expired."};
                 }
             } 
  
-            return true;
+            return {isValid: true, error: ""};
         };
 
         function getCardType(str) {
@@ -234,44 +231,62 @@
 
         function isValidCardNumber(str, onBlur) {
 
-            var cardType = getCardType(str);
+            str = str.replace(/\s+/g, '');
+            var cardType = "";
+            var max = 0;
 
-            if(onBlur && str.length === 0){
-                return false; // Validate onBlur as required field
-            }
-            if(cardType === ""){
-                return true; // Unknown card type. Default to true
+            if(str.length > 0){
+                cardType = getCardType(str);
+                if(cardType){
+                    max = getMaxLength("length", cardType);
+                }
             }
             
-            var max = getMaxLength("length", cardType);
-            str = str.replace(/\s+/g, '');
+            if(onBlur){
+                if(str.length === 0 || cardType === "") {
+                    return {isValid: false, error: "This is a required field."}; // Validate onBlur as required field
+                } else if(str.length != max){
+                    return {isValid: false, error: "This card numer is too short."}; // if onBlur and str not complete
+                } else{
+                    var luhn = getLuhnChecksum(str);
+                    if(luhn){
+                        return {isValid: true, error: ""};
+                    } else{
+                        return {isValid: false, error: "This is an invalid card number."};
+                    }
+                }
 
-            if(str.length === max){
-                return getLuhnChecksum(str);
-            } else if(onBlur){
-                return false; // if onBlur and str not complete
+            } else{
+                if(str.length === max){
+                    var luhn = getLuhnChecksum(str);
+                    if(luhn){
+                        return {isValid: true, error: ""};
+                    } else{
+                        return {isValid: false, error: "This is an invalid card number."};
+                    }
+                }
+
             }
-
-            return true; // Report valid while user is inputting str
+            
+            return {isValid: true, error: ""}; // Report valid while user is inputting str
         };
 
-        function isValidCvc(str, onBlur) {
+        function isValidCvc(cardType, str, onBlur) {
 
-            var cardType = getCardType(str);
 
             if(onBlur && str.length === 0){
-                return false; // Validate onBlur as required field
+                return {isValid: false, error: "This is a required field."};
             }
             if(cardType === ""){
-                return true; // Unknown card type. Default to true
+                return {isValid: true, error: ""}; // Unknown card type. Default to true
             }
             
             var max = getMaxLength("cvcLength", cardType);
             if(str.length < max && onBlur === true){
-                return false;
+                return {isValid: false, error: "This card numer is too short."};
             }
 
-            return true;
+            return {isValid: true, error: ""};
         };
 
 
