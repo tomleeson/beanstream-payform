@@ -19,7 +19,7 @@ input[data-beanstream-id]{
     background-repeat: no-repeat;
     background-size: contain;
     background-origin: content-box;
-    background-image: url("./images/cvc_hint.png");
+    background-image: url("http://downloads.beanstream.com/images/payform/cvc_hint.png");
 }
 
 .beanstream_invalid{

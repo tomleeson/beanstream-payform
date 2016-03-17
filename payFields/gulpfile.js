@@ -35,7 +35,7 @@ gulp.task('scripts', function() {
                     './assets/js/cc_input/template.js',
                     './assets/js/event.js',
                     './assets/js/app.js'])
-    .pipe(concat('script.js'))
+    .pipe(concat('beanstream_payfields.js'))
     .pipe(gulp.dest('./assets/js/build/'));
 });
 

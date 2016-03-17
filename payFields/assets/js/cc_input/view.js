@@ -76,7 +76,7 @@
                         if(cardType){
                             if(cardType === "maestro") cardType = "mastercard";
                             if(cardType === "visaelectron")  cardType = "visa";
-                            _this._domInputElement.style.backgroundImage = 'url(../assets/css/images/' + cardType + '.png)';
+                            _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/' + cardType + '.png)';
                         } else{
                             _this._domInputElement.style.backgroundImage = "none";
                         }
