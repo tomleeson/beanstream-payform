@@ -283,7 +283,7 @@
         attachDomListeners();
 
         // todo: replace with to absolute link
-        injectStyles("../assets/css/style.css");
+        injectStyles("https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/style.css");
         injectFields();
 
         fireEvent('beanstream_loaded');
