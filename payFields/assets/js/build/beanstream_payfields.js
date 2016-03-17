@@ -232,6 +232,18 @@
             return max;
         };
 
+        function getMinLength(fieldType, cardType){
+            
+            var card = cards.filter(function( c ) {
+              return c.type === cardType;
+            });
+            card = card[0];
+
+            var lengths = card[fieldType]
+            var min = Math.min.apply( Math, lengths );
+            return min;
+        };
+
         function isValidExpiryDate(str, currentDate, onBlur) {
 
             if(onBlur && str === ""){
@@ -297,19 +309,21 @@
 
             str = str.replace(/\s+/g, '');
             var cardType = "";
-            var max = 0;
+            var min = 0;
 
             if(str.length > 0){
                 cardType = getCardType(str);
                 if(cardType){
-                    max = getMaxLength("length", cardType);
+                    min = getMinLength("length", cardType);
                 }
             }
             
             if(onBlur){
-                if(str.length === 0 || cardType === "") {
+                if(str.length === 0) {
                     return {isValid: false, error: "This is a required field."}; // Validate onBlur as required field
-                } else if(str.length != max){
+                } else if(cardType === ""){
+                    return {isValid: true, error: ""};
+                } else if(str.length < min){
                     return {isValid: false, error: "This card numer is too short."}; // if onBlur and str not complete
                 } else{
                     var luhn = getLuhnChecksum(str);
@@ -321,7 +335,7 @@
                 }
 
             } else{
-                if(str.length === max){
+                if(str.length >= min){
                     var luhn = getLuhnChecksum(str);
                     if(luhn){
                         return {isValid: true, error: ""};
@@ -345,8 +359,8 @@
                 return {isValid: true, error: ""}; // Unknown card type. Default to true
             }
             
-            var max = getMaxLength("cvcLength", cardType);
-            if(str.length < max && onBlur === true){
+            var min = getMinLength("cvcLength", cardType);
+            if(str.length < min && onBlur === true){
                 return {isValid: false, error: "This card numer is too short."};
             }
 
