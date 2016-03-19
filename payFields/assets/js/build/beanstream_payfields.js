@@ -932,6 +932,416 @@
     window.beanstream = window.beanstream || {};
     window.beanstream.InputTemplate = InputTemplate;
 })(window);
+
+(function(window) {
+    'use strict';
+
+    /**
+     * The Model stores data and notifies the View of changes.
+     */
+    function FormModel() {
+        this._token = "";
+
+        this._fields = {
+            cc_number: {
+                name: "cardnumber",
+                labelText: "Credit Card Number",
+                placeholder: "",
+                autocomplete: "cc-number"
+            },
+            cc_cvv: {
+                name: "cvc",
+                labelText: "CVC",
+                placeholder: "",
+                autocomplete: "cc-csc"
+            },
+            cc_exp: {
+                name: "cc-exp",
+                labelText: "Expires MM/YY",
+                placeholder: "",
+                autocomplete: "cc-exp"
+            }
+        };
+
+        this._domTargetsFound = {inputs: false, errors: false};
+
+
+        this.tokenChanged = new beanstream.Event(this);
+        this.domTargetsFoundChanged = new beanstream.Event(this);
+        
+    }
+
+    FormModel.prototype = {
+        getToken: function() {
+            return this._token;
+        },
+        setToken: function(token) {
+            if(token != this._token){
+                this._token = token;
+                this.tokenChanged.notify();
+            }
+        },
+        getFields: function() {
+            return this._fields;
+        },
+        getDomTargetsFound: function(key) {
+            return this._domTargetsFound[key];
+        },
+        setDomTargetsFound: function(key, value) {
+            if(value != this._domTargetsFound[key]){
+                this._domTargetsFound[key] = value;
+                this.domTargetsFoundChanged.notify();
+            }
+        },
+        getSubmitForm: function() {
+            return this._submitForm;
+        },
+        setSubmitForm: function(value) {
+            this._submitForm = value;
+        }
+    };
+
+
+    // Export to window
+    window.beanstream = window.beanstream || {};
+    window.beanstream.FormModel = FormModel;
+})(window);
+
+(function(window) {
+    'use strict';
+
+    /**
+     * The View presents the model and notifies the Controller of UI events.
+     */
+    function FormView(model) {
+
+        this._model = model;
+        this.submit = new beanstream.Event(this);
+    }
+
+    FormView.prototype = {
+        init: function(){
+            var self = this;
+            self.cacheDom();
+            self.readAttributes();
+            self.attachDomListeners();
+        },
+        cacheDom: function(id) {
+            // http://stackoverflow.com/a/22745553
+            // there may be multiple forms in a page, get ref to current form
+            var scripts = document.getElementsByTagName('script');
+            this.script = scripts[scripts.length - 1];
+            this.form = this.script.parentNode;
+            this.head = document.getElementsByTagName("head")[0];
+            this.submitBtn = this.form.querySelector("input[type=submit]");
+            
+            if (!this.submitBtn) {
+                this.submitBtn = this.form.querySelector("button[type=submit]");
+            }
+
+            this.domTargets = {};
+
+            var fields = this._model.getFields();
+            for (var field in fields) {
+
+                var input = field + "_input";
+                var error = field + "_error";
+                
+                this.domTargets[input] 
+                    = this.form.querySelector('[data-beanstream-target="'+input+'"]');
+
+                this.domTargets[error] 
+                    = this.form.querySelector('[data-beanstream-target="'+error+'"]');
+
+                // Set flags. If target missing for any input, ignore all input targets
+                this._model.setDomTargetsFound('inputs', true);
+                this._model.setDomTargetsFound('errors', true);
+
+                if(this.domTargets[input] === null){
+                    this._model.setDomTargetsFound('inputs', false);
+                }
+                if(this.domTargets[error] === null){
+                    this._model.setDomTargetsFound('errors', false);
+                }
+            }
+        },
+        readAttributes: function() {
+            var self = this;
+            var submit = self.script.getAttribute('data-submit-form')  === 'true';
+            this._model.setSubmitForm(submit);
+        },
+        attachDomListeners: function() {
+            var self = this;
+            window.onload = function(e) {
+                // validate and get token before submit event
+                // button is below script tag, so we wait until it loads
+                self.submitBtn = self.form.querySelector("input[type=submit]");
+                if (!self.submitBtn) {
+                    self.submitBtn = self.form.querySelector("button[type=submit]");
+                }
+
+                self.submitBtn.addEventListener("click", function(e){
+                    self.submit.notify(e);
+                }, false);
+                
+            }.bind(self);
+        },    
+        render: function(viewCmd, parameter) {
+            
+            var self = this;
+            var viewCommands = {
+                enalbeSubmitButton: function(parameter) {
+                    self.submitBtn.disabled = Boolean(parameter);
+                },
+                injectStyles: function(parameter) {
+
+                    var fileref = document.createElement("link");
+                    fileref.setAttribute("rel", "stylesheet");
+                    fileref.setAttribute("type", "text/css");
+                    fileref.setAttribute("href", parameter);
+                    
+                    if (typeof fileref != "undefined") {
+                        self.head.appendChild(fileref);
+                    }
+                },
+                appendToken: function(value) {
+                    var input = self.form.querySelector("input[name=singleUseToken]");
+
+                    if(input){
+                        input.value = value;
+                    } else{
+                        input = document.createElement('input');
+                        input.type = "hidden";
+                        input.name = "singleUseToken";
+                        input.value = value;
+                        self.form.appendChild(input);
+                    }
+                },
+                setFocusNext: function(sender) {
+                    var currentEl_id = sender._config.id;
+                    
+                    //toDo: these inputs should be cached
+                    var inputs = self.form.getElementsByTagName("input");
+
+                    var currentInput = self.getIndexById(inputs, currentEl_id);
+                    if(inputs[currentInput+1]){
+                        inputs[currentInput+1].focus();
+                    } else{
+                        self.submitBtn.focus();
+                    }
+                }
+            };
+
+            viewCommands[viewCmd](parameter);
+        },
+        getIndexById: function(source, id) {
+            for (var i = 0; i < source.length; i++) {
+                
+                if (source[i].getAttribute('data-beanstream-id') === id) {
+                    return i;
+                }
+            }
+        }
+
+    };
+
+    // Export to window
+    window.beanstream = window.beanstream || {};
+    window.beanstream.FormView = FormView;
+})(window);
+
+(function(window) {
+    'use strict';
+
+    /**
+     * The Controller handles UI events and updates the Model.
+     */
+    function FormController(model, view) {
+
+        var self = this;
+        self._model = model;
+        self._view = view;
+
+        self._view.init();
+        self._view.submit.attach(function(sender, e) {
+            self.onSubmit(e);
+        });
+    }
+
+    FormController.prototype = {
+
+        init: function() {
+            var self = this;
+            self._view.render("injectStyles", "https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/style.css");
+            self.injectFields();
+            self.fireEvent('beanstream_loaded');
+        },
+        onSubmit: function(e) {
+            var self = this;
+            e.preventDefault();
+            self._view.render("enalbeSubmitButton", "false");
+
+            var data = self.getFieldValues();
+            if(!beanstream.Helper.isEmpty(data)){
+
+                var ajaxHelper = new beanstream.AjaxHelper();
+                ajaxHelper.getToken(data, function(args) {
+                    
+                    self._view.render("appendToken", args.token);
+
+                    if(this._model.getSubmitForm()){
+                        console.log("*** Submitting ***");
+                        self._view.form.submit();
+                        self._view.render("enalbeSubmitButton", "true");
+                    } else{
+                        self.fireEvent('beanstream_tokenUpdated');
+                        self._view.render("enalbeSubmitButton", "true");
+                    }
+                }.bind(self));
+            } else{
+                self._view.render("enalbeSubmitButton", "true");
+            }
+        },
+        appendToken: function(form, value) {
+
+            var input = form.querySelector("input[name=singleUseToken]");
+
+            if(input){
+                input.value = value;
+            } else{
+                input = document.createElement('input');
+                input.type = "hidden";
+                input.name = "singleUseToken";
+                input.value = value;
+                form.appendChild(input);
+            }
+        },
+        injectFields: function(filename) {
+
+            this.fieldObjs = [];
+
+            var fields = this._model.getFields();
+            for (var field in fields) {
+
+                var domTargets = {};
+                if (this._model.getDomTargetsFound("inputs")) {
+                    domTargets.input = this._view.domTargets[field + "_input"];
+                }
+                if (this._model.getDomTargetsFound("errors")) {
+                    domTargets.error = this._view.domTargets[field + "_error"];
+                }
+                domTargets.form = this._view.form;
+
+                var config = new Object;
+                config.domTargetsFound_input = this._model.getDomTargetsFound("inputs");
+                config.domTargetsFound_error = this._model.getDomTargetsFound("errors");
+                config.id = field;
+                config.name = fields[field].name;
+                config.labelText = fields[field].labelText;
+                config.placeholder = fields[field].placeholder;
+                config.autocomplete = fields[field].autocomplete;
+                var f = {};
+                f.model = new beanstream.InputModel();
+                f.template = new beanstream.InputTemplate();
+                f.view = new beanstream.InputView(f.model, f.template, domTargets);
+                f.controller = new beanstream.InputController(f.model, f.view, config);
+
+                this.fieldObjs.push(f);
+            }
+
+            // register listener on controller for cardType changed
+            var field = this.fieldObjs.filter(function( f ) {
+                  return f.controller._config.id === "cc_number";
+                });
+            field = field[0];
+
+            //attach listeners to new field
+            var self = this;
+            if(field){
+                field.controller.cardTypeChanged.attach(function(sender, cardType) {
+                    self.setCardType(cardType)
+                }.bind(self));
+            }
+            
+            for (field in this.fieldObjs) {
+
+                this.fieldObjs[field].controller.inputComplete.attach(function(sender) {
+                    self._view.render("setFocusNext", sender);
+                }.bind(self));
+
+                this.fieldObjs[field].controller.inputValidityChanged.attach(function(sender, args) {
+                    self.inputValidityChanged(args)
+                }.bind(self));
+            }
+            
+
+        },
+        setCardType: function(cardType) {
+            var field = this.fieldObjs.filter(function( f ) {
+                  return f.controller._config.id === "cc_cvv";
+                });
+            field = field[0];
+
+            if(field){
+                field.controller._model.setCardType(cardType);
+            }
+        },
+        inputValidityChanged: function(args) {
+            var self = this;
+            self.fireEvent('beanstream_inputValidityChanged', args);
+        },
+        fireEvent: function(title, eventDetail) {
+            var event = new CustomEvent(title);
+            event.eventDetail = eventDetail;
+            document.dispatchEvent(event);
+        },
+        getFieldValues: function() {
+
+            var data = {};
+
+            var invalidFields = this.fieldObjs.filter(function( f ) {
+                  return f.controller._model.getIsValid() === false;
+                });
+
+            var emptyFields = this.fieldObjs.filter(function( f ) {
+                  return f.controller._model.getValue() === "";
+                });
+
+            if(invalidFields.length === 0 && emptyFields.length === 0) {
+                for(var i=0; i<this.fieldObjs.length; i++){
+
+                    switch(this.fieldObjs[i].controller._config.id) {
+                        case "cc_number":
+                            data.number = this.fieldObjs[i].controller._model.getValue();
+                            break;
+                        case "cc_cvv":
+                            data.cvd = this.fieldObjs[i].controller._model.getValue();;
+                            break;
+                        case "cc_exp":
+                            var str = this.fieldObjs[i].controller._model.getValue();
+                            var arr = str.split("/");
+                            data.expiry_month = arr[0].trim();
+                            data.expiry_year = "20" + arr[1].trim();
+                            break;
+                        default:
+                            break;
+                    }
+
+                    this.fieldObjs[i].controller._model.setValue("");
+                }
+            }
+
+            return data;
+        }
+
+    };
+
+
+
+    // Export to window
+    window.beanstream = window.beanstream || {};
+    window.beanstream.FormController = FormController;
+})(window);
 (function (window) {
     'use strict';
 
@@ -960,294 +1370,13 @@ Event.prototype = {
 
 (function() {
 
-    // ToDo: Refactor App logic along MVC pattern for clarity and testibility
+    console.log("Starting Beanstream Payfields...");
 
-    var fields = {
-        cc_number: {
-            name: "cardnumber",
-            labelText: "Credit Card Number",
-            placeholder: "",
-            autocomplete: "cc-number"
-        },
-        cc_cvv: {
-            name: "cvc",
-            labelText: "CVC",
-            placeholder: "",
-            autocomplete: "cc-csc"
-        },
-        cc_exp: {
-            name: "cc-exp",
-            labelText: "Expires MM/YY",
-            placeholder: "",
-            autocomplete: "cc-exp"
-        }
-    };
+    var form = {};
+    form.model = new beanstream.FormModel();
+    form.view = new beanstream.FormView(form.model);
+    form.controller = new beanstream.FormController(form.model, form.view);
 
-
-    function cacheDom() {
-        // http://stackoverflow.com/a/22745553
-        // there may be multiple forms in a page, get ref to current form
-        var scripts = document.getElementsByTagName('script');
-        this.script = scripts[scripts.length - 1];
-        this.form = this.script.parentNode;
-        this.head = document.getElementsByTagName("head")[0];
-        this.domTargets = {};
-
-        this.config.domTargetsFound_input = true;
-        this.config.domTargetsFound_error = true;
-
-        for (field in fields) {
-
-            var input = field + "_input";
-            var error = field + "_error";
-            
-            this.domTargets[input] 
-                = this.form.querySelector('[data-beanstream-target="'+input+'"]');
-
-            this.domTargets[error] 
-                = this.form.querySelector('[data-beanstream-target="'+error+'"]');
-
-            // Set flags. If target missing for any input, ignore all input targets
-            if(this.domTargets[input] === null){
-                this.config.domTargetsFound_input = false;
-            }
-            if(this.domTargets[error] === null){
-                this.config.domTargetsFound_error = false;
-            }
-        }
-
-    }
-
-    function attachDomListeners() {
-        window.onload = function(event) {
-            // validate and get token before submit event
-            // button is below script tag, so we wait until it loads
-            this.submitBtn = this.form.querySelector("input[type=submit]");
-            if (!this.submitBtn) {
-                this.submitBtn = this.form.querySelector("button[type=submit]");
-            }
-
-            this.submitBtn.addEventListener("click", onSubmit, false);
-        };
-
-    }
-
-    function onSubmit(event) {
-        var self = this;
-
-        this.submitBtn = this.form.querySelector("input[type=submit]");
-        if (!this.submitBtn) {
-            this.submitBtn = this.form.querySelector("button[type=submit]");
-        }
-
-        event.preventDefault();
-        this.submitBtn.disabled = true;
-
-        var data = getFieldValues();
-        if(!beanstream.Helper.isEmpty(data)){
-
-            var ajaxHelper = new beanstream.AjaxHelper();
-            ajaxHelper.getToken(data, function(args) {
-                
-                appendToken(self.form, args.token);
-
-                if(this.submitForm){
-                    this.form.submit();
-                } else{
-                    fireEvent('beanstream_tokenUpdated');
-                }
-            }.bind(self));
-        }
-
-        this.submitBtn.disabled = false;
-    }
-
-    function appendToken(form, value) {
-
-        var input = form.querySelector("input[name=singleUseToken]");
-
-        if(input){
-            input.value = value;
-        } else{
-            input = document.createElement('input');
-            input.type = "hidden";
-            input.name = "singleUseToken";
-            input.value = value;
-            form.appendChild(input);
-        }
-    }
-
-    function getFieldValues() {
-
-        var data = {};
-
-        var invalidFields = fieldObjs.filter(function( f ) {
-              return f.controller._model.getIsValid() === false;
-            });
-
-        var emptyFields = fieldObjs.filter(function( f ) {
-              return f.controller._model.getValue() === "";
-            });
-
-        if(invalidFields.length === 0 && emptyFields.length === 0) {
-            for(var i=0; i<fieldObjs.length; i++){
-
-                switch(fieldObjs[i].controller._config.id) {
-                    case "cc_number":
-                        data.number = fieldObjs[i].controller._model.getValue();
-                        break;
-                    case "cc_cvv":
-                        data.cvd = fieldObjs[i].controller._model.getValue();;
-                        break;
-                    case "cc_exp":
-                        var str = fieldObjs[i].controller._model.getValue();
-                        var arr = str.split("/");
-                        data.expiry_month = arr[0].trim();
-                        data.expiry_year = "20" + arr[1].trim();
-                        break;
-                    default:
-                        break;
-                }
-
-                fieldObjs[i].controller._model.setValue("");
-            }
-        }
-
-        return data;
-    }
-
-    function injectStyles(filename) {
-
-        var fileref = document.createElement("link")
-        fileref.setAttribute("rel", "stylesheet")
-        fileref.setAttribute("type", "text/css")
-        fileref.setAttribute("href", filename)
-
-        if (typeof fileref != "undefined") {
-            this.head.appendChild(fileref);
-        }
-    }
-
-    function injectFields(filename) {
-
-        this.fieldObjs = [];
-
-        for (field in fields) {
-            var domTargets = {};
-            if (this.config.domTargetsFound_input) {
-                domTargets.input = this.domTargets[field + "_input"];
-            }
-            if (this.config.domTargetsFound_error) {
-                domTargets.error = this.domTargets[field + "_error"];
-            }
-            domTargets.form = this.form;
-
-            var config = new Object;
-            config.domTargetsFound_input = this.config.domTargetsFound_input;
-            config.domTargetsFound_error = this.config.domTargetsFound_error;
-            config.id = field;
-            config.name = fields[field].name;
-            config.labelText = fields[field].labelText;
-            config.placeholder = fields[field].placeholder;
-            config.autocomplete = fields[field].autocomplete;
-            var f = {};
-            f.model = new beanstream.InputModel();
-            f.template = new beanstream.InputTemplate();
-            f.view = new beanstream.InputView(f.model, f.template, domTargets);
-            f.controller = new beanstream.InputController(f.model, f.view, config);
-
-            this.fieldObjs.push(f);
-        }
-
-        // register listener on controller for cardType changed
-        var field = this.fieldObjs.filter(function( f ) {
-              return f.controller._config.id === "cc_number";
-            });
-        field = field[0];
-
-        //attach listeners to new field
-        if(field){
-            field.controller.cardTypeChanged.attach(function(sender, cardType) {
-                setCardType(cardType)
-            });
-        }
-
-        for (field in this.fieldObjs) {
-
-            this.fieldObjs[field].controller.inputComplete.attach(function(sender) {
-                setFocusNext(sender);
-            });
-            this.fieldObjs[field].controller.inputValidityChanged.attach(function(sender, args) {
-                inputValidityChanged(args)
-            });
-        }
-
-    }
-
-    function setCardType(cardType) {
-        var field = this.fieldObjs.filter(function( f ) {
-              return f.controller._config.id === "cc_cvv";
-            });
-        field = field[0];
-
-        if(field){
-            field.controller._model.setCardType(cardType);
-        }
-    }
-
-    function inputValidityChanged(args) {
-        fireEvent('beanstream_inputValidityChanged', args);
-    }
-
-    function setFocusNext(sender) {
-
-        var currentEl_id = sender._config.id;
-        var inputs = form.getElementsByTagName("input");
-
-        var currentInput = getIndexById(inputs, currentEl_id);
-        if(inputs[currentInput+1]){
-            inputs[currentInput+1].focus();
-        } else{
-            this.submitBtn.focus();
-        }
-    }
-
-    function getIndexById(source, id) {
-        for (var i = 0; i < source.length; i++) {
-            
-            if (source[i].getAttribute('data-beanstream-id') === id) {
-                return i;
-            }
-        }
-    }
-
-    function fireEvent(title, eventDetail) {
-        var event = new CustomEvent(title);
-        event.eventDetail = eventDetail;
-        document.dispatchEvent(event);
-    }
-
-    function readAttributes() {
-        this.submitForm = this.script.getAttribute('data-submit-form');
-
-        if(this.submitForm === null || this.submitForm === ""){
-            this.submitForm = true;
-        }
-    }
-
-    function init() {
-        this.config = {};
-
-        cacheDom();
-        readAttributes();
-        attachDomListeners();
-
-        // todo: replace with to absolute link
-        injectStyles("https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/style.css");
-        injectFields();
-
-        fireEvent('beanstream_loaded');
-    }
-    init();
+    form.controller.init();
 
 })();
