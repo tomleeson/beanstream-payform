@@ -173,6 +173,7 @@
                     var arr = format.exec(str);
                     arr.shift(); // remove first element which contains the full matched text 
                     str = arr.join(' ');
+                    str = str.trim(); // remove whitespaces seperating empty arrays - all patterns not yet matched
                 }
             } 
 
@@ -581,6 +582,7 @@
         this.keyup = new beanstream.Event(this);
         this.paste = new beanstream.Event(this);
         this.blur = new beanstream.Event(this);
+        this.focus = new beanstream.Event(this);
 
         var _this = this;
 
@@ -640,7 +642,28 @@
                             if(cardType === "visaelectron")  cardType = "visa";
                             _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/' + cardType + '.png)';
                         } else{
-                            _this._domInputElement.style.backgroundImage = "none";
+                            _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/card.png)';
+                        }
+                    }
+                },
+                csc: function() {
+                    var fieldType = _this._model.getFieldType();
+
+                    if(fieldType === "cc-csc"){
+                        var cardType = _this._model.getCardType();
+
+                        if(cardType && cardType === "amex"){
+                            if(parameter==="focus"){
+                                _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/cvc_hint_color_amex.png)';
+                            } else{
+                                _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/cvc_hint_mono_amex.png)';
+                            }
+                        } else if(cardType){
+                            if(parameter==="focus"){
+                                _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/cvc_hint_color.png)';
+                            } else{
+                                _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/cvc_hint_mono.png)';
+                            }
                         }
                     }
                 },
@@ -677,6 +700,9 @@
             }, false);
             this._domInputElement.addEventListener('blur', function(e) {
                 _this.blur.notify(e);
+            }, false);
+            this._domInputElement.addEventListener('focus', function(e) {
+                _this.focus.notify(e);
             }, false);
         },
         createDocFrag: function(htmlStr) {
@@ -787,6 +813,7 @@
                     var cardType = self._model.getCardType();
                     var isValid = beanstream.Validator.isValidCvc(cardType, str, onBlur);
                     self.setInputValidity(isValid);
+                    self._view.render("csc", "blur");
                     break;
                 case "cc-exp":
                     var isValid = beanstream.Validator.isValidExpiryDate(str, new Date(), onBlur);
@@ -794,6 +821,16 @@
                     break;
                 default:
                     break;
+            }
+
+        });
+
+        self._view.focus.attach(function(sender, e) {
+
+            var str = self._model.getValue();
+
+            if(self._model.getFieldType() === "cc-csc"){
+                self._view.render("csc", "focus");
             }
 
         });
@@ -1173,6 +1210,7 @@
         init: function() {
             var self = this;
             self._view.render("injectStyles", "https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/style.css");
+            //self._view.render("injectStyles", "../assets/css/style.css");
             self.injectFields();
             self.fireEvent('beanstream_loaded');
         },
@@ -1335,8 +1373,6 @@
         }
 
     };
-
-
 
     // Export to window
     window.beanstream = window.beanstream || {};

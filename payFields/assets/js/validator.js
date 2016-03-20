@@ -109,6 +109,7 @@
                     var arr = format.exec(str);
                     arr.shift(); // remove first element which contains the full matched text 
                     str = arr.join(' ');
+                    str = str.trim(); // remove whitespaces seperating empty arrays - all patterns not yet matched
                 }
             } 
 

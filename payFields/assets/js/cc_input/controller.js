@@ -90,6 +90,7 @@
                     var cardType = self._model.getCardType();
                     var isValid = beanstream.Validator.isValidCvc(cardType, str, onBlur);
                     self.setInputValidity(isValid);
+                    self._view.render("csc", "blur");
                     break;
                 case "cc-exp":
                     var isValid = beanstream.Validator.isValidExpiryDate(str, new Date(), onBlur);
@@ -97,6 +98,16 @@
                     break;
                 default:
                     break;
+            }
+
+        });
+
+        self._view.focus.attach(function(sender, e) {
+
+            var str = self._model.getValue();
+
+            if(self._model.getFieldType() === "cc-csc"){
+                self._view.render("csc", "focus");
             }
 
         });

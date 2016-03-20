@@ -19,6 +19,7 @@
         this.keyup = new beanstream.Event(this);
         this.paste = new beanstream.Event(this);
         this.blur = new beanstream.Event(this);
+        this.focus = new beanstream.Event(this);
 
         var _this = this;
 
@@ -78,7 +79,28 @@
                             if(cardType === "visaelectron")  cardType = "visa";
                             _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/' + cardType + '.png)';
                         } else{
-                            _this._domInputElement.style.backgroundImage = "none";
+                            _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/card.png)';
+                        }
+                    }
+                },
+                csc: function() {
+                    var fieldType = _this._model.getFieldType();
+
+                    if(fieldType === "cc-csc"){
+                        var cardType = _this._model.getCardType();
+
+                        if(cardType && cardType === "amex"){
+                            if(parameter==="focus"){
+                                _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/cvc_hint_color_amex.png)';
+                            } else{
+                                _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/cvc_hint_mono_amex.png)';
+                            }
+                        } else if(cardType){
+                            if(parameter==="focus"){
+                                _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/cvc_hint_color.png)';
+                            } else{
+                                _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/cvc_hint_mono.png)';
+                            }
                         }
                     }
                 },
@@ -115,6 +137,9 @@
             }, false);
             this._domInputElement.addEventListener('blur', function(e) {
                 _this.blur.notify(e);
+            }, false);
+            this._domInputElement.addEventListener('focus', function(e) {
+                _this.focus.notify(e);
             }, false);
         },
         createDocFrag: function(htmlStr) {

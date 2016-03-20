@@ -22,6 +22,7 @@
         init: function() {
             var self = this;
             self._view.render("injectStyles", "https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/style.css");
+            //self._view.render("injectStyles", "../assets/css/style.css");
             self.injectFields();
             self.fireEvent('beanstream_loaded');
         },

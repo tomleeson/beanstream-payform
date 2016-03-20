@@ -12,6 +12,7 @@ input[data-beanstream-id]{
     background-repeat: no-repeat;
     background-size: contain;
     background-origin: content-box;
+    background-image: url("http://downloads.beanstream.com/images/payform/card.png");
 }
 
 [data-beanstream-id="cc_cvv"] {
@@ -19,7 +20,15 @@ input[data-beanstream-id]{
     background-repeat: no-repeat;
     background-size: contain;
     background-origin: content-box;
-    background-image: url("http://downloads.beanstream.com/images/payform/cvc_hint.png");
+    background-image: url("http://downloads.beanstream.com/images/payform/cvc_hint_mono.png");
+}
+
+[data-beanstream-id="cc_exp"] {
+    background-position: right center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-origin: content-box;
+    background-image: url("http://downloads.beanstream.com/images/payform/date.png");
 }
 
 .beanstream_invalid{
