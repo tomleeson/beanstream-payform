@@ -272,7 +272,7 @@
                 }
 
             } else{
-                if(str.length >= min){
+                if(str.length >= min && min != 0){
                     var luhn = getLuhnChecksum(str);
                     if(luhn){
                         return {isValid: true, error: ""};

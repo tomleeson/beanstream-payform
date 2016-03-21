@@ -68,6 +68,12 @@
                 },
                 value: function() {
                     _this._domInputElement.value = _this._model.getValue();
+
+                    // Do not reposition caret for date
+                    if(_this._model.getFieldType() != "cc-exp"){
+                        var pos =  _this._model.getCaretPos();
+                         _this._domInputElement.setSelectionRange(pos, pos);
+                    }
                 },
                 cardType: function() {
                     var fieldType = _this._model.getFieldType();
@@ -151,7 +157,27 @@
                 frag.appendChild(temp.firstChild);
             }
             return frag;
-        }
+        },
+        getCaretOffset: function(el) {
+            http://stackoverflow.com/a/2897229/6011159
+            var el = this._domInputElement;
+            var pos = 0;
+
+              // IE Support
+              if (document.selection) {
+
+                var sel = document.selection.createRange();
+                sel.moveStart('character', -el.value.length);
+                pos = sel.text.length;
+              }
+
+              // Firefox support
+              else if (el.selectionStart || el.selectionStart == '0'){
+                pos = el.selectionStart;
+              }
+
+              return pos;
+            }
     };
 
     // Export to window

@@ -23,6 +23,14 @@
 
         //listen to view events
         self._view.keydown.attach(function(sender, e) {
+            
+            if( (self._model.getFieldType() === "cc-exp") &&
+                (e.keyCode === 8 || e.keyCode === 46)){
+                // delete whole date on delete ant char
+                self._model.setValue("");
+                return;
+            }
+
             if(beanstream.Helper.isNonInputKey(e)){
                 // Don't override default functionality except for input
                 return;
@@ -42,6 +50,10 @@
             if(args.event.keyCode === 8 || args.event.keyCode === 46){
                 //Update model directly from UI on delete
                 //keyup is only needed for deletion
+
+                var pos = self._view.getCaretOffset();
+                self._model.setCaretPos(pos);
+
                 self._model.setValue(args.inputValue);
                 
                 if(self._model.getFieldType() === "cc-number"){
@@ -130,7 +142,13 @@
                             currentStr.substring(
                                 selectedText.start, selectedText.end), "");
 
-            var newStr = currentStr + str;
+            // insert new char at cursor position
+            var inputStr = [currentStr.slice( 0, 
+                                            selectedText.start), 
+                                            str, 
+                                            currentStr.slice(selectedText.start)].join('');
+
+            var newStr = inputStr;
 
             switch(self._model.getFieldType()) {
                 case "cc-number":
@@ -154,7 +172,20 @@
                 default:
                     break;
             }
-            
+
+            // Calculate new caret position            
+            var caretPos = selectedText.start + str.length; // get caret pos on original string
+            inputStr = inputStr.substring(0, caretPos); // remove white spacing
+            inputStr = inputStr.replace(/\s+/g, '');
+            var match = inputStr.split('').join('\\s*'); // create string for RegEx insensitive to white spacing
+            match = new RegExp(match);
+            var res = newStr.match(match);
+            if(res){
+                res = res[0].toString(); // find unformatted substring in formatted string
+                var caretPos = res.length;
+                self._model.setCaretPos(caretPos);
+            }
+
             self._model.setValue(newStr);
             
             if(self._model.getIsValid()){

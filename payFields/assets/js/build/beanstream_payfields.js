@@ -336,7 +336,9 @@
                 }
 
             } else{
-                if(str.length >= min){
+                console.log("min: "+ min);
+                console.log("str.length: "+ str.length);
+                if(str.length >= min && min != 0){
                     var luhn = getLuhnChecksum(str);
                     if(luhn){
                         return {isValid: true, error: ""};
@@ -507,6 +509,7 @@
         this._cardType = "";
         this._fieldType = "";
         this._error = "";
+        this._caretPos = 0;
 
         this.valueChanged = new beanstream.Event(this);
         this.validityChanged = new beanstream.Event(this);
@@ -553,7 +556,14 @@
         },
         setError: function(error) {
             this._error = error;
+        },
+        getCaretPos: function() {
+            return this._caretPos;
+        },
+        setCaretPos: function(pos) {
+            this._caretPos = pos;
         }
+
     };
 
 
@@ -631,6 +641,12 @@
                 },
                 value: function() {
                     _this._domInputElement.value = _this._model.getValue();
+
+                    // Do not reposition caret for date
+                    if(_this._model.getFieldType() != "cc-exp"){
+                        var pos =  _this._model.getCaretPos();
+                         _this._domInputElement.setSelectionRange(pos, pos);
+                    }
                 },
                 cardType: function() {
                     var fieldType = _this._model.getFieldType();
@@ -714,7 +730,27 @@
                 frag.appendChild(temp.firstChild);
             }
             return frag;
-        }
+        },
+        getCaretOffset: function(el) {
+            http://stackoverflow.com/a/2897229/6011159
+            var el = this._domInputElement;
+            var pos = 0;
+
+              // IE Support
+              if (document.selection) {
+
+                var sel = document.selection.createRange();
+                sel.moveStart('character', -el.value.length);
+                pos = sel.text.length;
+              }
+
+              // Firefox support
+              else if (el.selectionStart || el.selectionStart == '0'){
+                pos = el.selectionStart;
+              }
+
+              return pos;
+            }
     };
 
     // Export to window
@@ -746,6 +782,14 @@
 
         //listen to view events
         self._view.keydown.attach(function(sender, e) {
+            
+            if( (self._model.getFieldType() === "cc-exp") &&
+                (e.keyCode === 8 || e.keyCode === 46)){
+                // delete whole date on delete ant char
+                self._model.setValue("");
+                return;
+            }
+
             if(beanstream.Helper.isNonInputKey(e)){
                 // Don't override default functionality except for input
                 return;
@@ -765,6 +809,10 @@
             if(args.event.keyCode === 8 || args.event.keyCode === 46){
                 //Update model directly from UI on delete
                 //keyup is only needed for deletion
+
+                var pos = self._view.getCaretOffset();
+                self._model.setCaretPos(pos);
+
                 self._model.setValue(args.inputValue);
                 
                 if(self._model.getFieldType() === "cc-number"){
@@ -853,7 +901,13 @@
                             currentStr.substring(
                                 selectedText.start, selectedText.end), "");
 
-            var newStr = currentStr + str;
+            // insert new char at cursor position
+            var inputStr = [currentStr.slice( 0, 
+                                            selectedText.start), 
+                                            str, 
+                                            currentStr.slice(selectedText.start)].join('');
+
+            var newStr = inputStr;
 
             switch(self._model.getFieldType()) {
                 case "cc-number":
@@ -877,7 +931,20 @@
                 default:
                     break;
             }
-            
+
+            // Calculate new caret position            
+            var caretPos = selectedText.start + str.length; // get caret pos on original string
+            inputStr = inputStr.substring(0, caretPos); // remove white spacing
+            inputStr = inputStr.replace(/\s+/g, '');
+            var match = inputStr.split('').join('\\s*'); // create string for RegEx insensitive to white spacing
+            match = new RegExp(match);
+            var res = newStr.match(match);
+            if(res){
+                res = res[0].toString(); // find unformatted substring in formatted string
+                var caretPos = res.length;
+                self._model.setCaretPos(caretPos);
+            }
+
             self._model.setValue(newStr);
             
             if(self._model.getIsValid()){

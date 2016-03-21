@@ -11,6 +11,7 @@
         this._cardType = "";
         this._fieldType = "";
         this._error = "";
+        this._caretPos = 0;
 
         this.valueChanged = new beanstream.Event(this);
         this.validityChanged = new beanstream.Event(this);
@@ -57,7 +58,14 @@
         },
         setError: function(error) {
             this._error = error;
+        },
+        getCaretPos: function() {
+            return this._caretPos;
+        },
+        setCaretPos: function(pos) {
+            this._caretPos = pos;
         }
+
     };
 
 
