@@ -24,20 +24,28 @@
         //listen to view events
         self._view.keydown.attach(function(sender, e) {
             
+            // delete whole date str on delete any char
             if( (self._model.getFieldType() === "cc-exp") &&
                 (e.keyCode === 8 || e.keyCode === 46)){
-                // delete whole date on delete ant char
+
                 self._model.setValue("");
                 return;
             }
 
+            // Don't override default functionality except for input
             if(beanstream.Helper.isNonInputKey(e)){
-                // Don't override default functionality except for input
                 return;
             }
             e.preventDefault();
 
-            var char = String.fromCharCode(e.keyCode);
+            var char;
+            
+            // Handle keypad
+            if( e.keyCode >= 96 && e.keyCode <= 105){
+                char = String.fromCharCode(e.keyCode-48);
+            } else{
+                char = String.fromCharCode(e.keyCode);
+            }
 
             var selectedText = {};
             selectedText.start = e.target.selectionStart;
@@ -131,7 +139,7 @@
             var self = this;
 
             str = str.replace(/\D/g,''); // remove non ints from string
-
+            
             if(!str.length){
                 return;
             }

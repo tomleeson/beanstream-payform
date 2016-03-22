@@ -126,17 +126,20 @@
             mon = parts[1] || '';
             sep = parts[2] || '';
             year = parts[3] || '';
+
             if (year.length > 0) {
                 sep = ' / ';
             } else if (sep === ' /') {
                 mon = mon.substring(0, 1);
                 sep = '';
+            } else if (mon.length === 2 && (parseInt(mon) > 12)) {
+                mon = "1";
             } else if (mon.length === 2 || sep.length > 0) {
                 sep = ' / ';
             } else if (mon.length === 1 && (mon !== '0' && mon !== '1')) {
                 mon = "0" + mon;
                 sep = ' / ';
-            }
+            } 
             return mon + sep + year;
         };
 
@@ -261,7 +264,7 @@
                 } else if(cardType === ""){
                     return {isValid: true, error: ""};
                 } else if(str.length < min){
-                    return {isValid: false, error: "This card numer is too short."}; // if onBlur and str not complete
+                    return {isValid: false, error: "This card number is too short."}; // if onBlur and str not complete
                 } else{
                     var luhn = getLuhnChecksum(str);
                     if(luhn){
@@ -298,7 +301,7 @@
             
             var min = getMinLength("cvcLength", cardType);
             if(str.length < min && onBlur === true){
-                return {isValid: false, error: "This card numer is too short."};
+                return {isValid: false, error: "This card number is too short."};
             }
 
             return {isValid: true, error: ""};

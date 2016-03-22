@@ -5,10 +5,14 @@
     var Helper = (function() {
         function isNonInputKey(event) {
 
-            if (event.shiftKey || event.ctrlKey || event.shiftKey || event.metaKey 
+            if (event.ctrlKey || event.metaKey 
                 || event.keyCode === 8 //backspace
                 || event.keyCode === 9 //tab
-                || event.keyCode === 13 //enter
+                || event.keyCode === 13 //enter               
+                || event.keyCode === 33 //page up
+                || event.keyCode === 34 //page down
+                || event.keyCode === 35 //end
+                || event.keyCode === 36 //home
                 || event.keyCode === 37 //left arrow
                 || event.keyCode === 39 //right arrow
                 || event.keyCode === 45 //insert

@@ -29,10 +29,10 @@
         onSubmit: function(e) {
             var self = this;
             e.preventDefault();
-            self._view.render("enalbeSubmitButton", "false");
 
             var data = self.getFieldValues();
             if(!beanstream.Helper.isEmpty(data)){
+                self._view.render("enalbeSubmitButton", "false");
 
                 var ajaxHelper = new beanstream.AjaxHelper();
                 ajaxHelper.getToken(data, function(args) {
@@ -40,13 +40,11 @@
                     self._view.render("appendToken", args.token);
 
                     if(this._model.getSubmitForm()){
-                        console.log("*** Submitting ***");
                         self._view.form.submit();
-                        self._view.render("enalbeSubmitButton", "true");
                     } else{
                         self.fireEvent('beanstream_tokenUpdated');
-                        self._view.render("enalbeSubmitButton", "true");
                     }
+                    self._view.render("enalbeSubmitButton", "true");
                 }.bind(self));
             } else{
                 self._view.render("enalbeSubmitButton", "true");

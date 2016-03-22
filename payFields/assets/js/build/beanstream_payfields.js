@@ -5,10 +5,14 @@
     var Helper = (function() {
         function isNonInputKey(event) {
 
-            if (event.shiftKey || event.ctrlKey || event.shiftKey || event.metaKey 
+            if (event.ctrlKey || event.metaKey 
                 || event.keyCode === 8 //backspace
                 || event.keyCode === 9 //tab
-                || event.keyCode === 13 //enter
+                || event.keyCode === 13 //enter               
+                || event.keyCode === 33 //page up
+                || event.keyCode === 34 //page down
+                || event.keyCode === 35 //end
+                || event.keyCode === 36 //home
                 || event.keyCode === 37 //left arrow
                 || event.keyCode === 39 //right arrow
                 || event.keyCode === 45 //insert
@@ -190,17 +194,20 @@
             mon = parts[1] || '';
             sep = parts[2] || '';
             year = parts[3] || '';
+
             if (year.length > 0) {
                 sep = ' / ';
             } else if (sep === ' /') {
                 mon = mon.substring(0, 1);
                 sep = '';
+            } else if (mon.length === 2 && (parseInt(mon) > 12)) {
+                mon = "1";
             } else if (mon.length === 2 || sep.length > 0) {
                 sep = ' / ';
             } else if (mon.length === 1 && (mon !== '0' && mon !== '1')) {
                 mon = "0" + mon;
                 sep = ' / ';
-            }
+            } 
             return mon + sep + year;
         };
 
@@ -325,7 +332,7 @@
                 } else if(cardType === ""){
                     return {isValid: true, error: ""};
                 } else if(str.length < min){
-                    return {isValid: false, error: "This card numer is too short."}; // if onBlur and str not complete
+                    return {isValid: false, error: "This card number is too short."}; // if onBlur and str not complete
                 } else{
                     var luhn = getLuhnChecksum(str);
                     if(luhn){
@@ -336,8 +343,6 @@
                 }
 
             } else{
-                console.log("min: "+ min);
-                console.log("str.length: "+ str.length);
                 if(str.length >= min && min != 0){
                     var luhn = getLuhnChecksum(str);
                     if(luhn){
@@ -364,7 +369,7 @@
             
             var min = getMinLength("cvcLength", cardType);
             if(str.length < min && onBlur === true){
-                return {isValid: false, error: "This card numer is too short."};
+                return {isValid: false, error: "This card number is too short."};
             }
 
             return {isValid: true, error: ""};
@@ -705,19 +710,24 @@
             var _this = this;
 
             this._domInputElement.addEventListener('keydown', function(e) {
+                e = e || window.event;
                 _this.keydown.notify(e);
             }, false);
             this._domInputElement.addEventListener('keyup', function(e) {
+                e = e || window.event;
                 var args = {event: e, inputValue: _this._domInputElement.value};
                 _this.keyup.notify(args);
             }, false);
             this._domInputElement.addEventListener('paste', function(e) {
+                e = e || window.event;
                 _this.paste.notify(e);
             }, false);
             this._domInputElement.addEventListener('blur', function(e) {
+                e = e || window.event;
                 _this.blur.notify(e);
             }, false);
             this._domInputElement.addEventListener('focus', function(e) {
+                e = e || window.event;
                 _this.focus.notify(e);
             }, false);
         },
@@ -783,20 +793,28 @@
         //listen to view events
         self._view.keydown.attach(function(sender, e) {
             
+            // delete whole date str on delete any char
             if( (self._model.getFieldType() === "cc-exp") &&
                 (e.keyCode === 8 || e.keyCode === 46)){
-                // delete whole date on delete ant char
+
                 self._model.setValue("");
                 return;
             }
 
+            // Don't override default functionality except for input
             if(beanstream.Helper.isNonInputKey(e)){
-                // Don't override default functionality except for input
                 return;
             }
             e.preventDefault();
 
-            var char = String.fromCharCode(e.keyCode);
+            var char;
+            
+            // Handle keypad
+            if( e.keyCode >= 96 && e.keyCode <= 105){
+                char = String.fromCharCode(e.keyCode-48);
+            } else{
+                char = String.fromCharCode(e.keyCode);
+            }
 
             var selectedText = {};
             selectedText.start = e.target.selectionStart;
@@ -890,7 +908,7 @@
             var self = this;
 
             str = str.replace(/\D/g,''); // remove non ints from string
-
+            
             if(!str.length){
                 return;
             }
@@ -1195,7 +1213,7 @@
             var self = this;
             var viewCommands = {
                 enalbeSubmitButton: function(parameter) {
-                    self.submitBtn.disabled = Boolean(parameter);
+                    self.submitBtn.disabled = Boolean(!parameter);
                 },
                 injectStyles: function(parameter) {
 
@@ -1284,10 +1302,10 @@
         onSubmit: function(e) {
             var self = this;
             e.preventDefault();
-            self._view.render("enalbeSubmitButton", "false");
 
             var data = self.getFieldValues();
             if(!beanstream.Helper.isEmpty(data)){
+                self._view.render("enalbeSubmitButton", "false");
 
                 var ajaxHelper = new beanstream.AjaxHelper();
                 ajaxHelper.getToken(data, function(args) {
@@ -1295,13 +1313,11 @@
                     self._view.render("appendToken", args.token);
 
                     if(this._model.getSubmitForm()){
-                        console.log("*** Submitting ***");
                         self._view.form.submit();
-                        self._view.render("enalbeSubmitButton", "true");
                     } else{
                         self.fireEvent('beanstream_tokenUpdated');
-                        self._view.render("enalbeSubmitButton", "true");
                     }
+                    self._view.render("enalbeSubmitButton", "true");
                 }.bind(self));
             } else{
                 self._view.render("enalbeSubmitButton", "true");

@@ -132,19 +132,24 @@
             var _this = this;
 
             this._domInputElement.addEventListener('keydown', function(e) {
+                e = e || window.event;
                 _this.keydown.notify(e);
             }, false);
             this._domInputElement.addEventListener('keyup', function(e) {
+                e = e || window.event;
                 var args = {event: e, inputValue: _this._domInputElement.value};
                 _this.keyup.notify(args);
             }, false);
             this._domInputElement.addEventListener('paste', function(e) {
+                e = e || window.event;
                 _this.paste.notify(e);
             }, false);
             this._domInputElement.addEventListener('blur', function(e) {
+                e = e || window.event;
                 _this.blur.notify(e);
             }, false);
             this._domInputElement.addEventListener('focus', function(e) {
+                e = e || window.event;
                 _this.focus.notify(e);
             }, false);
         },
