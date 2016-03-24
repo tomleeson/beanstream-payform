@@ -82,7 +82,7 @@
             
             var self = this;
             var viewCommands = {
-                enalbeSubmitButton: function(parameter) {
+                enableSubmitButton: function(parameter) {
                     self.submitBtn.disabled = Boolean(!parameter);
                 },
                 injectStyles: function(parameter) {

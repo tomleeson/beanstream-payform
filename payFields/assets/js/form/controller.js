@@ -32,7 +32,7 @@
 
             var data = self.getFieldValues();
             if (!beanstream.Helper.isEmpty(data)) {
-                self._view.render("enalbeSubmitButton", "false");
+                self._view.render("enableSubmitButton", "false");
 
                 var ajaxHelper = new beanstream.AjaxHelper();
                 ajaxHelper.getToken(data, function (args) {
@@ -44,10 +44,10 @@
                     } else {
                         self.fireEvent('beanstream_tokenUpdated');
                     }
-                    self._view.render("enalbeSubmitButton", "true");
+                    self._view.render("enableSubmitButton", "true");
                 }.bind(self));
             } else {
-                self._view.render("enalbeSubmitButton", "true");
+                self._view.render("enableSubmitButton", "true");
             }
         },
         appendToken: function (form, value) {
