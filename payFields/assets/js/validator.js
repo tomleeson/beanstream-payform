@@ -1,8 +1,8 @@
 
-(function(window) {
+(function (window) {
     'use strict';
 
-    var Validator = (function() {
+    var Validator = (function () {
 
         var defaultFormat = /(\d{1,4})/g;
 
@@ -85,7 +85,7 @@
                 }
             }
             return sum % 10 === 0;
-        };
+        }
 
         function formatCardNumber(str) {
 
@@ -99,7 +99,7 @@
             card = card[0];
 
             if(card){
-                var format = card["format"]
+                var format = card["format"];
                 
                 if (format.global) {
                     var arr = str.match(format).join(' ');
@@ -114,7 +114,7 @@
             } 
 
             return str;
-        };
+        }
 
         function formatExpiry(str) {
 
@@ -141,11 +141,11 @@
                 sep = ' / ';
             } 
             return mon + sep + year;
-        };
+        }
 
         function limitLength(str, fieldType, cardType) {
 
-            if((fieldType != "length" && fieldType != "cvcLength") || cardType === undefined || cardType === ""){
+            if((fieldType !== "length" && fieldType !== "cvcLength") || cardType === undefined || cardType === ""){
                 return str; 
             }
 
@@ -158,7 +158,7 @@
             str = str.substring(0, max+whiteSpacing).trim();
 
             return str; 
-        };
+        }
 
         function getMaxLength(fieldType, cardType){
             
@@ -167,10 +167,10 @@
             });
             card = card[0];
 
-            var lengths = card[fieldType]
+            var lengths = card[fieldType];
             var max = Math.max.apply( Math, lengths );
             return max;
-        };
+        }
 
         function getMinLength(fieldType, cardType){
             
@@ -179,10 +179,10 @@
             });
             card = card[0];
 
-            var lengths = card[fieldType]
+            var lengths = card[fieldType];
             var min = Math.min.apply( Math, lengths );
             return min;
-        };
+        }
 
         function isValidExpiryDate(str, currentDate, onBlur) {
 
@@ -225,7 +225,7 @@
             } 
  
             return {isValid: true, error: ""};
-        };
+        }
 
         function getCardType(str) {
             var cardType = "";
@@ -243,7 +243,7 @@
                 }
             }
             return cardType; 
-        };
+        }
 
         function isValidCardNumber(str, onBlur) {
 
@@ -275,7 +275,7 @@
                 }
 
             } else{
-                if(str.length >= min && min != 0){
+                if(str.length >= min && min !== 0){
                     var luhn = getLuhnChecksum(str);
                     if(luhn){
                         return {isValid: true, error: ""};
@@ -287,7 +287,7 @@
             }
             
             return {isValid: true, error: ""}; // Report valid while user is inputting str
-        };
+        }
 
         function isValidCvc(cardType, str, onBlur) {
 
@@ -305,7 +305,7 @@
             }
 
             return {isValid: true, error: ""};
-        };
+        }
 
 
         return {
@@ -318,7 +318,7 @@
             isValidCardNumber: isValidCardNumber,
             isValidCvc: isValidCvc,
             getMaxLength: getMaxLength
-        }
+        };
 
     })();
 

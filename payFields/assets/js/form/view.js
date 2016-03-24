@@ -1,5 +1,5 @@
 
-(function(window) {
+(function (window) {
     'use strict';
 
     /**
@@ -12,13 +12,13 @@
     }
 
     FormView.prototype = {
-        init: function(){
+        init: function () {
             var self = this;
             self.cacheDom();
             self.readAttributes();
             self.attachDomListeners();
         },
-        cacheDom: function(id) {
+        cacheDom: function (id) {
             // http://stackoverflow.com/a/22745553
             // there may be multiple forms in a page, get ref to current form
             var scripts = document.getElementsByTagName('script');
@@ -59,7 +59,7 @@
         },
         readAttributes: function() {
             var self = this;
-            var submit = self.script.getAttribute('data-submit-form')  === 'true';
+            var submit = self.script.getAttribute('data-submit-form') === 'true';
             this._model.setSubmitForm(submit);
         },
         attachDomListeners: function() {

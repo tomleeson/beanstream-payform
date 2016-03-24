@@ -1,5 +1,5 @@
 
-(function(window) {
+(function (window) {
     'use strict';
 
     function AjaxHelper() {
@@ -7,15 +7,15 @@
 
     AjaxHelper.prototype = {
 
-        makePayment: function(auth, data, listenter) {
+        makePayment: function (auth, data, listenter) {
             var self = this;
             self._listener = listenter;
 
             var url = "https://www.beanstream.com/api/v1/payments";
 
             var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-            if (xhttp.readyState == 4 && xhttp.status == 200) {
+            xhttp.onreadystatechange = function () {
+            if (xhttp.readyState === 4 && xhttp.status === 200) {
             	console.log(xhttp.responseText);
                   self._listener(xhttp.responseText);
                 }
@@ -50,13 +50,13 @@
         		//https://developer.mozilla.org/en-US/docs/Web/API/XDomainRequest
         		//https required for POST CORS requests in XDomainRequest
 
-        		if(window.location.protocol == "https:"){
+        		if (window.location.protocol === "https:") {
 	        		var xdr = new XDomainRequest();
 	        		xdr.open("get", url);
 
-	        		xdr.onload = function() {
+	        		xdr.onload = function () {
 						self._listener(self.parseResponse(xdr.responseText));
-					}
+					};
 
 					setTimeout(function () {
 					    xdr.send(data);
@@ -86,7 +86,7 @@
 			var self = this;
 		    obj = JSON.parse(obj);
 		    var response = new self.formattedResponse();
-		    if (obj.code == 1) {
+		    if (obj.code === 1) {
 		        response.success = true;
 		        response.token = obj.token;
 		    } else {

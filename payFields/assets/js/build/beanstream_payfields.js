@@ -1,8 +1,8 @@
 
-(function(window) {
+(function (window) {
     'use strict';
 
-    var Helper = (function() {
+    var Helper = (function () {
         function isNonInputKey(event) {
 
             if (event.ctrlKey || event.metaKey 
@@ -42,7 +42,7 @@
         function isEmpty(obj) {
 
             // http://stackoverflow.com/a/4994244/6011159
-            if (obj == null) return true;
+            if (obj === null) return true;
             if (obj.length > 0) return false;
             if (obj.length === 0) return true;
 
@@ -58,7 +58,7 @@
             deleteSelectedText: deleteSelectedText,
             createDocFrag: createDocFrag,
             isEmpty: isEmpty
-        }
+        };
 
     })();
 
@@ -153,7 +153,7 @@
                 }
             }
             return sum % 10 === 0;
-        };
+        }
 
         function formatCardNumber(str) {
 
@@ -167,7 +167,7 @@
             card = card[0];
 
             if(card){
-                var format = card["format"]
+                var format = card["format"];
                 
                 if (format.global) {
                     var arr = str.match(format).join(' ');
@@ -182,7 +182,7 @@
             } 
 
             return str;
-        };
+        }
 
         function formatExpiry(str) {
 
@@ -209,11 +209,11 @@
                 sep = ' / ';
             } 
             return mon + sep + year;
-        };
+        }
 
         function limitLength(str, fieldType, cardType) {
 
-            if((fieldType != "length" && fieldType != "cvcLength") || cardType === undefined || cardType === ""){
+            if((fieldType !== "length" && fieldType !== "cvcLength") || cardType === undefined || cardType === ""){
                 return str; 
             }
 
@@ -226,7 +226,7 @@
             str = str.substring(0, max+whiteSpacing).trim();
 
             return str; 
-        };
+        }
 
         function getMaxLength(fieldType, cardType){
             
@@ -235,10 +235,10 @@
             });
             card = card[0];
 
-            var lengths = card[fieldType]
+            var lengths = card[fieldType];
             var max = Math.max.apply( Math, lengths );
             return max;
-        };
+        }
 
         function getMinLength(fieldType, cardType){
             
@@ -247,10 +247,10 @@
             });
             card = card[0];
 
-            var lengths = card[fieldType]
+            var lengths = card[fieldType];
             var min = Math.min.apply( Math, lengths );
             return min;
-        };
+        }
 
         function isValidExpiryDate(str, currentDate, onBlur) {
 
@@ -293,7 +293,7 @@
             } 
  
             return {isValid: true, error: ""};
-        };
+        }
 
         function getCardType(str) {
             var cardType = "";
@@ -311,7 +311,7 @@
                 }
             }
             return cardType; 
-        };
+        }
 
         function isValidCardNumber(str, onBlur) {
 
@@ -343,7 +343,7 @@
                 }
 
             } else{
-                if(str.length >= min && min != 0){
+                if(str.length >= min && min !== 0){
                     var luhn = getLuhnChecksum(str);
                     if(luhn){
                         return {isValid: true, error: ""};
@@ -355,7 +355,7 @@
             }
             
             return {isValid: true, error: ""}; // Report valid while user is inputting str
-        };
+        }
 
         function isValidCvc(cardType, str, onBlur) {
 
@@ -373,7 +373,7 @@
             }
 
             return {isValid: true, error: ""};
-        };
+        }
 
 
         return {
@@ -386,7 +386,7 @@
             isValidCardNumber: isValidCardNumber,
             isValidCvc: isValidCvc,
             getMaxLength: getMaxLength
-        }
+        };
 
     })();
 
@@ -403,15 +403,15 @@
 
     AjaxHelper.prototype = {
 
-        makePayment: function(auth, data, listenter) {
+        makePayment: function(auth, data, listener) {
             var self = this;
-            self._listener = listenter;
+            self._listener = listener;
 
             var url = "https://www.beanstream.com/api/v1/payments";
 
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
-            if (xhttp.readyState == 4 && xhttp.status == 200) {
+            if (xhttp.readyState === 4 && xhttp.status === 200) {
             	console.log(xhttp.responseText);
                   self._listener(xhttp.responseText);
                 }
@@ -433,7 +433,7 @@
             if (window.XMLHttpRequest) {
 	            var xhttp = new XMLHttpRequest();
 	            xhttp.onreadystatechange = function() {
-	            if (xhttp.readyState == 4 && xhttp.status == 200) {
+	            if (xhttp.readyState === 4 && xhttp.status === 200) {
 	                    self._listener(self.parseResponse(xhttp.responseText));
 	                }
 	            }.bind(self);
@@ -446,13 +446,13 @@
         		//https://developer.mozilla.org/en-US/docs/Web/API/XDomainRequest
         		//https required for POST CORS requests in XDomainRequest
 
-        		if(window.location.protocol == "https:"){
+        		if(window.location.protocol === "https:"){
 	        		var xdr = new XDomainRequest();
 	        		xdr.open("get", url);
 
 	        		xdr.onload = function() {
 						self._listener(self.parseResponse(xdr.responseText));
-					}
+					};
 
 					setTimeout(function () {
 					    xdr.send(data);
@@ -482,7 +482,7 @@
 			var self = this;
 		    obj = JSON.parse(obj);
 		    var response = new self.formattedResponse();
-		    if (obj.code == 1) {
+		    if (obj.code === 1) {
 		        response.success = true;
 		        response.token = obj.token;
 		    } else {
@@ -527,7 +527,7 @@
             return this._value;
         },
         setValue: function(value) {
-            if(value != this._value){
+            if(value !== this._value){
                 this._value = value;
                 this.valueChanged.notify();
             }
@@ -536,7 +536,7 @@
             return this._isValid;
         },
         setIsValid: function(valid) {
-            if(valid != this._isValid){
+            if(valid !== this._isValid){
                 this._isValid = valid;
                 this.validityChanged.notify();
             }
@@ -545,7 +545,7 @@
             return this._cardType;
         },
         setCardType: function(cardType) {
-            if(cardType != this._cardType){
+            if(cardType !== this._cardType){
                 this._cardType = cardType;
                 this.cardTypeChanged.notify();
             }
@@ -648,14 +648,14 @@
                     _this._domInputElement.value = _this._model.getValue();
 
                     // Do not reposition caret for date
-                    if(_this._model.getFieldType() != "cc-exp"){
+                    if(_this._model.getFieldType() !== "cc-exp"){
                         var pos =  _this._model.getCaretPos();
                          _this._domInputElement.setSelectionRange(pos, pos);
                     }
                 },
                 cardType: function() {
                     var fieldType = _this._model.getFieldType();
-                    if(fieldType == "cc-number"){
+                    if(fieldType === "cc-number"){
                         var cardType = _this._model.getCardType();
 
                         if(cardType){
@@ -742,7 +742,7 @@
             return frag;
         },
         getCaretOffset: function(el) {
-            http://stackoverflow.com/a/2897229/6011159
+            // http://stackoverflow.com/a/2897229/6011159
             var el = this._domInputElement;
             var pos = 0;
 
@@ -967,7 +967,7 @@
             
             if(self._model.getIsValid()){
                 var cardType = self._model.getCardType();
-                if(cardType != "" || self._model.getFieldType() === "cc-exp" ){
+                if(cardType !== "" || self._model.getFieldType() === "cc-exp" ){
                     self.updateFocus(newStr, self._model.getCardType());
                 }
             }   
@@ -976,7 +976,7 @@
         setCardType: function(cardType) {
             var self = this;  
             var currentType = self._model.setCardType(cardType);   
-            if(cardType != currentType ){   
+            if(cardType !== currentType ){
                 self._model.setCardType(cardType); // update model for viey
                 self.cardTypeChanged.notify(cardType); //emit event for form
             }
@@ -1026,7 +1026,7 @@
     'use strict';
 
     function InputTemplate() {
-        this.inputTemplate = '<input data-beanstream-id="{{id}}" placeholder="{{placeholder}}" autocomplete="{{autocomplete}}"></input>';
+        this.inputTemplate = '<input data-beanstream-id="{{id}}" placeholder="{{placeholder}}" autocomplete="{{autocomplete}}">';
 
         this.labelTemplate = '<label data-beanstream-id="" for="{{id}}">{{labelText}}</label>';
 
@@ -1098,7 +1098,7 @@
             return this._token;
         },
         setToken: function(token) {
-            if(token != this._token){
+            if(token !== this._token){
                 this._token = token;
                 this.tokenChanged.notify();
             }
@@ -1110,7 +1110,7 @@
             return this._domTargetsFound[key];
         },
         setDomTargetsFound: function(key, value) {
-            if(value != this._domTargetsFound[key]){
+            if(value !== this._domTargetsFound[key]){
                 this._domTargetsFound[key] = value;
                 this.domTargetsFoundChanged.notify();
             }
@@ -1169,11 +1169,11 @@
                 var input = field + "_input";
                 var error = field + "_error";
                 
-                this.domTargets[input] 
-                    = this.form.querySelector('[data-beanstream-target="'+input+'"]');
+                this.domTargets[input] =
+                    this.form.querySelector('[data-beanstream-target="'+input+'"]');
 
-                this.domTargets[error] 
-                    = this.form.querySelector('[data-beanstream-target="'+error+'"]');
+                this.domTargets[error] =
+                    this.form.querySelector('[data-beanstream-target="'+error+'"]');
 
                 // Set flags. If target missing for any input, ignore all input targets
                 this._model.setDomTargetsFound('inputs', true);
@@ -1212,7 +1212,7 @@
             
             var self = this;
             var viewCommands = {
-                enalbeSubmitButton: function(parameter) {
+                enableSubmitButton: function(parameter) {
                     self.submitBtn.disabled = Boolean(!parameter);
                 },
                 injectStyles: function(parameter) {
@@ -1222,7 +1222,7 @@
                     fileref.setAttribute("type", "text/css");
                     fileref.setAttribute("href", parameter);
                     
-                    if (typeof fileref != "undefined") {
+                    if (typeof fileref !== "undefined") {
                         self.head.appendChild(fileref);
                     }
                 },
@@ -1305,7 +1305,7 @@
 
             var data = self.getFieldValues();
             if(!beanstream.Helper.isEmpty(data)){
-                self._view.render("enalbeSubmitButton", "false");
+                self._view.render("enableSubmitButton", "false");
 
                 var ajaxHelper = new beanstream.AjaxHelper();
                 ajaxHelper.getToken(data, function(args) {
@@ -1317,10 +1317,10 @@
                     } else{
                         self.fireEvent('beanstream_tokenUpdated');
                     }
-                    self._view.render("enalbeSubmitButton", "true");
+                    self._view.render("enableSubmitButton", "true");
                 }.bind(self));
             } else{
-                self._view.render("enalbeSubmitButton", "true");
+                self._view.render("enableSubmitButton", "true");
             }
         },
         appendToken: function(form, value) {
@@ -1436,7 +1436,7 @@
                             data.number = this.fieldObjs[i].controller._model.getValue();
                             break;
                         case "cc_cvv":
-                            data.cvd = this.fieldObjs[i].controller._model.getValue();;
+                            data.cvd = this.fieldObjs[i].controller._model.getValue();
                             break;
                         case "cc_exp":
                             var str = this.fieldObjs[i].controller._model.getValue();

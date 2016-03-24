@@ -22,18 +22,18 @@
         self._view.render("elements", self._config);
 
         //listen to view events
-        self._view.keydown.attach(function(sender, e) {
+        self._view.keydown.attach(function (sender, e) {
             
             // delete whole date str on delete any char
-            if( (self._model.getFieldType() === "cc-exp") &&
-                (e.keyCode === 8 || e.keyCode === 46)){
+            if ((self._model.getFieldType() === "cc-exp") &&
+                (e.keyCode === 8 || e.keyCode === 46)) {
 
                 self._model.setValue("");
                 return;
             }
 
             // Don't override default functionality except for input
-            if(beanstream.Helper.isNonInputKey(e)){
+            if (beanstream.Helper.isNonInputKey(e)) {
                 return;
             }
             e.preventDefault();
@@ -41,9 +41,9 @@
             var char;
             
             // Handle keypad
-            if( e.keyCode >= 96 && e.keyCode <= 105){
-                char = String.fromCharCode(e.keyCode-48);
-            } else{
+            if (e.keyCode >= 96 && e.keyCode <= 105) {
+                char = String.fromCharCode(e.keyCode - 48);
+            } else {
                 char = String.fromCharCode(e.keyCode);
             }
 
@@ -54,8 +54,8 @@
             self.limitInput(char, selectedText);
         });
 
-        self._view.keyup.attach(function(sender, args) {
-            if(args.event.keyCode === 8 || args.event.keyCode === 46){
+        self._view.keyup.attach(function (sender, args) {
+            if (args.event.keyCode === 8 || args.event.keyCode === 46) {
                 //Update model directly from UI on delete
                 //keyup is only needed for deletion
 
@@ -64,18 +64,18 @@
 
                 self._model.setValue(args.inputValue);
                 
-                if(self._model.getFieldType() === "cc-number"){
+                if (self._model.getFieldType() === "cc-number"){
                     var cardType = beanstream.Validator.getCardType(args.inputValue);
                     self.setCardType(cardType);
                     var isValid = beanstream.Validator.isValidCardNumber(args.inputValue);
                     self.setInputValidity(isValid);
                 }
-                if(self._model.getFieldType() === "cc-exp"){
+                if (self._model.getFieldType() === "cc-exp") {
                     var isValid = beanstream.Validator.isValidExpiryDate(args.inputValue, new Date());
                     self.setInputValidity(isValid);
                 }
 
-                if(self._model.getFieldType() === "cc-csc"){
+                if (self._model.getFieldType() === "cc-csc") {
                     var cardType = self._model.getCardType();
                     var isValid = beanstream.Validator.isValidCvc(cardType, args.inputValue);
                     self.setInputValidity(isValid);
@@ -85,7 +85,7 @@
             }
         });
 
-        self._view.paste.attach(function(sender, e) {
+        self._view.paste.attach(function (sender, e) {
             e.preventDefault();
 
             var pastedStr = e.clipboardData.getData('text/plain');
@@ -97,7 +97,7 @@
             self.limitInput(pastedStr, selectedText);
         });
 
-        self._view.blur.attach(function(sender, e) {
+        self._view.blur.attach(function (sender, e) {
             var onBlur = true;
             var str = self._model.getValue();
 
@@ -122,11 +122,11 @@
 
         });
 
-        self._view.focus.attach(function(sender, e) {
+        self._view.focus.attach(function (sender, e) {
 
             var str = self._model.getValue();
 
-            if(self._model.getFieldType() === "cc-csc"){
+            if (self._model.getFieldType() === "cc-csc") {
                 self._view.render("csc", "focus");
             }
 
@@ -198,7 +198,7 @@
             
             if(self._model.getIsValid()){
                 var cardType = self._model.getCardType();
-                if(cardType != "" || self._model.getFieldType() === "cc-exp" ){
+                if(cardType !== "" || self._model.getFieldType() === "cc-exp" ){
                     self.updateFocus(newStr, self._model.getCardType());
                 }
             }   
@@ -207,7 +207,7 @@
         setCardType: function(cardType) {
             var self = this;  
             var currentType = self._model.setCardType(cardType);   
-            if(cardType != currentType ){   
+            if(cardType !== currentType ){   
                 self._model.setCardType(cardType); // update model for viey
                 self.cardTypeChanged.notify(cardType); //emit event for form
             }

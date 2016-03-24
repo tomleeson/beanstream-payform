@@ -2,7 +2,7 @@
 (function(window) {
     'use strict';
 
-    var Helper = (function() {
+    var Helper = (function () {
         function isNonInputKey(event) {
 
             if (event.ctrlKey || event.metaKey 
@@ -42,7 +42,7 @@
         function isEmpty(obj) {
 
             // http://stackoverflow.com/a/4994244/6011159
-            if (obj == null) return true;
+            if (obj === null) return true;
             if (obj.length > 0) return false;
             if (obj.length === 0) return true;
 
@@ -58,7 +58,7 @@
             deleteSelectedText: deleteSelectedText,
             createDocFrag: createDocFrag,
             isEmpty: isEmpty
-        }
+        };
 
     })();
 

@@ -1,5 +1,5 @@
 
-(function(window) {
+(function (window) {
     'use strict';
 
     /**
@@ -24,13 +24,13 @@
         var _this = this;
 
         // attach model Listeners
-        this._model.valueChanged.attach(function() {
+        this._model.valueChanged.attach(function () {
             _this.render("value", "");
         });
-        this._model.cardTypeChanged.attach(function() {
+        this._model.cardTypeChanged.attach(function () {
             _this.render("cardType", "");
         });
-        this._model.validityChanged.attach(function() {
+        this._model.validityChanged.attach(function () {
             _this.render("isValid", "");
         });
 
@@ -38,10 +38,10 @@
 
     InputView.prototype = {
 
-        render: function(viewCmd, parameter) {
+        render: function (viewCmd, parameter) {
             var _this = this;
             var viewCommands = {
-                elements: function() {
+                elements: function () {
                     var template = _this._template.show(parameter);
                     var inputFrag = _this.createDocFrag(template.input);
                     var labelFrag = _this.createDocFrag(template.label);
@@ -55,7 +55,7 @@
                         _this._domParentElements.form.appendChild(inputFrag);                       
                     }
 
-                    if(parameter.domTargetsFound_error){
+                    if (parameter.domTargetsFound_error) {
                         _this._domParentElements.error.appendChild(errorFrag);
                     } else if (!parameter.domTargetsFound_error && parameter.domTargetsFound_input) {
                         _this._domParentElements.input.appendChild(errorFrag);
@@ -66,23 +66,23 @@
 
                     _this.attachDomListeners();
                 },
-                value: function() {
+                value: function () {
                     _this._domInputElement.value = _this._model.getValue();
 
                     // Do not reposition caret for date
-                    if(_this._model.getFieldType() != "cc-exp"){
+                    if (_this._model.getFieldType() !== "cc-exp") {
                         var pos =  _this._model.getCaretPos();
                          _this._domInputElement.setSelectionRange(pos, pos);
                     }
                 },
-                cardType: function() {
+                cardType: function () {
                     var fieldType = _this._model.getFieldType();
-                    if(fieldType == "cc-number"){
+                    if (fieldType === "cc-number") {
                         var cardType = _this._model.getCardType();
 
-                        if(cardType){
-                            if(cardType === "maestro") cardType = "mastercard";
-                            if(cardType === "visaelectron")  cardType = "visa";
+                        if (cardType) {
+                            if (cardType === "maestro") cardType = "mastercard";
+                            if (cardType === "visaelectron")  cardType = "visa";
                             _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/' + cardType + '.png)';
                         } else{
                             _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/card.png)';

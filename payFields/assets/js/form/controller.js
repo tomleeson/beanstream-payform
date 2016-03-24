@@ -1,5 +1,5 @@
 
-(function(window) {
+(function (window) {
     'use strict';
 
     /**
@@ -19,44 +19,44 @@
 
     FormController.prototype = {
 
-        init: function() {
+        init: function () {
             var self = this;
             self._view.render("injectStyles", "https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/style.css");
             //self._view.render("injectStyles", "../assets/css/style.css");
             self.injectFields();
             self.fireEvent('beanstream_loaded');
         },
-        onSubmit: function(e) {
+        onSubmit: function (e) {
             var self = this;
             e.preventDefault();
 
             var data = self.getFieldValues();
-            if(!beanstream.Helper.isEmpty(data)){
+            if (!beanstream.Helper.isEmpty(data)) {
                 self._view.render("enalbeSubmitButton", "false");
 
                 var ajaxHelper = new beanstream.AjaxHelper();
-                ajaxHelper.getToken(data, function(args) {
+                ajaxHelper.getToken(data, function (args) {
                     
                     self._view.render("appendToken", args.token);
 
-                    if(this._model.getSubmitForm()){
+                    if (this._model.getSubmitForm()) {
                         self._view.form.submit();
-                    } else{
+                    } else {
                         self.fireEvent('beanstream_tokenUpdated');
                     }
                     self._view.render("enalbeSubmitButton", "true");
                 }.bind(self));
-            } else{
+            } else {
                 self._view.render("enalbeSubmitButton", "true");
             }
         },
-        appendToken: function(form, value) {
+        appendToken: function (form, value) {
 
             var input = form.querySelector("input[name=singleUseToken]");
 
-            if(input){
+            if (input) {
                 input.value = value;
-            } else{
+            } else {
                 input = document.createElement('input');
                 input.type = "hidden";
                 input.name = "singleUseToken";
@@ -64,7 +64,7 @@
                 form.appendChild(input);
             }
         },
-        injectFields: function(filename) {
+        injectFields: function (filename) {
 
             this.fieldObjs = [];
 
@@ -107,7 +107,7 @@
             var self = this;
             if(field){
                 field.controller.cardTypeChanged.attach(function(sender, cardType) {
-                    self.setCardType(cardType)
+                    self.setCardType(cardType);
                 }.bind(self));
             }
             
@@ -118,7 +118,7 @@
                 }.bind(self));
 
                 this.fieldObjs[field].controller.inputValidityChanged.attach(function(sender, args) {
-                    self.inputValidityChanged(args)
+                    self.inputValidityChanged(args);
                 }.bind(self));
             }
             
@@ -163,7 +163,7 @@
                             data.number = this.fieldObjs[i].controller._model.getValue();
                             break;
                         case "cc_cvv":
-                            data.cvd = this.fieldObjs[i].controller._model.getValue();;
+                            data.cvd = this.fieldObjs[i].controller._model.getValue();
                             break;
                         case "cc_exp":
                             var str = this.fieldObjs[i].controller._model.getValue();

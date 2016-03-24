@@ -1,16 +1,16 @@
 
-(function(window) {
+(function (window) {
     'use strict';
 
     function InputTemplate() {
-        this.inputTemplate = '<input data-beanstream-id="{{id}}" placeholder="{{placeholder}}" autocomplete="{{autocomplete}}"></input>';
+        this.inputTemplate = '<input data-beanstream-id="{{id}}" placeholder="{{placeholder}}" autocomplete="{{autocomplete}}">';
 
         this.labelTemplate = '<label data-beanstream-id="" for="{{id}}">{{labelText}}</label>';
 
         this.errorTemplate = '<div data-beanstream-id="{{id}}_error"></div>';
     }
 
-    InputTemplate.prototype.show = function(parameter) {
+    InputTemplate.prototype.show = function (parameter) {
 
         var template = {};
         template.label = this.labelTemplate;
