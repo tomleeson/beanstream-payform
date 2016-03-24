@@ -1,4 +1,3 @@
-
 (function (window) {
     'use strict';
 
@@ -30,11 +29,8 @@
         };
 
         this._domTargetsFound = {inputs: false, errors: false};
-
-
         this.tokenChanged = new beanstream.Event(this);
         this.domTargetsFoundChanged = new beanstream.Event(this);
-        
     }
 
     FormModel.prototype = {
@@ -66,7 +62,6 @@
             this._submitForm = value;
         }
     };
-
 
     // Export to window
     window.beanstream = window.beanstream || {};

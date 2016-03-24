@@ -1,11 +1,9 @@
-
 (function (window) {
     'use strict';
 
     var Helper = (function () {
         function isNonInputKey(event) {
-
-            if (event.ctrlKey || event.metaKey 
+            if (event.ctrlKey || event.metaKey
                 || event.keyCode === 8 //backspace
                 || event.keyCode === 9 //tab
                 || event.keyCode === 13 //enter               
@@ -24,7 +22,6 @@
         }
 
         function deleteSelectedText(e) {
-
             e.target.value = e.target.value.replace(e.target.value.substring(e.target.selectionStart, e.target.selectionEnd), "");
         }
 
@@ -33,14 +30,15 @@
             var frag = document.createDocumentFragment(),
                 temp = document.createElement('div');
             temp.innerHTML = htmlStr;
+
             while (temp.firstChild) {
                 frag.appendChild(temp.firstChild);
             }
+
             return frag;
         }
 
         function isEmpty(obj) {
-
             // http://stackoverflow.com/a/4994244/6011159
             if (obj === null) return true;
             if (obj.length > 0) return false;
@@ -59,7 +57,6 @@
             createDocFrag: createDocFrag,
             isEmpty: isEmpty
         };
-
     })();
 
     // Export to window
@@ -71,9 +68,7 @@
     'use strict';
 
     var Validator = (function() {
-
         var defaultFormat = /(\d{1,4})/g;
-
         var cards = [{
             type: 'visaelectron',
             patterns: [4026, 417500, 4405, 4508, 4844, 4913, 4917],
@@ -133,16 +128,18 @@
         }];
 
         function getLuhnChecksum(num_str) {
-
             num_str = num_str.replace(/\s+/g, '');
             var digit;
             var sum = 0;
             var num_array = num_str.split('').reverse();
+
             for (var i = 0; i < num_array.length; i++) {
                 digit = num_array[i];
                 digit = +digit;
+
                 if (i % 2) {
                     digit *= 2;
+
                     if (digit < 10) {
                         sum += digit;
                     } else {
@@ -152,11 +149,11 @@
                     sum += digit;
                 }
             }
+
             return sum % 10 === 0;
         }
 
         function formatCardNumber(str) {
-
             str = str.replace(/\s+/g, '');
             var cardType = getCardType(str);
 
@@ -185,12 +182,13 @@
         }
 
         function formatExpiry(str) {
-
             var mon, parts, sep, year;
             parts = str.match(/^\D*(\d{1,2})(\D+)?(\d{1,2})?/);
+
             if (!parts) {
                 return '';
             }
+
             mon = parts[1] || '';
             sep = parts[2] || '';
             year = parts[3] || '';
@@ -208,11 +206,11 @@
                 mon = "0" + mon;
                 sep = ' / ';
             } 
+
             return mon + sep + year;
         }
 
         function limitLength(str, fieldType, cardType) {
-
             if((fieldType !== "length" && fieldType !== "cvcLength") || cardType === undefined || cardType === ""){
                 return str; 
             }
@@ -229,7 +227,6 @@
         }
 
         function getMaxLength(fieldType, cardType){
-            
             var card = cards.filter(function( c ) {
               return c.type === cardType;
             });
@@ -241,7 +238,6 @@
         }
 
         function getMinLength(fieldType, cardType){
-            
             var card = cards.filter(function( c ) {
               return c.type === cardType;
             });
@@ -253,7 +249,6 @@
         }
 
         function isValidExpiryDate(str, currentDate, onBlur) {
-
             if(onBlur && str === ""){
                  return {isValid: false, error: "This is a required field."}; // Validate onBlur as required field
             }
@@ -262,14 +257,19 @@
             var arr = str.split("/");
             //JavaScript counts months from 0 to 11
             var month = arr[0];
+
             if(month) month = month.trim() -1;
+
             var year = arr[1];
+
             if(year){
                 year = year.trim();
+
                 if(year.length === 2){
                     year = "20" + year; 
 
                     var expiryDate = new Date(year, month);
+
                     if (expiryDate < currentDate) {
                         return {isValid: false, error: "This date is past. Your card has expired."};
                     }
@@ -301,20 +301,22 @@
             loop1:
             for(var i=0; i<cards.length; i++){
                 var patterns = cards[i].patterns;               
+
                 loop2:
                 for(var j=0; j<patterns.length; j++){
                     var pos = str.indexOf(patterns[j]);
+
                     if(pos === 0){
                        cardType = cards[i].type;
                        break loop1;
                     }
                 }
             }
-            return cardType; 
+
+            return cardType;
         }
 
         function isValidCardNumber(str, onBlur) {
-
             str = str.replace(/\s+/g, '');
             var cardType = "";
             var min = 0;
@@ -325,7 +327,7 @@
                     min = getMinLength("length", cardType);
                 }
             }
-            
+
             if(onBlur){
                 if(str.length === 0) {
                     return {isValid: false, error: "This is a required field."}; // Validate onBlur as required field
@@ -335,46 +337,45 @@
                     return {isValid: false, error: "This card number is too short."}; // if onBlur and str not complete
                 } else{
                     var luhn = getLuhnChecksum(str);
+
                     if(luhn){
                         return {isValid: true, error: ""};
                     } else{
                         return {isValid: false, error: "This is an invalid card number."};
                     }
                 }
-
             } else{
                 if(str.length >= min && min !== 0){
                     var luhn = getLuhnChecksum(str);
+
                     if(luhn){
                         return {isValid: true, error: ""};
                     } else{
                         return {isValid: false, error: "This is an invalid card number."};
                     }
                 }
-
             }
-            
+
             return {isValid: true, error: ""}; // Report valid while user is inputting str
         }
 
         function isValidCvc(cardType, str, onBlur) {
-
-
             if(onBlur && str.length === 0){
                 return {isValid: false, error: "This is a required field."};
             }
+
             if(cardType === ""){
                 return {isValid: true, error: ""}; // Unknown card type. Default to true
             }
             
             var min = getMinLength("cvcLength", cardType);
+
             if(str.length < min && onBlur === true){
                 return {isValid: false, error: "This card number is too short."};
             }
 
             return {isValid: true, error: ""};
         }
-
 
         return {
             getCardType: getCardType,
@@ -387,7 +388,6 @@
             isValidCvc: isValidCvc,
             getMaxLength: getMaxLength
         };
-
     })();
 
     // Export to window
@@ -402,7 +402,6 @@
     }
 
     AjaxHelper.prototype = {
-
         makePayment: function(auth, data, listener) {
             var self = this;
             self._listener = listener;
@@ -411,6 +410,7 @@
 
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
+
             if (xhttp.readyState === 4 && xhttp.status === 200) {
             	console.log(xhttp.responseText);
                   self._listener(xhttp.responseText);
@@ -426,13 +426,14 @@
         	console.log("getToken");
             var self = this;
             self._listener = listenter;
-            
+
             var url = "https://www.beanstream.com/scripts/tokenization/tokens";
             data = JSON.stringify(data);
 
             if (window.XMLHttpRequest) {
 	            var xhttp = new XMLHttpRequest();
 	            xhttp.onreadystatechange = function() {
+
 	            if (xhttp.readyState === 4 && xhttp.status === 200) {
 	                    self._listener(self.parseResponse(xhttp.responseText));
 	                }
@@ -469,7 +470,6 @@
 				response.message = "Unsupported browser";
 				self._listener(response);
 	        }
-
         },
 		formattedResponse: function() {
 			var self = this;
@@ -482,6 +482,7 @@
 			var self = this;
 		    obj = JSON.parse(obj);
 		    var response = new self.formattedResponse();
+
 		    if (obj.code === 1) {
 		        response.success = true;
 		        response.token = obj.token;
@@ -490,17 +491,12 @@
 		    }
 		    return response;
 		}
-
-
     };
-
 
     // Export to window
     window.beanstream = window.beanstream || {};
     window.beanstream.AjaxHelper = AjaxHelper;
 })(window);
-
-
 
 (function(window) {
     'use strict';
@@ -522,7 +518,6 @@
     }
 
     InputModel.prototype = {
-
         getValue: function() {
             return this._value;
         },
@@ -568,9 +563,7 @@
         setCaretPos: function(pos) {
             this._caretPos = pos;
         }
-
     };
-
 
     // Export to window
     window.beanstream = window.beanstream || {};
@@ -611,11 +604,9 @@
         this._model.validityChanged.attach(function() {
             _this.render("isValid", "");
         });
-
     }
 
     InputView.prototype = {
-
         render: function(viewCmd, parameter) {
             var _this = this;
             var viewCommands = {
@@ -640,6 +631,7 @@
                     } else {
                         _this._domParentElements.form.appendChild(errorFrag);
                     }
+
                     _this.cacheDom(parameter.id);
 
                     _this.attachDomListeners();
@@ -655,12 +647,14 @@
                 },
                 cardType: function() {
                     var fieldType = _this._model.getFieldType();
+
                     if(fieldType === "cc-number"){
                         var cardType = _this._model.getCardType();
 
                         if(cardType){
                             if(cardType === "maestro") cardType = "mastercard";
                             if(cardType === "visaelectron")  cardType = "visa";
+
                             _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/' + cardType + '.png)';
                         } else{
                             _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/card.png)';
@@ -690,6 +684,7 @@
                 },
                 isValid: function() {
                     var isValid = _this._model.getIsValid();
+
                     if(isValid){
                         _this._domInputElement.className = _this._domInputElement.className.replace(" beanstream_invalid", "");
                     } else{
@@ -702,7 +697,6 @@
             viewCommands[viewCmd]();
         },
         cacheDom: function(id) {
-
             this._domInputElement = this._domParentElements.form.querySelector('[data-beanstream-id=' + id + ']');
             this._domErrorElement = this._domParentElements.form.querySelector('[data-beanstream-id="' + id + '_error"]');
         },
@@ -746,21 +740,20 @@
             var el = this._domInputElement;
             var pos = 0;
 
-              // IE Support
-              if (document.selection) {
-
+            // IE Support
+            if (document.selection) {
                 var sel = document.selection.createRange();
                 sel.moveStart('character', -el.value.length);
                 pos = sel.text.length;
-              }
-
-              // Firefox support
-              else if (el.selectionStart || el.selectionStart == '0'){
-                pos = el.selectionStart;
-              }
-
-              return pos;
             }
+
+            // Firefox support
+            else if (el.selectionStart || el.selectionStart == '0'){
+                pos = el.selectionStart;
+            }
+
+            return pos;
+        }
     };
 
     // Export to window
@@ -775,7 +768,6 @@
      * The Controller handles UI events and updates the Model.
      */
     function InputController(model, view, config) {
-
         var self = this;
         self._model = model;
         self._view = view;
@@ -792,7 +784,6 @@
 
         //listen to view events
         self._view.keydown.attach(function(sender, e) {
-            
             // delete whole date str on delete any char
             if( (self._model.getFieldType() === "cc-exp") &&
                 (e.keyCode === 8 || e.keyCode === 46)){
@@ -805,10 +796,11 @@
             if(beanstream.Helper.isNonInputKey(e)){
                 return;
             }
+
             e.preventDefault();
 
             var char;
-            
+
             // Handle keypad
             if( e.keyCode >= 96 && e.keyCode <= 105){
                 char = String.fromCharCode(e.keyCode-48);
@@ -832,13 +824,14 @@
                 self._model.setCaretPos(pos);
 
                 self._model.setValue(args.inputValue);
-                
+
                 if(self._model.getFieldType() === "cc-number"){
                     var cardType = beanstream.Validator.getCardType(args.inputValue);
                     self.setCardType(cardType);
                     var isValid = beanstream.Validator.isValidCardNumber(args.inputValue);
                     self.setInputValidity(isValid);
                 }
+
                 if(self._model.getFieldType() === "cc-exp"){
                     var isValid = beanstream.Validator.isValidExpiryDate(args.inputValue, new Date());
                     self.setInputValidity(isValid);
@@ -849,8 +842,6 @@
                     var isValid = beanstream.Validator.isValidCvc(cardType, args.inputValue);
                     self.setInputValidity(isValid);
                 }
-
-
             }
         });
 
@@ -888,27 +879,23 @@
                 default:
                     break;
             }
-
         });
 
         self._view.focus.attach(function(sender, e) {
-
             var str = self._model.getValue();
 
             if(self._model.getFieldType() === "cc-csc"){
                 self._view.render("csc", "focus");
             }
-
         });
     }
 
     InputController.prototype = {
-
         limitInput: function(str, selectedText) {
             var self = this;
 
             str = str.replace(/\D/g,''); // remove non ints from string
-            
+
             if(!str.length){
                 return;
             }
@@ -957,6 +944,7 @@
             var match = inputStr.split('').join('\\s*'); // create string for RegEx insensitive to white spacing
             match = new RegExp(match);
             var res = newStr.match(match);
+
             if(res){
                 res = res[0].toString(); // find unformatted substring in formatted string
                 var caretPos = res.length;
@@ -964,7 +952,7 @@
             }
 
             self._model.setValue(newStr);
-            
+
             if(self._model.getIsValid()){
                 var cardType = self._model.getCardType();
                 if(cardType !== "" || self._model.getFieldType() === "cc-exp" ){
@@ -972,23 +960,21 @@
                 }
             }   
         },
-
         setCardType: function(cardType) {
             var self = this;  
             var currentType = self._model.setCardType(cardType);   
+
             if(cardType !== currentType ){
                 self._model.setCardType(cardType); // update model for viey
                 self.cardTypeChanged.notify(cardType); //emit event for form
             }
         },
-
         setInputValidity: function(args) {
             var self = this;     
             self._model.setError(args.error); 
             self._model.setIsValid(args.isValid);
             self.inputValidityChanged.notify(args);
         },
-
         updateFocus: function(str, cardType) {
             var self = this;
             var max;
@@ -1012,10 +998,8 @@
             if(max === len){
                 self.inputComplete.notify();
             }
-
         }
     };
-
 
     // Export to window
     window.beanstream = window.beanstream || {};
@@ -1027,14 +1011,11 @@
 
     function InputTemplate() {
         this.inputTemplate = '<input data-beanstream-id="{{id}}" placeholder="{{placeholder}}" autocomplete="{{autocomplete}}">';
-
         this.labelTemplate = '<label data-beanstream-id="" for="{{id}}">{{labelText}}</label>';
-
         this.errorTemplate = '<div data-beanstream-id="{{id}}_error"></div>';
     }
 
     InputTemplate.prototype.show = function(parameter) {
-
         var template = {};
         template.label = this.labelTemplate;
         template.input = this.inputTemplate;
@@ -1063,7 +1044,6 @@
      */
     function FormModel() {
         this._token = "";
-
         this._fields = {
             cc_number: {
                 name: "cardnumber",
@@ -1087,10 +1067,8 @@
 
         this._domTargetsFound = {inputs: false, errors: false};
 
-
         this.tokenChanged = new beanstream.Event(this);
         this.domTargetsFoundChanged = new beanstream.Event(this);
-        
     }
 
     FormModel.prototype = {
@@ -1123,7 +1101,6 @@
         }
     };
 
-
     // Export to window
     window.beanstream = window.beanstream || {};
     window.beanstream.FormModel = FormModel;
@@ -1136,7 +1113,6 @@
      * The View presents the model and notifies the Controller of UI events.
      */
     function FormView(model) {
-
         this._model = model;
         this.submit = new beanstream.Event(this);
     }
@@ -1156,7 +1132,7 @@
             this.form = this.script.parentNode;
             this.head = document.getElementsByTagName("head")[0];
             this.submitBtn = this.form.querySelector("input[type=submit]");
-            
+
             if (!this.submitBtn) {
                 this.submitBtn = this.form.querySelector("button[type=submit]");
             }
@@ -1164,11 +1140,11 @@
             this.domTargets = {};
 
             var fields = this._model.getFields();
-            for (var field in fields) {
 
+            for (var field in fields) {
                 var input = field + "_input";
                 var error = field + "_error";
-                
+
                 this.domTargets[input] =
                     this.form.querySelector('[data-beanstream-target="'+input+'"]');
 
@@ -1182,6 +1158,7 @@
                 if(this.domTargets[input] === null){
                     this._model.setDomTargetsFound('inputs', false);
                 }
+
                 if(this.domTargets[error] === null){
                     this._model.setDomTargetsFound('errors', false);
                 }
@@ -1198,6 +1175,7 @@
                 // validate and get token before submit event
                 // button is below script tag, so we wait until it loads
                 self.submitBtn = self.form.querySelector("input[type=submit]");
+
                 if (!self.submitBtn) {
                     self.submitBtn = self.form.querySelector("button[type=submit]");
                 }
@@ -1205,23 +1183,20 @@
                 self.submitBtn.addEventListener("click", function(e){
                     self.submit.notify(e);
                 }, false);
-                
             }.bind(self);
         },    
         render: function(viewCmd, parameter) {
-            
             var self = this;
             var viewCommands = {
                 enableSubmitButton: function(parameter) {
                     self.submitBtn.disabled = Boolean(!parameter);
                 },
                 injectStyles: function(parameter) {
-
                     var fileref = document.createElement("link");
                     fileref.setAttribute("rel", "stylesheet");
                     fileref.setAttribute("type", "text/css");
                     fileref.setAttribute("href", parameter);
-                    
+
                     if (typeof fileref !== "undefined") {
                         self.head.appendChild(fileref);
                     }
@@ -1241,11 +1216,12 @@
                 },
                 setFocusNext: function(sender) {
                     var currentEl_id = sender._config.id;
-                    
+
                     //toDo: these inputs should be cached
                     var inputs = self.form.getElementsByTagName("input");
 
                     var currentInput = self.getIndexById(inputs, currentEl_id);
+
                     if(inputs[currentInput+1]){
                         inputs[currentInput+1].focus();
                     } else{
@@ -1258,13 +1234,11 @@
         },
         getIndexById: function(source, id) {
             for (var i = 0; i < source.length; i++) {
-                
                 if (source[i].getAttribute('data-beanstream-id') === id) {
                     return i;
                 }
             }
         }
-
     };
 
     // Export to window
@@ -1279,7 +1253,6 @@
      * The Controller handles UI events and updates the Model.
      */
     function FormController(model, view) {
-
         var self = this;
         self._model = model;
         self._view = view;
@@ -1291,7 +1264,6 @@
     }
 
     FormController.prototype = {
-
         init: function() {
             var self = this;
             self._view.render("injectStyles", "https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/style.css");
@@ -1304,6 +1276,7 @@
             e.preventDefault();
 
             var data = self.getFieldValues();
+
             if(!beanstream.Helper.isEmpty(data)){
                 self._view.render("enableSubmitButton", "false");
 
@@ -1317,6 +1290,7 @@
                     } else{
                         self.fireEvent('beanstream_tokenUpdated');
                     }
+
                     self._view.render("enableSubmitButton", "true");
                 }.bind(self));
             } else{
@@ -1324,7 +1298,6 @@
             }
         },
         appendToken: function(form, value) {
-
             var input = form.querySelector("input[name=singleUseToken]");
 
             if(input){
@@ -1338,19 +1311,20 @@
             }
         },
         injectFields: function(filename) {
-
             this.fieldObjs = [];
 
             var fields = this._model.getFields();
-            for (var field in fields) {
 
+            for (var field in fields) {
                 var domTargets = {};
                 if (this._model.getDomTargetsFound("inputs")) {
                     domTargets.input = this._view.domTargets[field + "_input"];
                 }
+
                 if (this._model.getDomTargetsFound("errors")) {
                     domTargets.error = this._view.domTargets[field + "_error"];
                 }
+
                 domTargets.form = this._view.form;
 
                 var config = new Object;
@@ -1378,14 +1352,14 @@
 
             //attach listeners to new field
             var self = this;
+
             if(field){
                 field.controller.cardTypeChanged.attach(function(sender, cardType) {
                     self.setCardType(cardType)
                 }.bind(self));
             }
-            
-            for (field in this.fieldObjs) {
 
+            for (field in this.fieldObjs) {
                 this.fieldObjs[field].controller.inputComplete.attach(function(sender) {
                     self._view.render("setFocusNext", sender);
                 }.bind(self));
@@ -1394,8 +1368,6 @@
                     self.inputValidityChanged(args)
                 }.bind(self));
             }
-            
-
         },
         setCardType: function(cardType) {
             var field = this.fieldObjs.filter(function( f ) {
@@ -1417,7 +1389,6 @@
             document.dispatchEvent(event);
         },
         getFieldValues: function() {
-
             var data = {};
 
             var invalidFields = this.fieldObjs.filter(function( f ) {
@@ -1430,7 +1401,6 @@
 
             if(invalidFields.length === 0 && emptyFields.length === 0) {
                 for(var i=0; i<this.fieldObjs.length; i++){
-
                     switch(this.fieldObjs[i].controller._config.id) {
                         case "cc_number":
                             data.number = this.fieldObjs[i].controller._model.getValue();
@@ -1454,33 +1424,33 @@
 
             return data;
         }
-
     };
 
     // Export to window
     window.beanstream = window.beanstream || {};
     window.beanstream.FormController = FormController;
 })(window);
+
 (function (window) {
     'use strict';
 
-function Event(sender) {
-    this._sender = sender;
-    this._listeners = [];
-}
-
-Event.prototype = {
-    attach: function (Inputener) {
-        this._listeners.push(Inputener);
-    },
-    notify: function (args) {
-        var index;
-
-        for (index = 0; index < this._listeners.length; index += 1) {
-            this._listeners[index](this._sender, args);
-        }
+    function Event(sender) {
+        this._sender = sender;
+        this._listeners = [];
     }
-};
+
+    Event.prototype = {
+        attach: function (Inputener) {
+            this._listeners.push(Inputener);
+        },
+        notify: function (args) {
+            var index;
+
+            for (index = 0; index < this._listeners.length; index += 1) {
+                this._listeners[index](this._sender, args);
+            }
+        }
+    };
 
     // Export to window
     window.beanstream = window.beanstream || {};
@@ -1488,7 +1458,6 @@ Event.prototype = {
 })(window);
 
 (function() {
-
     console.log("Starting Beanstream Payfields...");
 
     var form = {};
@@ -1497,5 +1466,4 @@ Event.prototype = {
     form.controller = new beanstream.FormController(form.model, form.view);
 
     form.controller.init();
-
 })();

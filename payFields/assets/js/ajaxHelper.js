@@ -1,4 +1,3 @@
-
 (function (window) {
     'use strict';
 
@@ -6,7 +5,6 @@
     }
 
     AjaxHelper.prototype = {
-
         makePayment: function (auth, data, listenter) {
             var self = this;
             self._listener = listenter;
@@ -73,7 +71,6 @@
 				response.message = "Unsupported browser";
 				self._listener(response);
 	        }
-
         },
 		formattedResponse: function() {
 			var self = this;
@@ -86,6 +83,7 @@
 			var self = this;
 		    obj = JSON.parse(obj);
 		    var response = new self.formattedResponse();
+
 		    if (obj.code === 1) {
 		        response.success = true;
 		        response.token = obj.token;
@@ -94,13 +92,9 @@
 		    }
 		    return response;
 		}
-
-
     };
-
 
     // Export to window
     window.beanstream = window.beanstream || {};
     window.beanstream.AjaxHelper = AjaxHelper;
 })(window);
-

@@ -1,4 +1,3 @@
-
 (function (window) {
     'use strict';
 
@@ -19,7 +18,6 @@
     }
 
     InputModel.prototype = {
-
         getValue: function () {
             return this._value;
         },
@@ -65,9 +63,7 @@
         setCaretPos: function (pos) {
             this._caretPos = pos;
         }
-
     };
-
 
     // Export to window
     window.beanstream = window.beanstream || {};

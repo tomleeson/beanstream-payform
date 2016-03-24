@@ -1,5 +1,4 @@
 (function() {
-
     console.log("Starting Beanstream Payfields...");
 
     var form = {};
@@ -8,5 +7,4 @@
     form.controller = new beanstream.FormController(form.model, form.view);
 
     form.controller.init();
-
 })();

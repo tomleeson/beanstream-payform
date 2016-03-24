@@ -1,4 +1,3 @@
-
 (function(window) {
     'use strict';
 
@@ -6,7 +5,6 @@
      * The Controller handles UI events and updates the Model.
      */
     function InputController(model, view, config) {
-
         var self = this;
         self._model = model;
         self._view = view;
@@ -23,7 +21,6 @@
 
         //listen to view events
         self._view.keydown.attach(function (sender, e) {
-            
             // delete whole date str on delete any char
             if ((self._model.getFieldType() === "cc-exp") &&
                 (e.keyCode === 8 || e.keyCode === 46)) {
@@ -39,7 +36,7 @@
             e.preventDefault();
 
             var char;
-            
+
             // Handle keypad
             if (e.keyCode >= 96 && e.keyCode <= 105) {
                 char = String.fromCharCode(e.keyCode - 48);
@@ -63,13 +60,14 @@
                 self._model.setCaretPos(pos);
 
                 self._model.setValue(args.inputValue);
-                
+
                 if (self._model.getFieldType() === "cc-number"){
                     var cardType = beanstream.Validator.getCardType(args.inputValue);
                     self.setCardType(cardType);
                     var isValid = beanstream.Validator.isValidCardNumber(args.inputValue);
                     self.setInputValidity(isValid);
                 }
+
                 if (self._model.getFieldType() === "cc-exp") {
                     var isValid = beanstream.Validator.isValidExpiryDate(args.inputValue, new Date());
                     self.setInputValidity(isValid);
@@ -80,8 +78,6 @@
                     var isValid = beanstream.Validator.isValidCvc(cardType, args.inputValue);
                     self.setInputValidity(isValid);
                 }
-
-
             }
         });
 
@@ -119,22 +115,18 @@
                 default:
                     break;
             }
-
         });
 
         self._view.focus.attach(function (sender, e) {
-
             var str = self._model.getValue();
 
             if (self._model.getFieldType() === "cc-csc") {
                 self._view.render("csc", "focus");
             }
-
         });
     }
 
     InputController.prototype = {
-
         limitInput: function(str, selectedText) {
             var self = this;
 
@@ -188,6 +180,7 @@
             var match = inputStr.split('').join('\\s*'); // create string for RegEx insensitive to white spacing
             match = new RegExp(match);
             var res = newStr.match(match);
+
             if(res){
                 res = res[0].toString(); // find unformatted substring in formatted string
                 var caretPos = res.length;
@@ -203,16 +196,15 @@
                 }
             }   
         },
-
         setCardType: function(cardType) {
             var self = this;  
             var currentType = self._model.setCardType(cardType);   
-            if(cardType !== currentType ){   
+
+            if(cardType !== currentType ){
                 self._model.setCardType(cardType); // update model for viey
                 self.cardTypeChanged.notify(cardType); //emit event for form
             }
         },
-
         setInputValidity: function(args) {
             var self = this;     
             self._model.setError(args.error); 
@@ -243,10 +235,8 @@
             if(max === len){
                 self.inputComplete.notify();
             }
-
         }
     };
-
 
     // Export to window
     window.beanstream = window.beanstream || {};

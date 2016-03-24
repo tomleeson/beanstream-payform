@@ -1,4 +1,3 @@
-
 (function (window) {
     'use strict';
 
@@ -35,7 +34,6 @@
 
             var fields = this._model.getFields();
             for (var field in fields) {
-
                 var input = field + "_input";
                 var error = field + "_error";
                 
@@ -75,18 +73,15 @@
                 self.submitBtn.addEventListener("click", function(e){
                     self.submit.notify(e);
                 }, false);
-                
             }.bind(self);
         },    
         render: function(viewCmd, parameter) {
-            
             var self = this;
             var viewCommands = {
                 enableSubmitButton: function(parameter) {
                     self.submitBtn.disabled = Boolean(!parameter);
                 },
                 injectStyles: function(parameter) {
-
                     var fileref = document.createElement("link");
                     fileref.setAttribute("rel", "stylesheet");
                     fileref.setAttribute("type", "text/css");
@@ -111,11 +106,12 @@
                 },
                 setFocusNext: function(sender) {
                     var currentEl_id = sender._config.id;
-                    
+
                     //toDo: these inputs should be cached
                     var inputs = self.form.getElementsByTagName("input");
 
                     var currentInput = self.getIndexById(inputs, currentEl_id);
+
                     if(inputs[currentInput+1]){
                         inputs[currentInput+1].focus();
                     } else{
@@ -128,13 +124,11 @@
         },
         getIndexById: function(source, id) {
             for (var i = 0; i < source.length; i++) {
-                
                 if (source[i].getAttribute('data-beanstream-id') === id) {
                     return i;
                 }
             }
         }
-
     };
 
     // Export to window

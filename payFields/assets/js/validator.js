@@ -1,11 +1,8 @@
-
 (function (window) {
     'use strict';
 
     var Validator = (function () {
-
         var defaultFormat = /(\d{1,4})/g;
-
         var cards = [{
             type: 'visaelectron',
             patterns: [4026, 417500, 4405, 4508, 4844, 4913, 4917],
@@ -65,16 +62,18 @@
         }];
 
         function getLuhnChecksum(num_str) {
-
             num_str = num_str.replace(/\s+/g, '');
             var digit;
             var sum = 0;
             var num_array = num_str.split('').reverse();
+
             for (var i = 0; i < num_array.length; i++) {
                 digit = num_array[i];
                 digit = +digit;
+
                 if (i % 2) {
                     digit *= 2;
+
                     if (digit < 10) {
                         sum += digit;
                     } else {
@@ -84,11 +83,11 @@
                     sum += digit;
                 }
             }
+
             return sum % 10 === 0;
         }
 
         function formatCardNumber(str) {
-
             str = str.replace(/\s+/g, '');
             var cardType = getCardType(str);
 
@@ -104,8 +103,7 @@
                 if (format.global) {
                     var arr = str.match(format).join(' ');
                     str = limitLength(arr, "length", cardType);                    
-                } 
-                else{
+                } else {
                     var arr = format.exec(str);
                     arr.shift(); // remove first element which contains the full matched text 
                     str = arr.join(' ');
@@ -117,12 +115,13 @@
         }
 
         function formatExpiry(str) {
-
             var mon, parts, sep, year;
             parts = str.match(/^\D*(\d{1,2})(\D+)?(\d{1,2})?/);
+
             if (!parts) {
                 return '';
             }
+
             mon = parts[1] || '';
             sep = parts[2] || '';
             year = parts[3] || '';
@@ -140,11 +139,11 @@
                 mon = "0" + mon;
                 sep = ' / ';
             } 
+
             return mon + sep + year;
         }
 
         function limitLength(str, fieldType, cardType) {
-
             if((fieldType !== "length" && fieldType !== "cvcLength") || cardType === undefined || cardType === ""){
                 return str; 
             }
@@ -161,7 +160,6 @@
         }
 
         function getMaxLength(fieldType, cardType){
-            
             var card = cards.filter(function( c ) {
               return c.type === cardType;
             });
@@ -173,7 +171,6 @@
         }
 
         function getMinLength(fieldType, cardType){
-            
             var card = cards.filter(function( c ) {
               return c.type === cardType;
             });
@@ -185,7 +182,6 @@
         }
 
         function isValidExpiryDate(str, currentDate, onBlur) {
-
             if(onBlur && str === ""){
                  return {isValid: false, error: "This is a required field."}; // Validate onBlur as required field
             }
@@ -194,14 +190,19 @@
             var arr = str.split("/");
             //JavaScript counts months from 0 to 11
             var month = arr[0];
+
             if(month) month = month.trim() -1;
+
             var year = arr[1];
+
             if(year){
                 year = year.trim();
+
                 if(year.length === 2){
                     year = "20" + year; 
 
                     var expiryDate = new Date(year, month);
+
                     if (expiryDate < currentDate) {
                         return {isValid: false, error: "This date is past. Your card has expired."};
                     }
@@ -231,33 +232,37 @@
             var cardType = "";
 
             loop1:
+
             for(var i=0; i<cards.length; i++){
                 var patterns = cards[i].patterns;               
                 loop2:
+
                 for(var j=0; j<patterns.length; j++){
                     var pos = str.indexOf(patterns[j]);
+
                     if(pos === 0){
                        cardType = cards[i].type;
                        break loop1;
                     }
                 }
             }
-            return cardType; 
+
+            return cardType;
         }
 
         function isValidCardNumber(str, onBlur) {
-
             str = str.replace(/\s+/g, '');
             var cardType = "";
             var min = 0;
 
             if(str.length > 0){
                 cardType = getCardType(str);
+
                 if(cardType){
                     min = getMinLength("length", cardType);
                 }
             }
-            
+
             if(onBlur){
                 if(str.length === 0) {
                     return {isValid: false, error: "This is a required field."}; // Validate onBlur as required field
@@ -267,6 +272,7 @@
                     return {isValid: false, error: "This card number is too short."}; // if onBlur and str not complete
                 } else{
                     var luhn = getLuhnChecksum(str);
+
                     if(luhn){
                         return {isValid: true, error: ""};
                     } else{
@@ -277,6 +283,7 @@
             } else{
                 if(str.length >= min && min !== 0){
                     var luhn = getLuhnChecksum(str);
+
                     if(luhn){
                         return {isValid: true, error: ""};
                     } else{
@@ -290,23 +297,22 @@
         }
 
         function isValidCvc(cardType, str, onBlur) {
-
-
             if(onBlur && str.length === 0){
                 return {isValid: false, error: "This is a required field."};
             }
+
             if(cardType === ""){
                 return {isValid: true, error: ""}; // Unknown card type. Default to true
             }
-            
+
             var min = getMinLength("cvcLength", cardType);
+
             if(str.length < min && onBlur === true){
                 return {isValid: false, error: "This card number is too short."};
             }
 
             return {isValid: true, error: ""};
         }
-
 
         return {
             getCardType: getCardType,
@@ -319,7 +325,6 @@
             isValidCvc: isValidCvc,
             getMaxLength: getMaxLength
         };
-
     })();
 
     // Export to window

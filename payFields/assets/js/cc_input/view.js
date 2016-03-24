@@ -1,4 +1,3 @@
-
 (function (window) {
     'use strict';
 
@@ -33,11 +32,9 @@
         this._model.validityChanged.attach(function () {
             _this.render("isValid", "");
         });
-
     }
 
     InputView.prototype = {
-
         render: function (viewCmd, parameter) {
             var _this = this;
             var viewCommands = {
@@ -77,6 +74,7 @@
                 },
                 cardType: function () {
                     var fieldType = _this._model.getFieldType();
+
                     if (fieldType === "cc-number") {
                         var cardType = _this._model.getCardType();
 
@@ -112,6 +110,7 @@
                 },
                 isValid: function() {
                     var isValid = _this._model.getIsValid();
+
                     if(isValid){
                         _this._domInputElement.className = _this._domInputElement.className.replace(" beanstream_invalid", "");
                     } else{
@@ -124,7 +123,6 @@
             viewCommands[viewCmd]();
         },
         cacheDom: function(id) {
-
             this._domInputElement = this._domParentElements.form.querySelector('[data-beanstream-id=' + id + ']');
             this._domErrorElement = this._domParentElements.form.querySelector('[data-beanstream-id="' + id + '_error"]');
         },
@@ -169,20 +167,19 @@
             var pos = 0;
 
               // IE Support
-              if (document.selection) {
-
+            if (document.selection) {
                 var sel = document.selection.createRange();
                 sel.moveStart('character', -el.value.length);
                 pos = sel.text.length;
-              }
-
-              // Firefox support
-              else if (el.selectionStart || el.selectionStart == '0'){
-                pos = el.selectionStart;
-              }
-
-              return pos;
             }
+
+            // Firefox support
+            else if (el.selectionStart || el.selectionStart == '0'){
+                pos = el.selectionStart;
+            }
+
+            return pos;
+        }
     };
 
     // Export to window

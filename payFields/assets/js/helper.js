@@ -1,4 +1,3 @@
-
 (function(window) {
     'use strict';
 
@@ -24,7 +23,6 @@
         }
 
         function deleteSelectedText(e) {
-
             e.target.value = e.target.value.replace(e.target.value.substring(e.target.selectionStart, e.target.selectionEnd), "");
         }
 
@@ -40,7 +38,6 @@
         }
 
         function isEmpty(obj) {
-
             // http://stackoverflow.com/a/4994244/6011159
             if (obj === null) return true;
             if (obj.length > 0) return false;
@@ -59,7 +56,6 @@
             createDocFrag: createDocFrag,
             isEmpty: isEmpty
         };
-
     })();
 
     // Export to window

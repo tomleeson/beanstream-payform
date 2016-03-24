@@ -1,4 +1,3 @@
-
 (function (window) {
     'use strict';
 
@@ -6,7 +5,6 @@
      * The Controller handles UI events and updates the Model.
      */
     function FormController(model, view) {
-
         var self = this;
         self._model = model;
         self._view = view;
@@ -18,7 +16,6 @@
     }
 
     FormController.prototype = {
-
         init: function () {
             var self = this;
             self._view.render("injectStyles", "https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/style.css");
@@ -31,12 +28,12 @@
             e.preventDefault();
 
             var data = self.getFieldValues();
+
             if (!beanstream.Helper.isEmpty(data)) {
                 self._view.render("enableSubmitButton", "false");
 
                 var ajaxHelper = new beanstream.AjaxHelper();
                 ajaxHelper.getToken(data, function (args) {
-                    
                     self._view.render("appendToken", args.token);
 
                     if (this._model.getSubmitForm()) {
@@ -51,7 +48,6 @@
             }
         },
         appendToken: function (form, value) {
-
             var input = form.querySelector("input[name=singleUseToken]");
 
             if (input) {
@@ -65,12 +61,11 @@
             }
         },
         injectFields: function (filename) {
-
             this.fieldObjs = [];
 
             var fields = this._model.getFields();
-            for (var field in fields) {
 
+            for (var field in fields) {
                 var domTargets = {};
                 if (this._model.getDomTargetsFound("inputs")) {
                     domTargets.input = this._view.domTargets[field + "_input"];
@@ -105,6 +100,7 @@
 
             //attach listeners to new field
             var self = this;
+
             if(field){
                 field.controller.cardTypeChanged.attach(function(sender, cardType) {
                     self.setCardType(cardType);
@@ -112,7 +108,6 @@
             }
             
             for (field in this.fieldObjs) {
-
                 this.fieldObjs[field].controller.inputComplete.attach(function(sender) {
                     self._view.render("setFocusNext", sender);
                 }.bind(self));
@@ -121,8 +116,6 @@
                     self.inputValidityChanged(args);
                 }.bind(self));
             }
-            
-
         },
         setCardType: function(cardType) {
             var field = this.fieldObjs.filter(function( f ) {
@@ -144,7 +137,6 @@
             document.dispatchEvent(event);
         },
         getFieldValues: function() {
-
             var data = {};
 
             var invalidFields = this.fieldObjs.filter(function( f ) {
@@ -157,7 +149,6 @@
 
             if(invalidFields.length === 0 && emptyFields.length === 0) {
                 for(var i=0; i<this.fieldObjs.length; i++){
-
                     switch(this.fieldObjs[i].controller._config.id) {
                         case "cc_number":
                             data.number = this.fieldObjs[i].controller._model.getValue();
@@ -181,7 +172,6 @@
 
             return data;
         }
-
     };
 
     // Export to window
