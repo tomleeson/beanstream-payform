@@ -1,4 +1,6 @@
-(function() {
+(function () {
+    'use strict';
+
     console.log("Starting Beanstream Payfields...");
 
     var form = {};

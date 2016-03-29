@@ -24,7 +24,7 @@
             xhttp.setRequestHeader("Authorization", auth);
             xhttp.send(JSON.stringify(data));
         },
-        getToken: function(data, listenter) {
+        getToken: function (data, listenter) {
         	console.log("getToken");
             var self = this;
             self._listener = listenter;
@@ -34,15 +34,15 @@
 
             if (window.XMLHttpRequest) {
 	            var xhttp = new XMLHttpRequest();
-	            xhttp.onreadystatechange = function() {
-	            if (xhttp.readyState == 4 && xhttp.status == 200) {
+	            xhttp.onreadystatechange = function () {
+	            if (xhttp.readyState === 4 && xhttp.status === 200) {
 	                    self._listener(self.parseResponse(xhttp.responseText));
 	                }
 	            }.bind(self);
 
 	        	xhttp.open("POST", url, true);
 	            xhttp.send(data);
-        	} else if(window.XDomainRequest){
+        	} else if (window.XDomainRequest) {
         		//https required for POST CORS requests in XDomainRequest
         		//XDomainRequest required to support  IE 8 and 9
         		//https://developer.mozilla.org/en-US/docs/Web/API/XDomainRequest
@@ -59,7 +59,7 @@
 					setTimeout(function () {
 					    xdr.send(data);
 					}, 0);
-				} else{
+				} else {
 					var response = new self.formattedResponse();
 					response.code = 5;
 					response.message = "HTTPS connection required in Internet Explorer 9 and below";
@@ -72,14 +72,14 @@
 				self._listener(response);
 	        }
         },
-		formattedResponse: function() {
+		formattedResponse: function () {
 			var self = this;
 			self.code = "";
 		    self.message = "";
 		    self.token = "";
 		    self.success = false;
 		},
-		parseResponse: function(obj) {
+		parseResponse: function (obj) {
 			var self = this;
 		    obj = JSON.parse(obj);
 		    var response = new self.formattedResponse();

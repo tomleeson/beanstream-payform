@@ -5,7 +5,6 @@
      * The View presents the model and notifies the Controller of UI events.
      */
     function FormView(model) {
-
         this._model = model;
         this.submit = new beanstream.Event(this);
     }
@@ -25,7 +24,7 @@
             this.form = this.script.parentNode;
             this.head = document.getElementsByTagName("head")[0];
             this.submitBtn = this.form.querySelector("input[type=submit]");
-            
+
             if (!this.submitBtn) {
                 this.submitBtn = this.form.querySelector("button[type=submit]");
             }
@@ -33,15 +32,16 @@
             this.domTargets = {};
 
             var fields = this._model.getFields();
+
             for (var field in fields) {
                 var input = field + "_input";
                 var error = field + "_error";
                 
-                this.domTargets[input] 
-                    = this.form.querySelector('[data-beanstream-target="'+input+'"]');
+                this.domTargets[input] =
+                    this.form.querySelector('[data-beanstream-target="'+input+'"]');
 
-                this.domTargets[error] 
-                    = this.form.querySelector('[data-beanstream-target="'+error+'"]');
+                this.domTargets[error] =
+                    this.form.querySelector('[data-beanstream-target="'+error+'"]');
 
                 // Set flags. If target missing for any input, ignore all input targets
                 this._model.setDomTargetsFound('inputs', true);
@@ -87,7 +87,7 @@
                     fileref.setAttribute("type", "text/css");
                     fileref.setAttribute("href", parameter);
                     
-                    if (typeof fileref != "undefined") {
+                    if (typeof fileref !== "undefined") {
                         self.head.appendChild(fileref);
                     }
                 },

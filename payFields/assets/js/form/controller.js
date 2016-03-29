@@ -10,7 +10,7 @@
         self._view = view;
 
         self._view.init();
-        self._view.submit.attach(function(sender, e) {
+        self._view.submit.attach(function (sender, e) {
             self.onSubmit(e);
         });
     }

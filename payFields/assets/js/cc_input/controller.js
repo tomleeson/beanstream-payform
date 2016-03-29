@@ -1,4 +1,4 @@
-(function(window) {
+(function (window) {
     'use strict';
 
     /**
@@ -23,7 +23,7 @@
         self._view.keydown.attach(function (sender, e) {
             // delete whole date str on delete any char
             if ((self._model.getFieldType() === "cc-exp") &&
-                (e.keyCode === 8 || e.keyCode === 46)) {
+                    (e.keyCode === 8 || e.keyCode === 46)) {
 
                 self._model.setValue("");
                 return;
@@ -61,7 +61,7 @@
 
                 self._model.setValue(args.inputValue);
 
-                if (self._model.getFieldType() === "cc-number"){
+                if (self._model.getFieldType() === "cc-number") {
                     var cardType = beanstream.Validator.getCardType(args.inputValue);
                     self.setCardType(cardType);
                     var isValid = beanstream.Validator.isValidCardNumber(args.inputValue);
@@ -97,23 +97,23 @@
             var onBlur = true;
             var str = self._model.getValue();
 
-            switch(self._model.getFieldType()) {
-                case "cc-number":
-                    var isValid = beanstream.Validator.isValidCardNumber(str, onBlur);
-                    self.setInputValidity(isValid);
-                    break;
-                case "cc-csc":
-                    var cardType = self._model.getCardType();
-                    var isValid = beanstream.Validator.isValidCvc(cardType, str, onBlur);
-                    self.setInputValidity(isValid);
-                    self._view.render("csc", "blur");
-                    break;
-                case "cc-exp":
-                    var isValid = beanstream.Validator.isValidExpiryDate(str, new Date(), onBlur);
-                    self.setInputValidity(isValid);
-                    break;
-                default:
-                    break;
+            switch (self._model.getFieldType()) {
+            case "cc-number":
+                var isValid = beanstream.Validator.isValidCardNumber(str, onBlur);
+                self.setInputValidity(isValid);
+                break;
+            case "cc-csc":
+                var cardType = self._model.getCardType();
+                var isValid = beanstream.Validator.isValidCvc(cardType, str, onBlur);
+                self.setInputValidity(isValid);
+                self._view.render("csc", "blur");
+                break;
+            case "cc-exp":
+                var isValid = beanstream.Validator.isValidExpiryDate(str, new Date(), onBlur);
+                self.setInputValidity(isValid);
+                break;
+            default:
+                break;
             }
         });
 
@@ -127,50 +127,54 @@
     }
 
     InputController.prototype = {
-        limitInput: function(str, selectedText) {
+        limitInput: function (str, selectedText) {
             var self = this;
 
-            str = str.replace(/\D/g,''); // remove non ints from string
-            
-            if(!str.length){
+            str = str.replace(/\D/g, ''); // remove non ints from string
+
+            if (!str.length) {
                 return;
             }
 
             // Remove any text selected in ui
             var currentStr = self._model.getValue();
             currentStr =  currentStr.replace(
-                            currentStr.substring(
-                                selectedText.start, selectedText.end), "");
+                currentStr.substring(
+                    selectedText.start,
+                    selectedText.end
+                ),
+                ""
+            );
 
             // insert new char at cursor position
-            var inputStr = [currentStr.slice( 0, 
-                                            selectedText.start), 
-                                            str, 
-                                            currentStr.slice(selectedText.start)].join('');
+            var inputStr = [currentStr.slice(0,
+                selectedText.start),
+                str,
+                currentStr.slice(selectedText.start)].join('');
 
             var newStr = inputStr;
 
-            switch(self._model.getFieldType()) {
-                case "cc-number":
-                    newStr = beanstream.Validator.formatCardNumber(newStr);
-                    var cardType = beanstream.Validator.getCardType(newStr);
-                    self.setCardType(cardType);
-                    var isValid = beanstream.Validator.isValidCardNumber(newStr);
-                    self.setInputValidity(isValid);
-                    break;
-                case "cc-csc":
-                    var cardType = self._model.getCardType();
-                    newStr = beanstream.Validator.limitLength(newStr, "cvcLength", self._model.getCardType());
-                    var isValid = beanstream.Validator.isValidCvc(cardType, newStr);
-                    self.setInputValidity(isValid);
-                    break;
-                case "cc-exp":
-                    newStr = beanstream.Validator.formatExpiry(newStr);
-                    var isValid = beanstream.Validator.isValidExpiryDate(newStr, new Date());
-                    self.setInputValidity(isValid);
-                    break;
-                default:
-                    break;
+            switch (self._model.getFieldType()) {
+            case "cc-number":
+                newStr = beanstream.Validator.formatCardNumber(newStr);
+                var cardType = beanstream.Validator.getCardType(newStr);
+                self.setCardType(cardType);
+                var isValid = beanstream.Validator.isValidCardNumber(newStr);
+                self.setInputValidity(isValid);
+                break;
+            case "cc-csc":
+                var cardType = self._model.getCardType();
+                newStr = beanstream.Validator.limitLength(newStr, "cvcLength", self._model.getCardType());
+                var isValid = beanstream.Validator.isValidCvc(cardType, newStr);
+                self.setInputValidity(isValid);
+                break;
+            case "cc-exp":
+                newStr = beanstream.Validator.formatExpiry(newStr);
+                var isValid = beanstream.Validator.isValidExpiryDate(newStr, new Date());
+                self.setInputValidity(isValid);
+                break;
+            default:
+                break;
             }
 
             // Calculate new caret position            
@@ -181,58 +185,57 @@
             match = new RegExp(match);
             var res = newStr.match(match);
 
-            if(res){
+            if (res) {
                 res = res[0].toString(); // find unformatted substring in formatted string
                 var caretPos = res.length;
                 self._model.setCaretPos(caretPos);
             }
 
             self._model.setValue(newStr);
-            
-            if(self._model.getIsValid()){
+
+            if (self._model.getIsValid()) {
                 var cardType = self._model.getCardType();
-                if(cardType !== "" || self._model.getFieldType() === "cc-exp" ){
+                if (cardType !== "" || self._model.getFieldType() === "cc-exp") {
                     self.updateFocus(newStr, self._model.getCardType());
                 }
-            }   
+            }
         },
-        setCardType: function(cardType) {
-            var self = this;  
-            var currentType = self._model.setCardType(cardType);   
+        setCardType: function (cardType) {
+            var self = this;
+            var currentType = self._model.setCardType(cardType);
 
-            if(cardType !== currentType ){
+            if (cardType !== currentType) {
                 self._model.setCardType(cardType); // update model for viey
                 self.cardTypeChanged.notify(cardType); //emit event for form
             }
         },
-        setInputValidity: function(args) {
-            var self = this;     
-            self._model.setError(args.error); 
+        setInputValidity: function (args) {
+            var self = this;
+            self._model.setError(args.error);
             self._model.setIsValid(args.isValid);
             self.inputValidityChanged.notify(args);
         },
-
-        updateFocus: function(str, cardType) {
+        updateFocus: function (str, cardType) {
             var self = this;
             var max;
             str = str.replace(/\s+/g, ''); //remove white spaces from string
             var len = str.length;
 
-            switch(self._model.getFieldType()) {
-                case "cc-number":
-                    max = beanstream.Validator.getMaxLength("length", cardType);
-                    break;
-                case "cc-csc":
-                    max = beanstream.Validator.getMaxLength("cvcLength", cardType);
-                    break;
-                case "cc-exp":
-                    max = 5; //Format: "MM / YY", minus white spacing
-                    break;
-                default:
-                    break;
+            switch (self._model.getFieldType()) {
+            case "cc-number":
+                max = beanstream.Validator.getMaxLength("length", cardType);
+                break;
+            case "cc-csc":
+                max = beanstream.Validator.getMaxLength("cvcLength", cardType);
+                break;
+            case "cc-exp":
+                max = 5; //Format: "MM / YY", minus white spacing
+                break;
+            default:
+                break;
             }
 
-            if(max === len){
+            if (max === len) {
                 self.inputComplete.notify();
             }
         }

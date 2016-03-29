@@ -49,7 +49,7 @@
                         _this._domParentElements.input.appendChild(inputFrag);
                     } else {
                         _this._domParentElements.form.appendChild(labelFrag);
-                        _this._domParentElements.form.appendChild(inputFrag);                       
+                        _this._domParentElements.form.appendChild(inputFrag);
                     }
 
                     if (parameter.domTargetsFound_error) {
@@ -69,7 +69,7 @@
                     // Do not reposition caret for date
                     if (_this._model.getFieldType() !== "cc-exp") {
                         var pos =  _this._model.getCaretPos();
-                         _this._domInputElement.setSelectionRange(pos, pos);
+                        _this._domInputElement.setSelectionRange(pos, pos);
                     }
                 },
                 cardType: function () {
@@ -162,7 +162,7 @@
             return frag;
         },
         getCaretOffset: function(el) {
-            http://stackoverflow.com/a/2897229/6011159
+            // http://stackoverflow.com/a/2897229/6011159
             var el = this._domInputElement;
             var pos = 0;
 
