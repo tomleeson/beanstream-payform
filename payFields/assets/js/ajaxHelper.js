@@ -15,17 +15,17 @@
     *                                                       expiry_month: "String - MM",
     *                                                       expiry_year: "String - YYYY" }
     *
-    * @param {Function} listenter. Peram1. Model Schema: {
+    * @param {Function} listener. Peram1. Model Schema: {
     *                                                       "token": "string",
     *                                                       "code": "string",
     *                                                       "version": 0,
     *                                                       "message": "string" }
     */
     AjaxHelper.prototype = {
-        getToken: function (data, listenter) {
+        getToken: function (data, listener) {
             console.log('getToken');
             var self = this;
-            self._listener = listenter;
+            self._listener = listener;
 
             var url = 'https://www.beanstream.com/scripts/tokenization/tokens';
             data = JSON.stringify(data);
