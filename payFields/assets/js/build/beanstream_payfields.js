@@ -1422,9 +1422,15 @@
             self.fireEvent('beanstream_inputValidityChanged', args);
         },
         fireEvent: function(title, eventDetail) {
+            var event = document.createEvent('Event');
+            event.initEvent(title, true, true);
+            event.eventDetail = eventDetail;
+            document.dispatchEvent(event);
+            /*
             var event = new CustomEvent(title);
             event.eventDetail = eventDetail;
             document.dispatchEvent(event);
+            */
         },
         /**
         * Gets card field values from model
