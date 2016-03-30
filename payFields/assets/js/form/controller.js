@@ -18,8 +18,8 @@
     FormController.prototype = {
         init: function () {
             var self = this;
-            self._view.render("injectStyles", "https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/style.css");
-            //self._view.render("injectStyles", "../assets/css/style.css");
+            self._view.render('injectStyles', 'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/style.css');
+            // self._view.render('injectStyles', '../assets/css/style.css');
             self.injectFields();
             self.fireEvent('beanstream_loaded');
         },
@@ -27,35 +27,45 @@
             var self = this;
             e.preventDefault();
 
-            var data = self.getFieldValues();
+            self.validateFields();
+            var fields = self.getFieldValues();
 
-            if (!beanstream.Helper.isEmpty(data)) {
-                self._view.render("enableSubmitButton", "false");
+            if (!beanstream.Helper.isEmpty(fields)) {
+                self._view.render('enableSubmitButton', 'false');
+
+                var data = { 'number': fields.number,
+                        'expiry_month': fields.expiryMonth,
+                        'expiry_year': fields.expiryYear,
+                        'cvd': fields.cvd };
 
                 var ajaxHelper = new beanstream.AjaxHelper();
                 ajaxHelper.getToken(data, function (args) {
-                    self._view.render("appendToken", args.token);
+                    if (args.success) {
+                        self._view.render('appendToken', args.token);
+                    } else {
+                        console.log('Warning: tokenisation failed. Code: ' + args.code + ', message: ' + args.message);
+                    }
 
                     if (this._model.getSubmitForm()) {
                         self._view.form.submit();
                     } else {
                         self.fireEvent('beanstream_tokenUpdated');
                     }
-                    self._view.render("enableSubmitButton", "true");
+                    self._view.render('enableSubmitButton', 'true');
                 }.bind(self));
             } else {
-                self._view.render("enableSubmitButton", "true");
+                self._view.render('enableSubmitButton', 'true');
             }
         },
         appendToken: function (form, value) {
-            var input = form.querySelector("input[name=singleUseToken]");
+            var input = form.querySelector('input[name=singleUseToken]');
 
             if (input) {
                 input.value = value;
             } else {
                 input = document.createElement('input');
-                input.type = "hidden";
-                input.name = "singleUseToken";
+                input.type = 'hidden';
+                input.name = 'singleUseToken';
                 input.value = value;
                 form.appendChild(input);
             }
@@ -67,17 +77,17 @@
 
             for (var field in fields) {
                 var domTargets = {};
-                if (this._model.getDomTargetsFound("inputs")) {
-                    domTargets.input = this._view.domTargets[field + "_input"];
+                if (this._model.getDomTargetsFound('inputs')) {
+                    domTargets.input = this._view.domTargets[field + '_input'];
                 }
-                if (this._model.getDomTargetsFound("errors")) {
-                    domTargets.error = this._view.domTargets[field + "_error"];
+                if (this._model.getDomTargetsFound('errors')) {
+                    domTargets.error = this._view.domTargets[field + '_error'];
                 }
                 domTargets.form = this._view.form;
 
                 var config = new Object;
-                config.domTargetsFound_input = this._model.getDomTargetsFound("inputs");
-                config.domTargetsFound_error = this._model.getDomTargetsFound("errors");
+                config.inputDomTargets = this._model.getDomTargetsFound('inputs');
+                config.errorDomTargets = this._model.getDomTargetsFound('errors');
                 config.id = field;
                 config.name = fields[field].name;
                 config.labelText = fields[field].labelText;
@@ -93,23 +103,23 @@
             }
 
             // register listener on controller for cardType changed
-            var field = this.fieldObjs.filter(function( f ) {
-                  return f.controller._config.id === "cc_number";
-                });
+            var field = this.fieldObjs.filter(function(f) {
+                return f.controller._config.id === 'ccNumber';
+            });
             field = field[0];
 
-            //attach listeners to new field
+            // attach listeners to new field
             var self = this;
 
-            if(field){
+            if (field) {
                 field.controller.cardTypeChanged.attach(function(sender, cardType) {
                     self.setCardType(cardType);
                 }.bind(self));
             }
-            
+
             for (field in this.fieldObjs) {
                 this.fieldObjs[field].controller.inputComplete.attach(function(sender) {
-                    self._view.render("setFocusNext", sender);
+                    self._view.render('setFocusNext', sender);
                 }.bind(self));
 
                 this.fieldObjs[field].controller.inputValidityChanged.attach(function(sender, args) {
@@ -117,13 +127,13 @@
                 }.bind(self));
             }
         },
-        setCardType: function(cardType) {
-            var field = this.fieldObjs.filter(function( f ) {
-                  return f.controller._config.id === "cc_cvv";
+        setCardType: function (cardType) {
+            var field = this.fieldObjs.filter(function(f) {
+                    return f.controller._config.id === 'ccCvv';
                 });
             field = field[0];
 
-            if(field){
+            if (field) {
                 field.controller._model.setCardType(cardType);
             }
         },
@@ -136,41 +146,56 @@
             event.eventDetail = eventDetail;
             document.dispatchEvent(event);
         },
+        /**
+        * Gets card field values from model
+        * Returns {} if invalid or empty
+        */
         getFieldValues: function() {
             var data = {};
 
-            var invalidFields = this.fieldObjs.filter(function( f ) {
-                  return f.controller._model.getIsValid() === false;
-                });
+            var invalidFields = this.fieldObjs.filter(function(f) {
+                return f.controller._model.getIsValid() === false;
+            });
 
-            var emptyFields = this.fieldObjs.filter(function( f ) {
-                  return f.controller._model.getValue() === "";
-                });
+            var emptyFields = this.fieldObjs.filter(function(f) {
+                return f.controller._model.getValue() === '';
+            });
 
-            if(invalidFields.length === 0 && emptyFields.length === 0) {
-                for(var i=0; i<this.fieldObjs.length; i++){
-                    switch(this.fieldObjs[i].controller._config.id) {
-                        case "cc_number":
+            if (invalidFields.length === 0 && emptyFields.length === 0) {
+                for (var i = 0; i < this.fieldObjs.length; i++) {
+                    switch (this.fieldObjs[i].controller._config.id) {
+                        case 'ccNumber': {
                             data.number = this.fieldObjs[i].controller._model.getValue();
                             break;
-                        case "cc_cvv":
+                        }
+                        case 'ccCvv': {
                             data.cvd = this.fieldObjs[i].controller._model.getValue();
                             break;
-                        case "cc_exp":
+                        }
+                        case 'ccExp': {
                             var str = this.fieldObjs[i].controller._model.getValue();
-                            var arr = str.split("/");
-                            data.expiry_month = arr[0].trim();
-                            data.expiry_year = "20" + arr[1].trim();
+                            var arr = str.split('/');
+                            data.expiryMonth = arr[0].trim();
+                            data.expiryYear = '20' + arr[1].trim();
                             break;
-                        default:
+                        }
+                        default: {
                             break;
+                        }
                     }
 
-                    this.fieldObjs[i].controller._model.setValue("");
+                    this.fieldObjs[i].controller._model.setValue('');
                 }
             }
 
             return data;
+        },
+        validateFields: function() {
+            var self = this;
+            var onBlur = true;
+            for (var i = 0; i < self.fieldObjs.length; i++) {
+                self.fieldObjs[i].controller.validate(onBlur);
+            }
         }
     };
 

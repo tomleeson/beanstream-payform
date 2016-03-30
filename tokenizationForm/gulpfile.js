@@ -5,52 +5,7 @@ var gulpProtractorAngular = require('gulp-angular-protractor');
 const jscs = require('gulp-jscs');
 
 /**
- * Concat JS files
- */
-gulp.task('concat', function() {
-    return gulp.src(['./assets/js/helper.js',
-                    './assets/js/validator.js',
-                    './assets/js/ajaxHelper.js',
-                    './assets/js/cc_input/model.js',
-                    './assets/js/cc_input/view.js',
-                    './assets/js/cc_input/controller.js',
-                    './assets/js/cc_input/template.js',
-                    './assets/js/form/model.js',
-                    './assets/js/form/view.js',
-                    './assets/js/form/controller.js',
-                    './assets/js/event.js',
-                    './assets/js/app.js'])
-    .pipe(concat('beanstream_payfields.js'))
-    .pipe(gulp.dest('./assets/js/build/'));
-});
-
-/**
- * Checks for formatting consistency as set in ./.jssrc file
- * Fixes errors
- */
-gulp.task('lint', ['pre-lint'], function() {
-    return gulp.src(['./assets/js/**/*.js'])
-        .pipe(jscs({ fix: true }))
-        .pipe(jscs.reporter())
-        .pipe(jscs.reporter('fail'))
-        .pipe(gulp.dest('./assets/js/'));
-});
-
-/**
- * Checks if there are any errors that jscs cannot resolve
- * The purpose is to run as a pre-task to 'lint'.
- * This is necessary as 'lint' is configured to try to fix errors.
- * If 'lint' cannot fix an error it saves an empty string to the src file - so we rin 'pre-lint'
- */
-gulp.task('pre-lint', function() {
-    return gulp.src(['./assets/js/**/*.js'])
-        .pipe(jscs({ fix: true }))
-        .pipe(jscs.reporter())
-        .pipe(jscs.reporter('fail'));
-});
-
-/**
- * Run unit test (karma) once and exit
+ * Run test once and exit
  */
 gulp.task('unit', function (done) {
     new Server({
@@ -69,8 +24,35 @@ gulp.task('tdd', function (done) {
 });
 
 /**
- * Run e2e test (protractor) once and exit
+ * Concat JS files
  */
+gulp.task('concat', function() {
+    return gulp.src(['./assets/js/form/model.js',
+                    './assets/js/form/view.js',
+                    './assets/js/form/controller.js',
+                    './assets/js/form/template.js',
+                    './assets/js/event.js',
+                    './assets/js/app.js'])
+    .pipe(concat('script.js'))
+    .pipe(gulp.dest('./assets/js/build/'));
+});
+
+// pre-lint task checks if there are any errors that jscs cannot resolve
+gulp.task('lint', ['pre-lint'], function() {
+    return gulp.src(['./assets/js/**/*.js'])
+        .pipe(jscs({ fix: true }))
+        .pipe(jscs.reporter())
+        .pipe(jscs.reporter('fail'))
+        .pipe(gulp.dest('./assets/js/'));
+});
+
+gulp.task('pre-lint', function() {
+    return gulp.src(['./assets/js/**/*.js'])
+        .pipe(jscs({ fix: true }))
+        .pipe(jscs.reporter())
+        .pipe(jscs.reporter('fail'));
+});
+
 gulp.task('e2e', function(callback) {
     gulp
         .src(['./tests/e2e/spec.js'])
@@ -85,7 +67,8 @@ gulp.task('e2e', function(callback) {
         .on('end', callback);
 });
 
-/**
- * Default task
- */
+// linting takes 1.4 s!
+// gulp.task('scripts', ['lint', 'concat']);
+gulp.task('scripts', ['concat']);
+
 gulp.task('default', ['tdd']);

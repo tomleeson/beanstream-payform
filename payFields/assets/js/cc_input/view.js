@@ -9,7 +9,7 @@
         this._template = template;
         this._domParentElements = domParentElements;
 
-        //this._domParentElement = domParentElements;
+        // this._domParentElement = domParentElements;
         if (domParentElements.form) {
             this._domParentElement = domParentElements.form;
         }
@@ -24,13 +24,13 @@
 
         // attach model Listeners
         this._model.valueChanged.attach(function () {
-            _this.render("value", "");
+            _this.render('value', '');
         });
         this._model.cardTypeChanged.attach(function () {
-            _this.render("cardType", "");
+            _this.render('cardType', '');
         });
         this._model.validityChanged.attach(function () {
-            _this.render("isValid", "");
+            _this.render('isValid', '');
         });
     }
 
@@ -44,7 +44,7 @@
                     var labelFrag = _this.createDocFrag(template.label);
                     var errorFrag = _this.createDocFrag(template.error);
 
-                    if (parameter.domTargetsFound_input) {
+                    if (parameter.inputDomTargets) {
                         // If a dom target is found do not append label
                         _this._domParentElements.input.appendChild(inputFrag);
                     } else {
@@ -52,9 +52,9 @@
                         _this._domParentElements.form.appendChild(inputFrag);
                     }
 
-                    if (parameter.domTargetsFound_error) {
+                    if (parameter.errorDomTargets) {
                         _this._domParentElements.error.appendChild(errorFrag);
-                    } else if (!parameter.domTargetsFound_error && parameter.domTargetsFound_input) {
+                    } else if (!parameter.errorDomTargets && parameter.inputDomTargets) {
                         _this._domParentElements.input.appendChild(errorFrag);
                     } else {
                         _this._domParentElements.form.appendChild(errorFrag);
@@ -67,7 +67,7 @@
                     _this._domInputElement.value = _this._model.getValue();
 
                     // Do not reposition caret for date
-                    if (_this._model.getFieldType() !== "cc-exp") {
+                    if (_this._model.getFieldType() !== 'cc-exp') {
                         var pos =  _this._model.getCaretPos();
                         _this._domInputElement.setSelectionRange(pos, pos);
                     }
@@ -75,14 +75,18 @@
                 cardType: function () {
                     var fieldType = _this._model.getFieldType();
 
-                    if (fieldType === "cc-number") {
+                    if (fieldType === 'cc-number') {
                         var cardType = _this._model.getCardType();
 
                         if (cardType) {
-                            if (cardType === "maestro") cardType = "mastercard";
-                            if (cardType === "visaelectron")  cardType = "visa";
+                            if (cardType === 'maestro') {
+                                cardType = 'mastercard';
+                            }
+                            if (cardType === 'visaelectron') {
+                                cardType = 'visa';
+                            }
                             _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/' + cardType + '.png)';
-                        } else{
+                        } else {
                             _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/card.png)';
                         }
                     }
@@ -90,19 +94,20 @@
                 csc: function() {
                     var fieldType = _this._model.getFieldType();
 
-                    if(fieldType === "cc-csc"){
+                    if (fieldType === 'cc-csc') {
                         var cardType = _this._model.getCardType();
+                        var onBlur = parameter;
 
-                        if(cardType && cardType === "amex"){
-                            if(parameter==="focus"){
+                        if (cardType && cardType === 'amex') {
+                            if (!onBlur) {
                                 _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/cvc_hint_color_amex.png)';
-                            } else{
+                            } else {
                                 _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/cvc_hint_mono_amex.png)';
                             }
-                        } else if(cardType){
-                            if(parameter==="focus"){
+                        } else if (cardType) {
+                            if (!onBlur) {
                                 _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/cvc_hint_color.png)';
-                            } else{
+                            } else {
                                 _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/cvc_hint_mono.png)';
                             }
                         }
@@ -111,10 +116,10 @@
                 isValid: function() {
                     var isValid = _this._model.getIsValid();
 
-                    if(isValid){
-                        _this._domInputElement.className = _this._domInputElement.className.replace(" beanstream_invalid", "");
-                    } else{
-                        _this._domInputElement.className += " beanstream_invalid";
+                    if (isValid) {
+                        _this._domInputElement.className = _this._domInputElement.className.replace(' beanstream_invalid', '');
+                    } else {
+                        _this._domInputElement.className += ' beanstream_invalid';
                     }
                     _this._domErrorElement.innerHTML = _this._model.getError();
                 }
@@ -124,7 +129,7 @@
         },
         cacheDom: function(id) {
             this._domInputElement = this._domParentElements.form.querySelector('[data-beanstream-id=' + id + ']');
-            this._domErrorElement = this._domParentElements.form.querySelector('[data-beanstream-id="' + id + '_error"]');
+            this._domErrorElement = this._domParentElements.form.querySelector('[data-beanstream-id=' + id + '_error]');
         },
         attachDomListeners: function() {
             var _this = this;
@@ -135,7 +140,7 @@
             }, false);
             this._domInputElement.addEventListener('keyup', function(e) {
                 e = e || window.event;
-                var args = {event: e, inputValue: _this._domInputElement.value};
+                var args = { event: e, inputValue: _this._domInputElement.value };
                 _this.keyup.notify(args);
             }, false);
             this._domInputElement.addEventListener('paste', function(e) {
@@ -153,8 +158,8 @@
         },
         createDocFrag: function(htmlStr) {
             // http://stackoverflow.com/questions/814564/inserting-html-elements-with-javascript
-            var frag = document.createDocumentFragment(),
-                temp = document.createElement('div');
+            var frag = document.createDocumentFragment();
+            var temp = document.createElement('div');
             temp.innerHTML = htmlStr;
             while (temp.firstChild) {
                 frag.appendChild(temp.firstChild);
@@ -166,7 +171,7 @@
             var el = this._domInputElement;
             var pos = 0;
 
-              // IE Support
+            // IE Support
             if (document.selection) {
                 var sel = document.selection.createRange();
                 sel.moveStart('character', -el.value.length);
@@ -174,7 +179,7 @@
             }
 
             // Firefox support
-            else if (el.selectionStart || el.selectionStart == '0'){
+            else if (el.selectionStart || el.selectionStart == '0') {
                 pos = el.selectionStart;
             }
 

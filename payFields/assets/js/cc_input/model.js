@@ -5,11 +5,11 @@
      * The Model stores data and notifies the View of changes.
      */
     function InputModel() {
-        this._value = "";
+        this._value = '';
         this._isValid = true;
-        this._cardType = "";
-        this._fieldType = "";
-        this._error = "";
+        this._cardType = '';
+        this._fieldType = '';
+        this._error = '';
         this._caretPos = 0;
 
         this.valueChanged = new beanstream.Event(this);

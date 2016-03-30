@@ -5,30 +5,30 @@
      * The Model stores data and notifies the View of changes.
      */
     function FormModel() {
-        this._token = "";
+        this._token = '';
 
         this._fields = {
-            cc_number: {
-                name: "cardnumber",
-                labelText: "Credit Card Number",
-                placeholder: "",
-                autocomplete: "cc-number"
+            ccNumber: {
+                name: 'cardnumber',
+                labelText: 'Credit Card Number',
+                placeholder: '',
+                autocomplete: 'cc-number'
             },
-            cc_cvv: {
-                name: "cvc",
-                labelText: "CVC",
-                placeholder: "",
-                autocomplete: "cc-csc"
+            ccCvv: {
+                name: 'cvc',
+                labelText: 'CVC',
+                placeholder: '',
+                autocomplete: 'cc-csc'
             },
-            cc_exp: {
-                name: "cc-exp",
-                labelText: "Expires MM/YY",
-                placeholder: "",
-                autocomplete: "cc-exp"
+            ccExp: {
+                name: 'cc-exp',
+                labelText: 'Expires MM/YY',
+                placeholder: '',
+                autocomplete: 'cc-exp'
             }
         };
 
-        this._domTargetsFound = {inputs: false, errors: false};
+        this._domTargetsFound = { inputs: false, errors: false };
         this.tokenChanged = new beanstream.Event(this);
         this.domTargetsFoundChanged = new beanstream.Event(this);
     }

@@ -1,6 +1,10 @@
 (function (window) {
     'use strict';
 
+    /**
+    * Simple event object that is encapsulated in most other objects
+    * @param {this} sender
+    */
     function Event(sender) {
         this._sender = sender;
         this._listeners = [];
