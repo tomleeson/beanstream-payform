@@ -44,14 +44,14 @@ You can configure this display of the form by setting placeholders for the field
 <script src="https://tbd.com/Beanstream_PayFields.js"
         data-submit-form="false"></script>
 
-<div data-beanstream-target="cc_number_input"></div>
-<div data-beanstream-target="cc_number_error"></div>
+<div data-beanstream-target="ccNumber_input"></div>
+<div data-beanstream-target="ccNumber_error"></div>
 
-<div data-beanstream-target="cc_exp_input"></div>
-<div data-beanstream-target="cc_exp_error"></div>
+<div data-beanstream-target="ccExp_input"></div>
+<div data-beanstream-target="ccExp_error"></div>
 
-<div data-beanstream-target="cc_cvv_input"></div>
-<div data-beanstream-target="cc_cvv_error"></div>
+<div data-beanstream-target="ccCvv_input"></div>
+<div data-beanstream-target="ccCvv_error"></div>
 
 <button type="submit">Submit</button>
 </form>

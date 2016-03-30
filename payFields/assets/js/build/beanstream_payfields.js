@@ -932,7 +932,6 @@
                 }
             }
 
-            // self._model.setValue(newStr);
             var onBlur = false;
             self.validate(onBlur, newStr);
 
@@ -1524,11 +1523,6 @@
     * 1. Injects card fields into DOM
     * 2. OnSubmit tokenises field content, clears them and appends hidden field to form
     * 3. Fires 'beanstream_tokenUpdated' event to document if 'data-submit-form' attribute is set to false
-    */
-
-    /**
-    * ToDo:
-    * 1. Validate input and show errors onSubmit
     */
 
     console.log('Starting Beanstream Payfields...');
