@@ -5,25 +5,6 @@ var gulpProtractorAngular = require('gulp-angular-protractor');
 const jscs = require('gulp-jscs');
 
 /**
- * Run test once and exit
- */
-gulp.task('unit', function (done) {
-    new Server({
-        configFile: __dirname + '/tests/karma.conf.js',
-        singleRun: true
-    }, done).start();
-});
-
-/**
- * Watch for file changes and re-run tests on each change
- */
-gulp.task('tdd', function (done) {
-    new Server({
-        configFile: __dirname + '/tests/karma.conf.js'
-    }, done).start();
-});
-
-/**
  * Concat JS files
  */
 gulp.task('concat', function() {
@@ -43,7 +24,10 @@ gulp.task('concat', function() {
     .pipe(gulp.dest('./assets/js/build/'));
 });
 
-// pre-lint task checks if there are any errors that jscs cannot resolve
+/**
+ * Checks for formatting consistency as set in ./.jssrc file
+ * Fixes errors
+ */
 gulp.task('lint', ['pre-lint'], function() {
     return gulp.src(['./assets/js/**/*.js'])
         .pipe(jscs({ fix: true }))
@@ -52,6 +36,12 @@ gulp.task('lint', ['pre-lint'], function() {
         .pipe(gulp.dest('./assets/js/'));
 });
 
+/**
+ * Checks if there are any errors that jscs cannot resolve
+ * The purpose is to run as a pre-task to 'lint'.
+ * This is necessary as 'lint' is configured to try to fix errors.
+ * If 'lint' cannot fix an error it saves an empty string to the src file - so we rin 'pre-lint'
+ */
 gulp.task('pre-lint', function() {
     return gulp.src(['./assets/js/**/*.js'])
         .pipe(jscs({ fix: true }))
@@ -59,6 +49,28 @@ gulp.task('pre-lint', function() {
         .pipe(jscs.reporter('fail'));
 });
 
+/**
+ * Run unit test (karma) once and exit
+ */
+gulp.task('unit', function (done) {
+    new Server({
+        configFile: __dirname + '/tests/karma.conf.js',
+        singleRun: true
+    }, done).start();
+});
+
+/**
+ * Watch for file changes and re-run tests on each change
+ */
+gulp.task('tdd', function (done) {
+    new Server({
+        configFile: __dirname + '/tests/karma.conf.js'
+    }, done).start();
+});
+
+/**
+ * Run e2e test (protractor) once and exit
+ */
 gulp.task('e2e', function(callback) {
     gulp
         .src(['./tests/e2e/spec.js'])
@@ -73,8 +85,7 @@ gulp.task('e2e', function(callback) {
         .on('end', callback);
 });
 
-// linting takes 1.4 s!
-// gulp.task('scripts', ['lint', 'concat']);
-gulp.task('scripts', ['concat']);
-
+/**
+ * Default task
+ */
 gulp.task('default', ['tdd']);

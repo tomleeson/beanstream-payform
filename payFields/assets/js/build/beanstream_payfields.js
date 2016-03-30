@@ -1,7 +1,17 @@
 (function (window) {
     'use strict';
 
+    /**
+    * Library containing shared functions
+    */
     var Helper = (function () {
+
+        /**
+         * Checks if an event was triggered by a navigation key
+         * This function is intended to avoid preventing events related to keyboard navigation
+         * @param {Event} event
+         * @return {Boolean}
+         */
         function isNonInputKey(event) {
 
             if (event.ctrlKey || event.metaKey
@@ -22,12 +32,13 @@
             return false;
         }
 
-        function deleteSelectedText(e) {
-            e.target.value = e.target.value.replace(e.target.value.substring(e.target.selectionStart, e.target.selectionEnd), '');
-        }
-
+        /**
+         * Checks id an object is empty
+         * Source: http://stackoverflow.com/a/814649
+         * @param {String} htmlStr
+         * @return {DocumentFragment object} frag
+         */
         function createDocFrag(htmlStr) {
-            // http://stackoverflow.com/questions/814564/inserting-html-elements-with-javascript
             var frag = document.createDocumentFragment();
             var temp = document.createElement('div');
             temp.innerHTML = htmlStr;
@@ -37,8 +48,13 @@
             return frag;
         }
 
+        /**
+         * Checks id an object is empty
+         * Source: http://stackoverflow.com/a/4994244/6011159
+         * @param {Object} obj
+         * @return {Boolean}
+         */
         function isEmpty(obj) {
-            // http://stackoverflow.com/a/4994244/6011159
             if (obj === null) {
                 return true;
             }
@@ -60,7 +76,6 @@
 
         return {
             isNonInputKey: isNonInputKey,
-            deleteSelectedText: deleteSelectedText,
             createDocFrag: createDocFrag,
             isEmpty: isEmpty
         };
@@ -409,29 +424,27 @@
 (function (window) {
     'use strict';
 
+    /**
+    * Simple object to encapsulate functionality related calling the REST API
+    */
     function AjaxHelper() {
     }
 
+    /**
+    * Tokenises card data and returns token to callback function passed in
+    * @param {Object} data.                 Model Schema: {
+    *                                                       number: "String",
+    *                                                       cvd: "String",
+    *                                                       expiry_month: "String - MM",
+    *                                                       expiry_year: "String - YYYY" }
+    *
+    * @param {Function} listenter. Peram1. Model Schema: {
+    *                                                       "token": "string",
+    *                                                       "code": "string",
+    *                                                       "version": 0,
+    *                                                       "message": "string" }
+    */
     AjaxHelper.prototype = {
-        makePayment: function (auth, data, listenter) {
-            var self = this;
-            self._listener = listenter;
-
-            var url = 'https://www.beanstream.com/api/v1/payments';
-
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function () {
-                if (xhttp.readyState === 4 && xhttp.status === 200) {
-                    console.log(xhttp.responseText);
-                    self._listener(xhttp.responseText);
-                }
-            }.bind(self);
-
-            xhttp.open('POST', url, true);
-            xhttp.setRequestHeader('Content-type', 'application/json');
-            xhttp.setRequestHeader('Authorization', auth);
-            xhttp.send(JSON.stringify(data));
-        },
         getToken: function (data, listenter) {
             console.log('getToken');
             var self = this;
@@ -451,6 +464,7 @@
                 xhttp.open('POST', url, true);
                 xhttp.send(data);
             } else if (window.XDomainRequest) {
+
                 // https required for POST CORS requests in XDomainRequest
                 // XDomainRequest required to support  IE 8 and 9
                 // https://developer.mozilla.org/en-US/docs/Web/API/XDomainRequest
@@ -495,9 +509,12 @@
             if (obj.code === 1) {
                 response.success = true;
                 response.token = obj.token;
-            } else {
-                response.message = obj.message;
             }
+
+            response.code = obj.code;
+            response.message = obj.message;
+            response.token = obj.token;
+
             return response;
         }
     };
@@ -677,15 +694,16 @@
 
                     if (fieldType === 'cc-csc') {
                         var cardType = _this._model.getCardType();
+                        var onBlur = parameter;
 
                         if (cardType && cardType === 'amex') {
-                            if (parameter === 'focus') {
+                            if (!onBlur) {
                                 _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/cvc_hint_color_amex.png)';
                             } else {
                                 _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/cvc_hint_mono_amex.png)';
                             }
                         } else if (cardType) {
-                            if (parameter === 'focus') {
+                            if (!onBlur) {
                                 _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/cvc_hint_color.png)';
                             } else {
                                 _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/cvc_hint_mono.png)';
@@ -835,23 +853,9 @@
 
                 self._model.setValue(args.inputValue);
 
-                if (self._model.getFieldType() === 'cc-number') {
-                    var cardType = beanstream.Validator.getCardType(args.inputValue);
-                    self.setCardType(cardType);
-                    var isValid = beanstream.Validator.isValidCardNumber(args.inputValue);
-                    self.setInputValidity(isValid);
-                }
-
-                if (self._model.getFieldType() === 'cc-exp') {
-                    var isValid = beanstream.Validator.isValidExpiryDate(args.inputValue, new Date());
-                    self.setInputValidity(isValid);
-                }
-
-                if (self._model.getFieldType() === 'cc-csc') {
-                    var cardType = self._model.getCardType();
-                    var isValid = beanstream.Validator.isValidCvc(cardType, args.inputValue);
-                    self.setInputValidity(isValid);
-                }
+                var onBlur = false;
+                var value = self._model.getValue();
+                self.validate(onBlur, value);
             }
         });
 
@@ -869,37 +873,17 @@
 
         self._view.blur.attach(function (sender, e) {
             var onBlur = true;
-            var str = self._model.getValue();
+            var value = self._model.getValue();
+            self.validate(onBlur, value);
 
-            switch (self._model.getFieldType()) {
-                case 'cc-number': {
-                    var isValid = beanstream.Validator.isValidCardNumber(str, onBlur);
-                    self.setInputValidity(isValid);
-                    break;
-                }
-                case 'cc-csc': {
-                    var cardType = self._model.getCardType();
-                    var isValid = beanstream.Validator.isValidCvc(cardType, str, onBlur);
-                    self.setInputValidity(isValid);
-                    self._view.render('csc', 'blur');
-                    break;
-                }
-                case 'cc-exp': {
-                    var isValid = beanstream.Validator.isValidExpiryDate(str, new Date(), onBlur);
-                    self.setInputValidity(isValid);
-                    break;
-                }
-                default: {
-                    break;
-                }
-            }
         });
 
         self._view.focus.attach(function (sender, e) {
             var str = self._model.getValue();
 
             if (self._model.getFieldType() === 'cc-csc') {
-                self._view.render('csc', 'focus');
+                var onBlur = false;
+                self._view.render('csc', false);
             }
         });
     }
@@ -920,9 +904,7 @@
                 currentStr.substring(
                     selectedText.start,
                     selectedText.end
-                ),
-                ''
-            );
+                ), '');
 
             // insert new char at cursor position
             var inputStr = [currentStr.slice(0,
@@ -935,29 +917,24 @@
             switch (self._model.getFieldType()) {
                 case 'cc-number': {
                     newStr = beanstream.Validator.formatCardNumber(newStr);
-                    var cardType = beanstream.Validator.getCardType(newStr);
-                    self.setCardType(cardType);
-                    var isValid = beanstream.Validator.isValidCardNumber(newStr);
-                    self.setInputValidity(isValid);
                     break;
                 }
                 case 'cc-csc': {
-                    var cardType = self._model.getCardType();
                     newStr = beanstream.Validator.limitLength(newStr, 'cvcLength', self._model.getCardType());
-                    var isValid = beanstream.Validator.isValidCvc(cardType, newStr);
-                    self.setInputValidity(isValid);
                     break;
                 }
                 case 'cc-exp': {
                     newStr = beanstream.Validator.formatExpiry(newStr);
-                    var isValid = beanstream.Validator.isValidExpiryDate(newStr, new Date());
-                    self.setInputValidity(isValid);
                     break;
                 }
                 default: {
                     break;
                 }
             }
+
+            // self._model.setValue(newStr);
+            var onBlur = false;
+            self.validate(onBlur, newStr);
 
             // Calculate new caret position
             var caretPos = selectedText.start + str.length; // get caret pos on original string
@@ -1024,6 +1001,38 @@
             if (max === len) {
                 self.inputComplete.notify();
             }
+        },
+        validate: function (onBlur, value) {
+            var self = this;
+            if (value === undefined) {
+                value = self._model.getValue();
+            }
+
+            switch (self._model.getFieldType()) {
+                case 'cc-number': {
+                    var cardType = beanstream.Validator.getCardType(value);
+                    self.setCardType(cardType);
+                    var isValid = beanstream.Validator.isValidCardNumber(value, onBlur);
+                    self.setInputValidity(isValid);
+                    break;
+                }
+                case 'cc-csc': {
+                    var cardType = self._model.getCardType();
+                    var isValid = beanstream.Validator.isValidCvc(cardType, value, onBlur);
+                    self.setInputValidity(isValid);
+                    self._view.render('csc', onBlur);
+                    break;
+                }
+                case 'cc-exp': {
+                    var isValid = beanstream.Validator.isValidExpiryDate(value, new Date(), onBlur);
+                    self.setInputValidity(isValid);
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+
         }
     };
 
@@ -1299,14 +1308,24 @@
             var self = this;
             e.preventDefault();
 
-            var data = self.getFieldValues();
+            self.validateFields();
+            var fields = self.getFieldValues();
 
-            if (!beanstream.Helper.isEmpty(data)) {
+            if (!beanstream.Helper.isEmpty(fields)) {
                 self._view.render('enableSubmitButton', 'false');
+
+                var data = { 'number': fields.number,
+                        'expiry_month': fields.expiryMonth,
+                        'expiry_year': fields.expiryYear,
+                        'cvd': fields.cvd };
 
                 var ajaxHelper = new beanstream.AjaxHelper();
                 ajaxHelper.getToken(data, function (args) {
-                    self._view.render('appendToken', args.token);
+                    if (args.success) {
+                        self._view.render('appendToken', args.token);
+                    } else {
+                        console.log('Warning: tokenisation failed. Code: ' + args.code + ', message: ' + args.message);
+                    }
 
                     if (this._model.getSubmitForm()) {
                         self._view.form.submit();
@@ -1408,6 +1427,10 @@
             event.eventDetail = eventDetail;
             document.dispatchEvent(event);
         },
+        /**
+        * Gets card field values from model
+        * Returns {} if invalid or empty
+        */
         getFieldValues: function() {
             var data = {};
 
@@ -1447,6 +1470,13 @@
             }
 
             return data;
+        },
+        validateFields: function() {
+            var self = this;
+            var onBlur = true;
+            for (var i = 0; i < self.fieldObjs.length; i++) {
+                self.fieldObjs[i].controller.validate(onBlur);
+            }
         }
     };
 
@@ -1458,6 +1488,10 @@
 (function (window) {
     'use strict';
 
+    /**
+    * Simple event object that is encapsulated in most other objects
+    * @param {this} sender
+    */
     function Event(sender) {
         this._sender = sender;
         this._listeners = [];
@@ -1483,6 +1517,19 @@
 
 (function () {
     'use strict';
+
+    /**
+    * Entry point for the Payfields app
+    * Functionality:
+    * 1. Injects card fields into DOM
+    * 2. OnSubmit tokenises field content, clears them and appends hidden field to form
+    * 3. Fires 'beanstream_tokenUpdated' event to document if 'data-submit-form' attribute is set to false
+    */
+
+    /**
+    * ToDo:
+    * 1. Validate input and show errors onSubmit
+    */
 
     console.log('Starting Beanstream Payfields...');
 

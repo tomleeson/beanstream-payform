@@ -1,7 +1,17 @@
 (function (window) {
     'use strict';
 
+    /**
+    * Library containing shared functions
+    */
     var Helper = (function () {
+
+        /**
+         * Checks if an event was triggered by a navigation key
+         * This function is intended to avoid preventing events related to keyboard navigation
+         * @param {Event} event
+         * @return {Boolean}
+         */
         function isNonInputKey(event) {
 
             if (event.ctrlKey || event.metaKey
@@ -22,12 +32,13 @@
             return false;
         }
 
-        function deleteSelectedText(e) {
-            e.target.value = e.target.value.replace(e.target.value.substring(e.target.selectionStart, e.target.selectionEnd), '');
-        }
-
+        /**
+         * Checks id an object is empty
+         * Source: http://stackoverflow.com/a/814649
+         * @param {String} htmlStr
+         * @return {DocumentFragment object} frag
+         */
         function createDocFrag(htmlStr) {
-            // http://stackoverflow.com/questions/814564/inserting-html-elements-with-javascript
             var frag = document.createDocumentFragment();
             var temp = document.createElement('div');
             temp.innerHTML = htmlStr;
@@ -37,8 +48,13 @@
             return frag;
         }
 
+        /**
+         * Checks id an object is empty
+         * Source: http://stackoverflow.com/a/4994244/6011159
+         * @param {Object} obj
+         * @return {Boolean}
+         */
         function isEmpty(obj) {
-            // http://stackoverflow.com/a/4994244/6011159
             if (obj === null) {
                 return true;
             }
@@ -60,7 +76,6 @@
 
         return {
             isNonInputKey: isNonInputKey,
-            deleteSelectedText: deleteSelectedText,
             createDocFrag: createDocFrag,
             isEmpty: isEmpty
         };

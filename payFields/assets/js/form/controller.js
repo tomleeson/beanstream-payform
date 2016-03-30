@@ -27,14 +27,24 @@
             var self = this;
             e.preventDefault();
 
-            var data = self.getFieldValues();
+            self.validateFields();
+            var fields = self.getFieldValues();
 
-            if (!beanstream.Helper.isEmpty(data)) {
+            if (!beanstream.Helper.isEmpty(fields)) {
                 self._view.render('enableSubmitButton', 'false');
+
+                var data = { 'number': fields.number,
+                        'expiry_month': fields.expiryMonth,
+                        'expiry_year': fields.expiryYear,
+                        'cvd': fields.cvd };
 
                 var ajaxHelper = new beanstream.AjaxHelper();
                 ajaxHelper.getToken(data, function (args) {
-                    self._view.render('appendToken', args.token);
+                    if (args.success) {
+                        self._view.render('appendToken', args.token);
+                    } else {
+                        console.log('Warning: tokenisation failed. Code: ' + args.code + ', message: ' + args.message);
+                    }
 
                     if (this._model.getSubmitForm()) {
                         self._view.form.submit();
@@ -136,6 +146,10 @@
             event.eventDetail = eventDetail;
             document.dispatchEvent(event);
         },
+        /**
+        * Gets card field values from model
+        * Returns {} if invalid or empty
+        */
         getFieldValues: function() {
             var data = {};
 
@@ -175,6 +189,13 @@
             }
 
             return data;
+        },
+        validateFields: function() {
+            var self = this;
+            var onBlur = true;
+            for (var i = 0; i < self.fieldObjs.length; i++) {
+                self.fieldObjs[i].controller.validate(onBlur);
+            }
         }
     };
 

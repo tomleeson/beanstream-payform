@@ -1,29 +1,27 @@
 (function (window) {
     'use strict';
 
+    /**
+    * Simple object to encapsulate functionality related calling the REST API
+    */
     function AjaxHelper() {
     }
 
+    /**
+    * Tokenises card data and returns token to callback function passed in
+    * @param {Object} data.                 Model Schema: {
+    *                                                       number: "String",
+    *                                                       cvd: "String",
+    *                                                       expiry_month: "String - MM",
+    *                                                       expiry_year: "String - YYYY" }
+    *
+    * @param {Function} listenter. Peram1. Model Schema: {
+    *                                                       "token": "string",
+    *                                                       "code": "string",
+    *                                                       "version": 0,
+    *                                                       "message": "string" }
+    */
     AjaxHelper.prototype = {
-        makePayment: function (auth, data, listenter) {
-            var self = this;
-            self._listener = listenter;
-
-            var url = 'https://www.beanstream.com/api/v1/payments';
-
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function () {
-                if (xhttp.readyState === 4 && xhttp.status === 200) {
-                    console.log(xhttp.responseText);
-                    self._listener(xhttp.responseText);
-                }
-            }.bind(self);
-
-            xhttp.open('POST', url, true);
-            xhttp.setRequestHeader('Content-type', 'application/json');
-            xhttp.setRequestHeader('Authorization', auth);
-            xhttp.send(JSON.stringify(data));
-        },
         getToken: function (data, listenter) {
             console.log('getToken');
             var self = this;
@@ -43,6 +41,7 @@
                 xhttp.open('POST', url, true);
                 xhttp.send(data);
             } else if (window.XDomainRequest) {
+
                 // https required for POST CORS requests in XDomainRequest
                 // XDomainRequest required to support  IE 8 and 9
                 // https://developer.mozilla.org/en-US/docs/Web/API/XDomainRequest
@@ -87,9 +86,12 @@
             if (obj.code === 1) {
                 response.success = true;
                 response.token = obj.token;
-            } else {
-                response.message = obj.message;
             }
+
+            response.code = obj.code;
+            response.message = obj.message;
+            response.token = obj.token;
+
             return response;
         }
     };
