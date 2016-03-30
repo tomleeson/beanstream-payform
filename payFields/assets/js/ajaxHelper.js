@@ -9,7 +9,7 @@
             var self = this;
             self._listener = listenter;
 
-            var url = "https://www.beanstream.com/api/v1/payments";
+            var url = 'https://www.beanstream.com/api/v1/payments';
 
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
@@ -19,17 +19,17 @@
                 }
             }.bind(self);
 
-            xhttp.open("POST", url, true);
-            xhttp.setRequestHeader("Content-type", "application/json");
-            xhttp.setRequestHeader("Authorization", auth);
+            xhttp.open('POST', url, true);
+            xhttp.setRequestHeader('Content-type', 'application/json');
+            xhttp.setRequestHeader('Authorization', auth);
             xhttp.send(JSON.stringify(data));
         },
         getToken: function (data, listenter) {
-            console.log("getToken");
+            console.log('getToken');
             var self = this;
             self._listener = listenter;
 
-            var url = "https://www.beanstream.com/scripts/tokenization/tokens";
+            var url = 'https://www.beanstream.com/scripts/tokenization/tokens';
             data = JSON.stringify(data);
 
             if (window.XMLHttpRequest) {
@@ -40,17 +40,17 @@
                     }
                 }.bind(self);
 
-                xhttp.open("POST", url, true);
+                xhttp.open('POST', url, true);
                 xhttp.send(data);
             } else if (window.XDomainRequest) {
-                //https required for POST CORS requests in XDomainRequest
-                //XDomainRequest required to support  IE 8 and 9
-                //https://developer.mozilla.org/en-US/docs/Web/API/XDomainRequest
-                //https required for POST CORS requests in XDomainRequest
+                // https required for POST CORS requests in XDomainRequest
+                // XDomainRequest required to support  IE 8 and 9
+                // https://developer.mozilla.org/en-US/docs/Web/API/XDomainRequest
+                // https required for POST CORS requests in XDomainRequest
 
-                if (window.location.protocol === "https:") {
+                if (window.location.protocol === 'https:') {
                     var xdr = new XDomainRequest();
-                    xdr.open("get", url);
+                    xdr.open('get', url);
 
                     xdr.onload = function () {
                         self._listener(self.parseResponse(xdr.responseText));
@@ -62,21 +62,21 @@
                 } else {
                     var response = new self.formattedResponse();
                     response.code = 5;
-                    response.message = "HTTPS connection required in Internet Explorer 9 and below";
+                    response.message = 'HTTPS connection required in Internet Explorer 9 and below';
                     self._listener(response);
                 }
             } else {
                 var response = new self.formattedResponse();
                 response.code = 6;
-                response.message = "Unsupported browser";
+                response.message = 'Unsupported browser';
                 self._listener(response);
             }
         },
         formattedResponse: function () {
             var self = this;
-            self.code = "";
-            self.message = "";
-            self.token = "";
+            self.code = '';
+            self.message = '';
+            self.token = '';
             self.success = false;
         },
         parseResponse: function (obj) {

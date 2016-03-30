@@ -22,11 +22,11 @@
             var scripts = document.getElementsByTagName('script');
             this.script = scripts[scripts.length - 1];
             this.form = this.script.parentNode;
-            this.head = document.getElementsByTagName("head")[0];
-            this.submitBtn = this.form.querySelector("input[type=submit]");
+            this.head = document.getElementsByTagName('head')[0];
+            this.submitBtn = this.form.querySelector('input[type=submit]');
 
             if (!this.submitBtn) {
-                this.submitBtn = this.form.querySelector("button[type=submit]");
+                this.submitBtn = this.form.querySelector('button[type=submit]');
             }
 
             this.domTargets = {};
@@ -34,23 +34,23 @@
             var fields = this._model.getFields();
 
             for (var field in fields) {
-                var input = field + "_input";
-                var error = field + "_error";
-                
+                var input = field + '_input';
+                var error = field + '_error';
+
                 this.domTargets[input] =
-                    this.form.querySelector('[data-beanstream-target="'+input+'"]');
+                    this.form.querySelector('[data-beanstream-target="' + input + '"]');
 
                 this.domTargets[error] =
-                    this.form.querySelector('[data-beanstream-target="'+error+'"]');
+                    this.form.querySelector('[data-beanstream-target="' + error + '"]');
 
                 // Set flags. If target missing for any input, ignore all input targets
                 this._model.setDomTargetsFound('inputs', true);
                 this._model.setDomTargetsFound('errors', true);
 
-                if(this.domTargets[input] === null){
+                if (this.domTargets[input] === null) {
                     this._model.setDomTargetsFound('inputs', false);
                 }
-                if(this.domTargets[error] === null){
+                if (this.domTargets[error] === null) {
                     this._model.setDomTargetsFound('errors', false);
                 }
             }
@@ -65,16 +65,16 @@
             window.onload = function(e) {
                 // validate and get token before submit event
                 // button is below script tag, so we wait until it loads
-                self.submitBtn = self.form.querySelector("input[type=submit]");
+                self.submitBtn = self.form.querySelector('input[type=submit]');
                 if (!self.submitBtn) {
-                    self.submitBtn = self.form.querySelector("button[type=submit]");
+                    self.submitBtn = self.form.querySelector('button[type=submit]');
                 }
 
-                self.submitBtn.addEventListener("click", function(e){
+                self.submitBtn.addEventListener('click', function(e) {
                     self.submit.notify(e);
                 }, false);
             }.bind(self);
-        },    
+        },
         render: function(viewCmd, parameter) {
             var self = this;
             var viewCommands = {
@@ -82,39 +82,39 @@
                     self.submitBtn.disabled = Boolean(!parameter);
                 },
                 injectStyles: function(parameter) {
-                    var fileref = document.createElement("link");
-                    fileref.setAttribute("rel", "stylesheet");
-                    fileref.setAttribute("type", "text/css");
-                    fileref.setAttribute("href", parameter);
-                    
-                    if (typeof fileref !== "undefined") {
+                    var fileref = document.createElement('link');
+                    fileref.setAttribute('rel', 'stylesheet');
+                    fileref.setAttribute('type', 'text/css');
+                    fileref.setAttribute('href', parameter);
+
+                    if (typeof fileref !== 'undefined') {
                         self.head.appendChild(fileref);
                     }
                 },
                 appendToken: function(value) {
-                    var input = self.form.querySelector("input[name=singleUseToken]");
+                    var input = self.form.querySelector('input[name=singleUseToken]');
 
-                    if(input){
+                    if (input) {
                         input.value = value;
-                    } else{
+                    } else {
                         input = document.createElement('input');
-                        input.type = "hidden";
-                        input.name = "singleUseToken";
+                        input.type = 'hidden';
+                        input.name = 'singleUseToken';
                         input.value = value;
                         self.form.appendChild(input);
                     }
                 },
                 setFocusNext: function(sender) {
-                    var currentEl_id = sender._config.id;
+                    var currentEl = sender._config.id;
 
-                    //toDo: these inputs should be cached
-                    var inputs = self.form.getElementsByTagName("input");
+                    // toDo: these inputs should be cached
+                    var inputs = self.form.getElementsByTagName('input');
 
-                    var currentInput = self.getIndexById(inputs, currentEl_id);
+                    var currentInput = self.getIndexById(inputs, currentEl);
 
-                    if(inputs[currentInput+1]){
-                        inputs[currentInput+1].focus();
-                    } else{
+                    if (inputs[currentInput + 1]) {
+                        inputs[currentInput + 1].focus();
+                    } else {
                         self.submitBtn.focus();
                     }
                 }

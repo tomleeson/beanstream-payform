@@ -61,18 +61,18 @@
             luhn: true
         }];
 
-        function getLuhnChecksum(num_str) {
-            num_str = num_str.replace(/\s+/g, '');
+        function getLuhnChecksum (numStr) {
+            numStr = numStr.replace(/\s+/g, '');
             var digit;
             var sum = 0;
-            var num_array = num_str.split('').reverse();
+            var numArray = numStr.split('').reverse();
 
-            for (var i = 0; i < num_array.length; i++) {
-                digit = num_array[i];
+            for (var i = 0;i < numArray.length;i++) {
+                digit = numArray[i];
                 digit = +digit;
 
                 if (i % 2) {
-                    digit *= 2;
+                    digit *= 2; d
 
                     if (digit < 10) {
                         sum += digit;
@@ -91,40 +91,39 @@
             str = str.replace(/\s+/g, '');
             var cardType = getCardType(str);
 
-            var card = cards.filter(function( c ) {
-              return c.type === cardType;
+            var card = cards.filter(function(c) {
+                return c.type === cardType;
             });
 
             card = card[0];
 
-            if(card){
-                var format = card["format"];
-                
+            if (card) {
+                var format = card.format;
+
                 if (format.global) {
                     var arr = str.match(format).join(' ');
-                    str = limitLength(arr, "length", cardType);                    
+                    str = limitLength(arr, 'length', cardType);
                 } else {
                     var arr = format.exec(str);
-                    arr.shift(); // remove first element which contains the full matched text 
+                    arr.shift();// remove first element which contains the full matched text
                     str = arr.join(' ');
-                    str = str.trim(); // remove whitespaces seperating empty arrays - all patterns not yet matched
+                    str = str.trim();// remove whitespaces seperating empty arrays - all patterns not yet matched
                 }
-            } 
+            }
 
             return str;
         }
 
         function formatExpiry(str) {
-            var mon, parts, sep, year;
-            parts = str.match(/^\D*(\d{1,2})(\D+)?(\d{1,2})?/);
+            var parts = str.match(/^\D*(\d{1,2})(\D+)?(\d{1,2})?/);
 
             if (!parts) {
                 return '';
             }
 
-            mon = parts[1] || '';
-            sep = parts[2] || '';
-            year = parts[3] || '';
+            var mon = parts[1] || '';
+            var sep = parts[2] || '';
+            var year = parts[3] || '';
 
             if (year.length > 0) {
                 sep = ' / ';
@@ -132,117 +131,119 @@
                 mon = mon.substring(0, 1);
                 sep = '';
             } else if (mon.length === 2 && (parseInt(mon) > 12)) {
-                mon = "1";
+                mon = '1';
             } else if (mon.length === 2 || sep.length > 0) {
                 sep = ' / ';
             } else if (mon.length === 1 && (mon !== '0' && mon !== '1')) {
-                mon = "0" + mon;
+                mon = '0' + mon;
                 sep = ' / ';
-            } 
+            }
 
             return mon + sep + year;
         }
 
         function limitLength(str, fieldType, cardType) {
-            if((fieldType !== "length" && fieldType !== "cvcLength") || cardType === undefined || cardType === ""){
-                return str; 
+            if ((fieldType !== 'length' && fieldType !== 'cvcLength') || cardType === undefined || cardType === '') {
+                return str;
             }
 
             var max = getMaxLength(fieldType, cardType);
 
             // adjust for whitespacing in creditcard str
-            var whiteSpacing = (str.match(new RegExp(" ", "g")) || []).length;
+            var whiteSpacing = (str.match(new RegExp(' ', 'g')) || []).length;
 
             // trim() is needed to remove final white space
-            str = str.substring(0, max+whiteSpacing).trim();
+            str = str.substring(0, max + whiteSpacing).trim();
 
-            return str; 
+            return str;
         }
 
-        function getMaxLength(fieldType, cardType){
-            var card = cards.filter(function( c ) {
-              return c.type === cardType;
+        function getMaxLength(fieldType, cardType) {
+            var card = cards.filter(function(c) {
+                return c.type === cardType;
             });
             card = card[0];
 
             var lengths = card[fieldType];
-            var max = Math.max.apply( Math, lengths );
+            var max = Math.max.apply(Math, lengths);
             return max;
         }
 
-        function getMinLength(fieldType, cardType){
-            var card = cards.filter(function( c ) {
-              return c.type === cardType;
+        function getMinLength(fieldType, cardType) {
+            var card = cards.filter(function(c) {
+                return c.type === cardType;
             });
             card = card[0];
 
             var lengths = card[fieldType];
-            var min = Math.min.apply( Math, lengths );
+            var min = Math.min.apply(Math, lengths);
             return min;
         }
 
         function isValidExpiryDate(str, currentDate, onBlur) {
-            if(onBlur && str === ""){
-                 return {isValid: false, error: "This is a required field."}; // Validate onBlur as required field
+            if (onBlur && str === '') {
+                return { isValid: false, error: 'This is a required field.' };// Validate onBlur as required field
             }
 
-            // expects str in format "mm/yyyy"
-            var arr = str.split("/");
-            //JavaScript counts months from 0 to 11
+            // expects str in format 'mm/yyyy'
+            var arr = str.split('/');
+            // JavaScript counts months from 0 to 11
             var month = arr[0];
 
-            if(month) month = month.trim() -1;
+            if (month) {
+                month = month.trim() - 1;
+            }
 
             var year = arr[1];
 
-            if(year){
+            if (year) {
                 year = year.trim();
 
-                if(year.length === 2){
-                    year = "20" + year; 
+                if (year.length === 2) {
+                    year = '20' + year;
 
                     var expiryDate = new Date(year, month);
 
                     if (expiryDate < currentDate) {
-                        return {isValid: false, error: "This date is past. Your card has expired."};
+                        return { isValid: false, error: 'This date is past. Your card has expired.' };
                     }
-                } else if(onBlur){
-                    return {isValid: false, error: "This is a required field."}; // Validate onBlur as required field
+                } else if (onBlur) {
+                    return { isValid: false, error: 'This is a required field.' };// Validate onBlur as required field
                 }
-            }  
-            if(onBlur){
-                if(year){
+            }
+            if (onBlur) {
+                if (year) {
                     year = year.trim();
-                    year = "20" + year; 
+                    year = '20' + year;
                 } else {
                     year = 0;
                 }
-                
+
                 var expiryDate = new Date(year, month);
 
                 if (expiryDate < currentDate) {
-                    return {isValid: false, error: "This date is past. Your card has expired."};
+                    return { isValid: false, error: 'This date is past. Your card has expired.' };
                 }
-            } 
- 
-            return {isValid: true, error: ""};
+            }
+
+            return { isValid: true, error: '' };
         }
 
         function getCardType(str) {
-            var cardType = "";
+            var cardType = '';
 
             loop1:
 
-            for(var i=0; i<cards.length; i++){
-                var patterns = cards[i].patterns;               
+            for (var i = 0;i < cards.length;i++) {
+                var patterns = cards[i].patterns;
                 loop2:
 
-                for(var j=0; j<patterns.length; j++){
+                for (var j = 0;j < patterns.length;j++) {
                     var pos = str.indexOf(patterns[j]);
 
-                    if(pos === 0){
-                       cardType = cards[i].type;
-                       break loop1;
+                    if (pos === 0) {
+                        cardType = cards[i].type;
+                        break loop1;
                     }
                 }
             }
@@ -252,66 +253,66 @@
 
         function isValidCardNumber(str, onBlur) {
             str = str.replace(/\s+/g, '');
-            var cardType = "";
+            var cardType = '';
             var min = 0;
 
-            if(str.length > 0){
+            if (str.length > 0) {
                 cardType = getCardType(str);
 
-                if(cardType){
-                    min = getMinLength("length", cardType);
+                if (cardType) {
+                    min = getMinLength('length', cardType);
                 }
             }
 
-            if(onBlur){
-                if(str.length === 0) {
-                    return {isValid: false, error: "This is a required field."}; // Validate onBlur as required field
-                } else if(cardType === ""){
-                    return {isValid: true, error: ""};
-                } else if(str.length < min){
-                    return {isValid: false, error: "This card number is too short."}; // if onBlur and str not complete
-                } else{
+            if (onBlur) {
+                if (str.length === 0) {
+                    return { isValid: false, error: 'This is a required field.' };// Validate onBlur as required field
+                } else if (cardType === '') {
+                    return { isValid: true, error: '' };
+                } else if (str.length < min) {
+                    return { isValid: false, error: 'This card number is too short.' };// if onBlur and str not complete
+                } else {
                     var luhn = getLuhnChecksum(str);
 
-                    if(luhn){
-                        return {isValid: true, error: ""};
-                    } else{
-                        return {isValid: false, error: "This is an invalid card number."};
+                    if (luhn) {
+                        return { isValid: true, error: '' };
+                    } else {
+                        return { isValid: false, error: 'This is an invalid card number.' };
                     }
                 }
 
-            } else{
-                if(str.length >= min && min !== 0){
+            } else {
+                if (str.length >= min && min !== 0) {
                     var luhn = getLuhnChecksum(str);
 
-                    if(luhn){
-                        return {isValid: true, error: ""};
-                    } else{
-                        return {isValid: false, error: "This is an invalid card number."};
+                    if (luhn) {
+                        return { isValid: true, error: '' };
+                    } else {
+                        return { isValid: false, error: 'This is an invalid card number.' };
                     }
                 }
 
             }
-            
-            return {isValid: true, error: ""}; // Report valid while user is inputting str
+
+            return { isValid: true, error: '' };// Report valid while user is inputting str
         }
 
         function isValidCvc(cardType, str, onBlur) {
-            if(onBlur && str.length === 0){
-                return {isValid: false, error: "This is a required field."};
+            if (onBlur && str.length === 0) {
+                return { isValid: false, error: 'This is a required field.' };
             }
 
-            if(cardType === ""){
-                return {isValid: true, error: ""}; // Unknown card type. Default to true
+            if (cardType === '') {
+                return { isValid: true, error: '' };// Unknown card type. Default to true
             }
 
-            var min = getMinLength("cvcLength", cardType);
+            var min = getMinLength('cvcLength', cardType);
 
-            if(str.length < min && onBlur === true){
-                return {isValid: false, error: "This card number is too short."};
+            if (str.length < min && onBlur === true) {
+                return { isValid: false, error: 'This card number is too short.' };
             }
 
-            return {isValid: true, error: ""};
+            return { isValid: true, error: '' };
         }
 
         return {

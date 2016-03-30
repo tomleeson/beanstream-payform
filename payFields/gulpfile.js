@@ -2,38 +2,39 @@ var gulp = require('gulp');
 var Server = require('karma').Server;
 var concat = require('gulp-concat');
 var gulpProtractorAngular = require('gulp-angular-protractor');
+const jscs = require('gulp-jscs');
 
 /**
  * Run test once and exit
  */
 gulp.task('unit', function (done) {
-  new Server({
-    configFile: __dirname + '/tests/karma.conf.js',
-    singleRun: true
-  }, done).start();
+    new Server({
+        configFile: __dirname + '/tests/karma.conf.js',
+        singleRun: true
+    }, done).start();
 });
 
 /**
  * Watch for file changes and re-run tests on each change
  */
 gulp.task('tdd', function (done) {
-  new Server({
-    configFile: __dirname + '/tests/karma.conf.js'
-  }, done).start();
+    new Server({
+        configFile: __dirname + '/tests/karma.conf.js'
+    }, done).start();
 });
- 
- /**
+
+/**
  * Concat JS files
  */
-gulp.task('scripts', function() {
-  return gulp.src([ './assets/js/helper.js', 
+gulp.task('concat', function() {
+    return gulp.src(['./assets/js/helper.js',
                     './assets/js/validator.js',
-                    './assets/js/ajaxHelper.js', 
-                    './assets/js/cc_input/model.js', 
+                    './assets/js/ajaxHelper.js',
+                    './assets/js/cc_input/model.js',
                     './assets/js/cc_input/view.js',
                     './assets/js/cc_input/controller.js',
                     './assets/js/cc_input/template.js',
-                    './assets/js/form/model.js', 
+                    './assets/js/form/model.js',
                     './assets/js/form/view.js',
                     './assets/js/form/controller.js',
                     './assets/js/event.js',
@@ -42,9 +43,22 @@ gulp.task('scripts', function() {
     .pipe(gulp.dest('./assets/js/build/'));
 });
 
-gulp.task('default', ['tdd']);
+// pre-lint task checks if there are any errors that jscs cannot resolve
+gulp.task('lint', ['pre-lint'], function() {
+    return gulp.src(['./assets/js/**/*.js'])
+        .pipe(jscs({ fix: true }))
+        .pipe(jscs.reporter())
+        .pipe(jscs.reporter('fail'))
+        .pipe(gulp.dest('./assets/js/'));
+});
 
- 
+gulp.task('pre-lint', function() {
+    return gulp.src(['./assets/js/**/*.js'])
+        .pipe(jscs({ fix: true }))
+        .pipe(jscs.reporter())
+        .pipe(jscs.reporter('fail'));
+});
+
 gulp.task('e2e', function(callback) {
     gulp
         .src(['./tests/e2e/spec.js'])
@@ -58,3 +72,9 @@ gulp.task('e2e', function(callback) {
         })
         .on('end', callback);
 });
+
+// linting takes 1.4 s!
+// gulp.task('scripts', ['lint', 'concat']);
+gulp.task('scripts', ['concat']);
+
+gulp.task('default', ['tdd']);
