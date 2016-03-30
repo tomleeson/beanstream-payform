@@ -1,4 +1,4 @@
-(function (window) {
+(function(window) {
     'use strict';
 
     /**
@@ -23,22 +23,22 @@
         var _this = this;
 
         // attach model Listeners
-        this._model.valueChanged.attach(function () {
+        this._model.valueChanged.attach(function() {
             _this.render('value', '');
         });
-        this._model.cardTypeChanged.attach(function () {
+        this._model.cardTypeChanged.attach(function() {
             _this.render('cardType', '');
         });
-        this._model.validityChanged.attach(function () {
+        this._model.validityChanged.attach(function() {
             _this.render('isValid', '');
         });
     }
 
     InputView.prototype = {
-        render: function (viewCmd, parameter) {
+        render: function(viewCmd, parameter) {
             var _this = this;
             var viewCommands = {
-                elements: function () {
+                elements: function() {
                     var template = _this._template.show(parameter);
                     var inputFrag = _this.createDocFrag(template.input);
                     var labelFrag = _this.createDocFrag(template.label);
@@ -63,7 +63,7 @@
 
                     _this.attachDomListeners();
                 },
-                value: function () {
+                value: function() {
                     _this._domInputElement.value = _this._model.getValue();
 
                     // Do not reposition caret for date
@@ -72,7 +72,7 @@
                         _this._domInputElement.setSelectionRange(pos, pos);
                     }
                 },
-                cardType: function () {
+                cardType: function() {
                     var fieldType = _this._model.getFieldType();
 
                     if (fieldType === 'cc-number') {
@@ -85,9 +85,11 @@
                             if (cardType === 'visaelectron') {
                                 cardType = 'visa';
                             }
-                            _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/' + cardType + '.png)';
+                            _this._domInputElement.style.backgroundImage =
+                                'url(http://downloads.beanstream.com/images/payform/' + cardType + '.png)';
                         } else {
-                            _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/card.png)';
+                            _this._domInputElement.style.backgroundImage =
+                                'url(http://downloads.beanstream.com/images/payform/card.png)';
                         }
                     }
                 },
@@ -100,15 +102,19 @@
 
                         if (cardType && cardType === 'amex') {
                             if (!onBlur) {
-                                _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/cvc_hint_color_amex.png)';
+                                _this._domInputElement.style.backgroundImage =
+                                    'url(http://downloads.beanstream.com/images/payform/cvc_hint_color_amex.png)';
                             } else {
-                                _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/cvc_hint_mono_amex.png)';
+                                _this._domInputElement.style.backgroundImage =
+                                    'url(http://downloads.beanstream.com/images/payform/cvc_hint_mono_amex.png)';
                             }
                         } else if (cardType) {
                             if (!onBlur) {
-                                _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/cvc_hint_color.png)';
+                                _this._domInputElement.style.backgroundImage =
+                                    'url(http://downloads.beanstream.com/images/payform/cvc_hint_color.png)';
                             } else {
-                                _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/cvc_hint_mono.png)';
+                                _this._domInputElement.style.backgroundImage =
+                                    'url(http://downloads.beanstream.com/images/payform/cvc_hint_mono.png)';
                             }
                         }
                     }
@@ -117,7 +123,8 @@
                     var isValid = _this._model.getIsValid();
 
                     if (isValid) {
-                        _this._domInputElement.className = _this._domInputElement.className.replace(' beanstream_invalid', '');
+                        _this._domInputElement.className =
+                            _this._domInputElement.className.replace(' beanstream_invalid', '');
                     } else {
                         _this._domInputElement.className += ' beanstream_invalid';
                     }
@@ -140,7 +147,7 @@
             }, false);
             this._domInputElement.addEventListener('keyup', function(e) {
                 e = e || window.event;
-                var args = { event: e, inputValue: _this._domInputElement.value };
+                var args = {event: e, inputValue: _this._domInputElement.value};
                 _this.keyup.notify(args);
             }, false);
             this._domInputElement.addEventListener('paste', function(e) {

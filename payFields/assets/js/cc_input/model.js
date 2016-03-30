@@ -1,4 +1,4 @@
-(function (window) {
+(function(window) {
     'use strict';
 
     /**
@@ -18,49 +18,49 @@
     }
 
     InputModel.prototype = {
-        getValue: function () {
+        getValue: function() {
             return this._value;
         },
-        setValue: function (value) {
+        setValue: function(value) {
             if (value !== this._value) {
                 this._value = value;
                 this.valueChanged.notify();
             }
         },
-        getIsValid: function () {
+        getIsValid: function() {
             return this._isValid;
         },
-        setIsValid: function (valid) {
+        setIsValid: function(valid) {
             if (valid !== this._isValid) {
                 this._isValid = valid;
                 this.validityChanged.notify();
             }
         },
-        getCardType: function () {
+        getCardType: function() {
             return this._cardType;
         },
-        setCardType: function (cardType) {
+        setCardType: function(cardType) {
             if (cardType !== this._cardType) {
                 this._cardType = cardType;
                 this.cardTypeChanged.notify();
             }
         },
-        getFieldType: function () {
+        getFieldType: function() {
             return this._fieldType;
         },
-        setFieType: function (fieldType) {
+        setFieType: function(fieldType) {
             this._fieldType = fieldType;
         },
-        getError: function () {
+        getError: function() {
             return this._error;
         },
-        setError: function (error) {
+        setError: function(error) {
             this._error = error;
         },
-        getCaretPos: function () {
+        getCaretPos: function() {
             return this._caretPos;
         },
-        setCaretPos: function (pos) {
+        setCaretPos: function(pos) {
             this._caretPos = pos;
         }
     };

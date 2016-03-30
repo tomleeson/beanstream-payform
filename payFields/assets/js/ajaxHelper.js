@@ -1,4 +1,4 @@
-(function (window) {
+(function(window) {
     'use strict';
 
     /**
@@ -22,7 +22,7 @@
     *                                                       "message": "string" }
     */
     AjaxHelper.prototype = {
-        getToken: function (data, listener) {
+        getToken: function(data, listener) {
             console.log('getToken');
             var self = this;
             self._listener = listener;
@@ -32,7 +32,7 @@
 
             if (window.XMLHttpRequest) {
                 var xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function () {
+                xhttp.onreadystatechange = function() {
                     if (xhttp.readyState === 4 && xhttp.status === 200) {
                         self._listener(self.parseResponse(xhttp.responseText));
                     }
@@ -51,11 +51,11 @@
                     var xdr = new XDomainRequest();
                     xdr.open('get', url);
 
-                    xdr.onload = function () {
+                    xdr.onload = function() {
                         self._listener(self.parseResponse(xdr.responseText));
                     };
 
-                    setTimeout(function () {
+                    setTimeout(function() {
                         xdr.send(data);
                     }, 0);
                 } else {
@@ -71,14 +71,14 @@
                 self._listener(response);
             }
         },
-        formattedResponse: function () {
+        formattedResponse: function() {
             var self = this;
             self.code = '';
             self.message = '';
             self.token = '';
             self.success = false;
         },
-        parseResponse: function (obj) {
+        parseResponse: function(obj) {
             var self = this;
             obj = JSON.parse(obj);
             var response = new self.formattedResponse();

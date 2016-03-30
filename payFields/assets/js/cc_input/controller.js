@@ -1,4 +1,4 @@
-(function (window) {
+(function(window) {
     'use strict';
 
     /**
@@ -20,7 +20,7 @@
         self._view.render('elements', self._config);
 
         // listen to view events
-        self._view.keydown.attach(function (sender, e) {
+        self._view.keydown.attach(function(sender, e) {
             // delete whole date str on delete any char
             if ((self._model.getFieldType() === 'cc-exp') &&
                     (e.keyCode === 8 || e.keyCode === 46)) {
@@ -51,7 +51,7 @@
             self.limitInput(char, selectedText);
         });
 
-        self._view.keyup.attach(function (sender, args) {
+        self._view.keyup.attach(function(sender, args) {
             if (args.event.keyCode === 8 || args.event.keyCode === 46) {
                 // Update model directly from UI on delete
                 // keyup is only needed for deletion
@@ -67,7 +67,7 @@
             }
         });
 
-        self._view.paste.attach(function (sender, e) {
+        self._view.paste.attach(function(sender, e) {
             e.preventDefault();
 
             var pastedStr = e.clipboardData.getData('text/plain');
@@ -79,14 +79,14 @@
             self.limitInput(pastedStr, selectedText);
         });
 
-        self._view.blur.attach(function (sender, e) {
+        self._view.blur.attach(function(sender, e) {
             var onBlur = true;
             var value = self._model.getValue();
             self.validate(onBlur, value);
 
         });
 
-        self._view.focus.attach(function (sender, e) {
+        self._view.focus.attach(function(sender, e) {
             var str = self._model.getValue();
 
             if (self._model.getFieldType() === 'cc-csc') {
@@ -97,7 +97,7 @@
     }
 
     InputController.prototype = {
-        limitInput: function (str, selectedText) {
+        limitInput: function(str, selectedText) {
             var self = this;
 
             str = str.replace(/\D/g, ''); // remove non ints from string
@@ -166,7 +166,7 @@
                 }
             }
         },
-        setCardType: function (cardType) {
+        setCardType: function(cardType) {
             var self = this;
             var currentType = self._model.setCardType(cardType);
 
@@ -175,13 +175,13 @@
                 self.cardTypeChanged.notify(cardType); // emit event for form
             }
         },
-        setInputValidity: function (args) {
+        setInputValidity: function(args) {
             var self = this;
             self._model.setError(args.error);
             self._model.setIsValid(args.isValid);
             self.inputValidityChanged.notify(args);
         },
-        updateFocus: function (str, cardType) {
+        updateFocus: function(str, cardType) {
             var self = this;
             var max;
             str = str.replace(/\s+/g, ''); // remove white spaces from string
@@ -209,7 +209,7 @@
                 self.inputComplete.notify();
             }
         },
-        validate: function (onBlur, value) {
+        validate: function(onBlur, value) {
             var self = this;
             if (value === undefined) {
                 value = self._model.getValue();

@@ -1,31 +1,33 @@
-(function (window) {
+(function(window) {
     'use strict';
 
     /**
     * Library containing shared functions
     */
-    var Helper = (function () {
+    var Helper = (function() {
 
         /**
          * Checks if an event was triggered by a navigation key
          * This function is intended to avoid preventing events related to keyboard navigation
+         *
          * @param {Event} event
          * @return {Boolean}
          */
         function isNonInputKey(event) {
 
-            if (event.ctrlKey || event.metaKey
-                || event.keyCode === 8 // backspace
-                || event.keyCode === 9 // tab
-                || event.keyCode === 13 // enter
-                || event.keyCode === 33 // page up
-                || event.keyCode === 34 // page down
-                || event.keyCode === 35 // end
-                || event.keyCode === 36 // home
-                || event.keyCode === 37 // left arrow
-                || event.keyCode === 39 // right arrow
-                || event.keyCode === 45 // insert
-                || event.keyCode === 46 // delete
+            if (event.ctrlKey ||
+                event.metaKey ||
+                event.keyCode === 8 || // backspace
+                event.keyCode === 9 || // tab
+                event.keyCode === 13 || // enter
+                event.keyCode === 33 || // page up
+                event.keyCode === 34 || // page down
+                event.keyCode === 35 || // end
+                event.keyCode === 36 || // home
+                event.keyCode === 37 || // left arrow
+                event.keyCode === 39 || // right arrow
+                event.keyCode === 45 || // insert
+                event.keyCode === 46 // delete
             ) {
                 return true;
             }
@@ -35,8 +37,9 @@
         /**
          * Checks id an object is empty
          * Source: http://stackoverflow.com/a/814649
+         *
          * @param {String} htmlStr
-         * @return {DocumentFragment object} frag
+         * @return {DocumentFragment} frag
          */
         function createDocFrag(htmlStr) {
             var frag = document.createDocumentFragment();
@@ -51,6 +54,7 @@
         /**
          * Checks id an object is empty
          * Source: http://stackoverflow.com/a/4994244/6011159
+         *
          * @param {Object} obj
          * @return {Boolean}
          */
@@ -86,10 +90,10 @@
     window.beanstream.Helper = Helper;
 })(window);
 
-(function (window) {
+(function(window) {
     'use strict';
 
-    var Validator = (function () {
+    var Validator = (function() {
         var defaultFormat = /(\d{1,4})/g;
         var cards = [{
             type: 'visaelectron',
@@ -149,13 +153,13 @@
             luhn: true
         }];
 
-        function getLuhnChecksum (numStr) {
+        function getLuhnChecksum(numStr) {
             numStr = numStr.replace(/\s+/g, '');
             var digit;
             var sum = 0;
             var numArray = numStr.split('').reverse();
 
-            for (var i = 0;i < numArray.length;i++) {
+            for (var i = 0; i < numArray.length; i++) {
                 digit = numArray[i];
                 digit = +digit;
 
@@ -270,7 +274,7 @@
 
         function isValidExpiryDate(str, currentDate, onBlur) {
             if (onBlur && str === '') {
-                return { isValid: false, error: 'This is a required field.' };// Validate onBlur as required field
+                return {isValid: false, error: 'This is a required field.'}; // Validate onBlur as required field
             }
 
             // expects str in format 'mm/yyyy'
@@ -293,10 +297,10 @@
                     var expiryDate = new Date(year, month);
 
                     if (expiryDate < currentDate) {
-                        return { isValid: false, error: 'This date is past. Your card has expired.' };
+                        return {isValid: false, error: 'This date is past. Your card has expired.'};
                     }
                 } else if (onBlur) {
-                    return { isValid: false, error: 'This is a required field.' };// Validate onBlur as required field
+                    return {isValid: false, error: 'This is a required field.'}; // Validate onBlur as required field
                 }
             }
             if (onBlur) {
@@ -310,11 +314,11 @@
                 var expiryDate = new Date(year, month);
 
                 if (expiryDate < currentDate) {
-                    return { isValid: false, error: 'This date is past. Your card has expired.' };
+                    return {isValid: false, error: 'This date is past. Your card has expired.'};
                 }
             }
 
-            return { isValid: true, error: '' };
+            return {isValid: true, error: ''};
         }
 
         function getCardType(str) {
@@ -322,11 +326,11 @@
 
             loop1:
 
-            for (var i = 0;i < cards.length;i++) {
+            for (var i = 0; i < cards.length; i++) {
                 var patterns = cards[i].patterns;
                 loop2:
 
-                for (var j = 0;j < patterns.length;j++) {
+                for (var j = 0; j < patterns.length; j++) {
                     var pos = str.indexOf(patterns[j]);
 
                     if (pos === 0) {
@@ -354,18 +358,18 @@
 
             if (onBlur) {
                 if (str.length === 0) {
-                    return { isValid: false, error: 'This is a required field.' };// Validate onBlur as required field
+                    return {isValid: false, error: 'This is a required field.'};// Validate onBlur as required field
                 } else if (cardType === '') {
-                    return { isValid: true, error: '' };
+                    return {isValid: true, error: ''};
                 } else if (str.length < min) {
-                    return { isValid: false, error: 'This card number is too short.' };// if onBlur and str not complete
+                    return {isValid: false, error: 'This card number is too short.'};// if onBlur and str not complete
                 } else {
                     var luhn = getLuhnChecksum(str);
 
                     if (luhn) {
-                        return { isValid: true, error: '' };
+                        return {isValid: true, error: ''};
                     } else {
-                        return { isValid: false, error: 'This is an invalid card number.' };
+                        return {isValid: false, error: 'This is an invalid card number.'};
                     }
                 }
 
@@ -374,33 +378,33 @@
                     var luhn = getLuhnChecksum(str);
 
                     if (luhn) {
-                        return { isValid: true, error: '' };
+                        return {isValid: true, error: ''};
                     } else {
-                        return { isValid: false, error: 'This is an invalid card number.' };
+                        return {isValid: false, error: 'This is an invalid card number.'};
                     }
                 }
 
             }
 
-            return { isValid: true, error: '' };// Report valid while user is inputting str
+            return {isValid: true, error: ''};// Report valid while user is inputting str
         }
 
         function isValidCvc(cardType, str, onBlur) {
             if (onBlur && str.length === 0) {
-                return { isValid: false, error: 'This is a required field.' };
+                return {isValid: false, error: 'This is a required field.'};
             }
 
             if (cardType === '') {
-                return { isValid: true, error: '' };// Unknown card type. Default to true
+                return {isValid: true, error: ''}; // Unknown card type. Default to true
             }
 
             var min = getMinLength('cvcLength', cardType);
 
             if (str.length < min && onBlur === true) {
-                return { isValid: false, error: 'This card number is too short.' };
+                return {isValid: false, error: 'This card number is too short.'};
             }
 
-            return { isValid: true, error: '' };
+            return {isValid: true, error: ''};
         }
 
         return {
@@ -421,7 +425,7 @@
     window.beanstream.Validator = Validator;
 })(window);
 
-(function (window) {
+(function(window) {
     'use strict';
 
     /**
@@ -445,7 +449,7 @@
     *                                                       "message": "string" }
     */
     AjaxHelper.prototype = {
-        getToken: function (data, listener) {
+        getToken: function(data, listener) {
             console.log('getToken');
             var self = this;
             self._listener = listener;
@@ -455,7 +459,7 @@
 
             if (window.XMLHttpRequest) {
                 var xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function () {
+                xhttp.onreadystatechange = function() {
                     if (xhttp.readyState === 4 && xhttp.status === 200) {
                         self._listener(self.parseResponse(xhttp.responseText));
                     }
@@ -474,11 +478,11 @@
                     var xdr = new XDomainRequest();
                     xdr.open('get', url);
 
-                    xdr.onload = function () {
+                    xdr.onload = function() {
                         self._listener(self.parseResponse(xdr.responseText));
                     };
 
-                    setTimeout(function () {
+                    setTimeout(function() {
                         xdr.send(data);
                     }, 0);
                 } else {
@@ -494,14 +498,14 @@
                 self._listener(response);
             }
         },
-        formattedResponse: function () {
+        formattedResponse: function() {
             var self = this;
             self.code = '';
             self.message = '';
             self.token = '';
             self.success = false;
         },
-        parseResponse: function (obj) {
+        parseResponse: function(obj) {
             var self = this;
             obj = JSON.parse(obj);
             var response = new self.formattedResponse();
@@ -524,7 +528,7 @@
     window.beanstream.AjaxHelper = AjaxHelper;
 })(window);
 
-(function (window) {
+(function(window) {
     'use strict';
 
     /**
@@ -544,49 +548,49 @@
     }
 
     InputModel.prototype = {
-        getValue: function () {
+        getValue: function() {
             return this._value;
         },
-        setValue: function (value) {
+        setValue: function(value) {
             if (value !== this._value) {
                 this._value = value;
                 this.valueChanged.notify();
             }
         },
-        getIsValid: function () {
+        getIsValid: function() {
             return this._isValid;
         },
-        setIsValid: function (valid) {
+        setIsValid: function(valid) {
             if (valid !== this._isValid) {
                 this._isValid = valid;
                 this.validityChanged.notify();
             }
         },
-        getCardType: function () {
+        getCardType: function() {
             return this._cardType;
         },
-        setCardType: function (cardType) {
+        setCardType: function(cardType) {
             if (cardType !== this._cardType) {
                 this._cardType = cardType;
                 this.cardTypeChanged.notify();
             }
         },
-        getFieldType: function () {
+        getFieldType: function() {
             return this._fieldType;
         },
-        setFieType: function (fieldType) {
+        setFieType: function(fieldType) {
             this._fieldType = fieldType;
         },
-        getError: function () {
+        getError: function() {
             return this._error;
         },
-        setError: function (error) {
+        setError: function(error) {
             this._error = error;
         },
-        getCaretPos: function () {
+        getCaretPos: function() {
             return this._caretPos;
         },
-        setCaretPos: function (pos) {
+        setCaretPos: function(pos) {
             this._caretPos = pos;
         }
     };
@@ -596,7 +600,7 @@
     window.beanstream.InputModel = InputModel;
 })(window);
 
-(function (window) {
+(function(window) {
     'use strict';
 
     /**
@@ -621,22 +625,22 @@
         var _this = this;
 
         // attach model Listeners
-        this._model.valueChanged.attach(function () {
+        this._model.valueChanged.attach(function() {
             _this.render('value', '');
         });
-        this._model.cardTypeChanged.attach(function () {
+        this._model.cardTypeChanged.attach(function() {
             _this.render('cardType', '');
         });
-        this._model.validityChanged.attach(function () {
+        this._model.validityChanged.attach(function() {
             _this.render('isValid', '');
         });
     }
 
     InputView.prototype = {
-        render: function (viewCmd, parameter) {
+        render: function(viewCmd, parameter) {
             var _this = this;
             var viewCommands = {
-                elements: function () {
+                elements: function() {
                     var template = _this._template.show(parameter);
                     var inputFrag = _this.createDocFrag(template.input);
                     var labelFrag = _this.createDocFrag(template.label);
@@ -661,7 +665,7 @@
 
                     _this.attachDomListeners();
                 },
-                value: function () {
+                value: function() {
                     _this._domInputElement.value = _this._model.getValue();
 
                     // Do not reposition caret for date
@@ -670,7 +674,7 @@
                         _this._domInputElement.setSelectionRange(pos, pos);
                     }
                 },
-                cardType: function () {
+                cardType: function() {
                     var fieldType = _this._model.getFieldType();
 
                     if (fieldType === 'cc-number') {
@@ -683,9 +687,11 @@
                             if (cardType === 'visaelectron') {
                                 cardType = 'visa';
                             }
-                            _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/' + cardType + '.png)';
+                            _this._domInputElement.style.backgroundImage =
+                                'url(http://downloads.beanstream.com/images/payform/' + cardType + '.png)';
                         } else {
-                            _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/card.png)';
+                            _this._domInputElement.style.backgroundImage =
+                                'url(http://downloads.beanstream.com/images/payform/card.png)';
                         }
                     }
                 },
@@ -698,15 +704,19 @@
 
                         if (cardType && cardType === 'amex') {
                             if (!onBlur) {
-                                _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/cvc_hint_color_amex.png)';
+                                _this._domInputElement.style.backgroundImage =
+                                    'url(http://downloads.beanstream.com/images/payform/cvc_hint_color_amex.png)';
                             } else {
-                                _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/cvc_hint_mono_amex.png)';
+                                _this._domInputElement.style.backgroundImage =
+                                    'url(http://downloads.beanstream.com/images/payform/cvc_hint_mono_amex.png)';
                             }
                         } else if (cardType) {
                             if (!onBlur) {
-                                _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/cvc_hint_color.png)';
+                                _this._domInputElement.style.backgroundImage =
+                                    'url(http://downloads.beanstream.com/images/payform/cvc_hint_color.png)';
                             } else {
-                                _this._domInputElement.style.backgroundImage = 'url(http://downloads.beanstream.com/images/payform/cvc_hint_mono.png)';
+                                _this._domInputElement.style.backgroundImage =
+                                    'url(http://downloads.beanstream.com/images/payform/cvc_hint_mono.png)';
                             }
                         }
                     }
@@ -715,7 +725,8 @@
                     var isValid = _this._model.getIsValid();
 
                     if (isValid) {
-                        _this._domInputElement.className = _this._domInputElement.className.replace(' beanstream_invalid', '');
+                        _this._domInputElement.className =
+                            _this._domInputElement.className.replace(' beanstream_invalid', '');
                     } else {
                         _this._domInputElement.className += ' beanstream_invalid';
                     }
@@ -738,7 +749,7 @@
             }, false);
             this._domInputElement.addEventListener('keyup', function(e) {
                 e = e || window.event;
-                var args = { event: e, inputValue: _this._domInputElement.value };
+                var args = {event: e, inputValue: _this._domInputElement.value};
                 _this.keyup.notify(args);
             }, false);
             this._domInputElement.addEventListener('paste', function(e) {
@@ -790,7 +801,7 @@
     window.beanstream.InputView = InputView;
 })(window);
 
-(function (window) {
+(function(window) {
     'use strict';
 
     /**
@@ -812,7 +823,7 @@
         self._view.render('elements', self._config);
 
         // listen to view events
-        self._view.keydown.attach(function (sender, e) {
+        self._view.keydown.attach(function(sender, e) {
             // delete whole date str on delete any char
             if ((self._model.getFieldType() === 'cc-exp') &&
                     (e.keyCode === 8 || e.keyCode === 46)) {
@@ -843,7 +854,7 @@
             self.limitInput(char, selectedText);
         });
 
-        self._view.keyup.attach(function (sender, args) {
+        self._view.keyup.attach(function(sender, args) {
             if (args.event.keyCode === 8 || args.event.keyCode === 46) {
                 // Update model directly from UI on delete
                 // keyup is only needed for deletion
@@ -859,7 +870,7 @@
             }
         });
 
-        self._view.paste.attach(function (sender, e) {
+        self._view.paste.attach(function(sender, e) {
             e.preventDefault();
 
             var pastedStr = e.clipboardData.getData('text/plain');
@@ -871,14 +882,14 @@
             self.limitInput(pastedStr, selectedText);
         });
 
-        self._view.blur.attach(function (sender, e) {
+        self._view.blur.attach(function(sender, e) {
             var onBlur = true;
             var value = self._model.getValue();
             self.validate(onBlur, value);
 
         });
 
-        self._view.focus.attach(function (sender, e) {
+        self._view.focus.attach(function(sender, e) {
             var str = self._model.getValue();
 
             if (self._model.getFieldType() === 'cc-csc') {
@@ -889,7 +900,7 @@
     }
 
     InputController.prototype = {
-        limitInput: function (str, selectedText) {
+        limitInput: function(str, selectedText) {
             var self = this;
 
             str = str.replace(/\D/g, ''); // remove non ints from string
@@ -958,7 +969,7 @@
                 }
             }
         },
-        setCardType: function (cardType) {
+        setCardType: function(cardType) {
             var self = this;
             var currentType = self._model.setCardType(cardType);
 
@@ -967,13 +978,13 @@
                 self.cardTypeChanged.notify(cardType); // emit event for form
             }
         },
-        setInputValidity: function (args) {
+        setInputValidity: function(args) {
             var self = this;
             self._model.setError(args.error);
             self._model.setIsValid(args.isValid);
             self.inputValidityChanged.notify(args);
         },
-        updateFocus: function (str, cardType) {
+        updateFocus: function(str, cardType) {
             var self = this;
             var max;
             str = str.replace(/\s+/g, ''); // remove white spaces from string
@@ -1001,7 +1012,7 @@
                 self.inputComplete.notify();
             }
         },
-        validate: function (onBlur, value) {
+        validate: function(onBlur, value) {
             var self = this;
             if (value === undefined) {
                 value = self._model.getValue();
@@ -1040,16 +1051,17 @@
     window.beanstream.InputController = InputController;
 })(window);
 
-(function (window) {
+(function(window) {
     'use strict';
 
     function InputTemplate() {
-        this.inputTemplate = '<input data-beanstream-id="{{id}}" placeholder="{{placeholder}}" autocomplete="{{autocomplete}}">';
-        this.labelTemplate = '<label data-beanstream-id="" for="{{id}}">{{labelText}}</label>';
-        this.errorTemplate = '<div data-beanstream-id="{{id}}_error"></div>';
+        this.inputTemplate =    '<input data-beanstream-id="{{id}}" ' +
+                                'placeholder="{{placeholder}}" autocomplete="{{autocomplete}}">';
+        this.labelTemplate =    '<label data-beanstream-id="" for="{{id}}">{{labelText}}</label>';
+        this.errorTemplate =    '<div data-beanstream-id="{{id}}_error"></div>';
     }
 
-    InputTemplate.prototype.show = function (parameter) {
+    InputTemplate.prototype.show = function(parameter) {
         var template = {};
         template.label = this.labelTemplate;
         template.input = this.inputTemplate;
@@ -1070,7 +1082,7 @@
     window.beanstream.InputTemplate = InputTemplate;
 })(window);
 
-(function (window) {
+(function(window) {
     'use strict';
 
     /**
@@ -1100,37 +1112,37 @@
             }
         };
 
-        this._domTargetsFound = { inputs: false, errors: false };
+        this._domTargetsFound = {inputs: false, errors: false};
         this.tokenChanged = new beanstream.Event(this);
         this.domTargetsFoundChanged = new beanstream.Event(this);
     }
 
     FormModel.prototype = {
-        getToken: function () {
+        getToken: function() {
             return this._token;
         },
-        setToken: function (token) {
+        setToken: function(token) {
             if (token !== this._token) {
                 this._token = token;
                 this.tokenChanged.notify();
             }
         },
-        getFields: function () {
+        getFields: function() {
             return this._fields;
         },
-        getDomTargetsFound: function (key) {
+        getDomTargetsFound: function(key) {
             return this._domTargetsFound[key];
         },
-        setDomTargetsFound: function (key, value) {
+        setDomTargetsFound: function(key, value) {
             if (value !== this._domTargetsFound[key]) {
                 this._domTargetsFound[key] = value;
                 this.domTargetsFoundChanged.notify();
             }
         },
-        getSubmitForm: function () {
+        getSubmitForm: function() {
             return this._submitForm;
         },
-        setSubmitForm: function (value) {
+        setSubmitForm: function(value) {
             this._submitForm = value;
         }
     };
@@ -1140,7 +1152,7 @@
     window.beanstream.FormModel = FormModel;
 })(window);
 
-(function (window) {
+(function(window) {
     'use strict';
 
     /**
@@ -1152,13 +1164,13 @@
     }
 
     FormView.prototype = {
-        init: function () {
+        init: function() {
             var self = this;
             self.cacheDom();
             self.readAttributes();
             self.attachDomListeners();
         },
-        cacheDom: function (id) {
+        cacheDom: function(id) {
             // http://stackoverflow.com/a/22745553
             // there may be multiple forms in a page, get ref to current form
             var scripts = document.getElementsByTagName('script');
@@ -1278,7 +1290,7 @@
     window.beanstream.FormView = FormView;
 })(window);
 
-(function (window) {
+(function(window) {
     'use strict';
 
     /**
@@ -1290,20 +1302,21 @@
         self._view = view;
 
         self._view.init();
-        self._view.submit.attach(function (sender, e) {
+        self._view.submit.attach(function(sender, e) {
             self.onSubmit(e);
         });
     }
 
     FormController.prototype = {
-        init: function () {
+        init: function() {
             var self = this;
-            self._view.render('injectStyles', 'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/style.css');
+            self._view.render('injectStyles',
+                                'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/style.css');
             // self._view.render('injectStyles', '../assets/css/style.css');
             self.injectFields();
             self.fireEvent('beanstream_loaded');
         },
-        onSubmit: function (e) {
+        onSubmit: function(e) {
             var self = this;
             e.preventDefault();
 
@@ -1313,13 +1326,13 @@
             if (!beanstream.Helper.isEmpty(fields)) {
                 self._view.render('enableSubmitButton', 'false');
 
-                var data = { 'number': fields.number,
+                var data = {'number': fields.number,
                         'expiry_month': fields.expiryMonth,
                         'expiry_year': fields.expiryYear,
-                        'cvd': fields.cvd };
+                        'cvd': fields.cvd};
 
                 var ajaxHelper = new beanstream.AjaxHelper();
-                ajaxHelper.getToken(data, function (args) {
+                ajaxHelper.getToken(data, function(args) {
                     if (args.success) {
                         self._view.render('appendToken', args.token);
                     } else {
@@ -1337,7 +1350,7 @@
                 self._view.render('enableSubmitButton', 'true');
             }
         },
-        appendToken: function (form, value) {
+        appendToken: function(form, value) {
             var input = form.querySelector('input[name=singleUseToken]');
 
             if (input) {
@@ -1350,7 +1363,7 @@
                 form.appendChild(input);
             }
         },
-        injectFields: function (filename) {
+        injectFields: function(filename) {
             this.fieldObjs = [];
 
             var fields = this._model.getFields();
@@ -1407,7 +1420,7 @@
                 }.bind(self));
             }
         },
-        setCardType: function (cardType) {
+        setCardType: function(cardType) {
             var field = this.fieldObjs.filter(function(f) {
                     return f.controller._config.id === 'ccCvv';
                 });
@@ -1490,11 +1503,12 @@
     window.beanstream.FormController = FormController;
 })(window);
 
-(function (window) {
+(function(window) {
     'use strict';
 
     /**
     * Simple event object that is encapsulated in most other objects
+    *
     * @param {this} sender
     */
     function Event(sender) {
@@ -1503,10 +1517,10 @@
     }
 
     Event.prototype = {
-        attach: function (Inputener) {
+        attach: function(Inputener) {
             this._listeners.push(Inputener);
         },
-        notify: function (args) {
+        notify: function(args) {
             var index;
 
             for (index = 0; index < this._listeners.length; index += 1) {
@@ -1520,7 +1534,7 @@
     window.beanstream.Event = Event;
 })(window);
 
-(function () {
+(function() {
     'use strict';
 
     /**

@@ -1,7 +1,7 @@
-(function (window) {
+(function(window) {
     'use strict';
 
-    var Validator = (function () {
+    var Validator = (function() {
         var defaultFormat = /(\d{1,4})/g;
         var cards = [{
             type: 'visaelectron',
@@ -61,13 +61,13 @@
             luhn: true
         }];
 
-        function getLuhnChecksum (numStr) {
+        function getLuhnChecksum(numStr) {
             numStr = numStr.replace(/\s+/g, '');
             var digit;
             var sum = 0;
             var numArray = numStr.split('').reverse();
 
-            for (var i = 0;i < numArray.length;i++) {
+            for (var i = 0; i < numArray.length; i++) {
                 digit = numArray[i];
                 digit = +digit;
 
@@ -182,7 +182,7 @@
 
         function isValidExpiryDate(str, currentDate, onBlur) {
             if (onBlur && str === '') {
-                return { isValid: false, error: 'This is a required field.' };// Validate onBlur as required field
+                return {isValid: false, error: 'This is a required field.'}; // Validate onBlur as required field
             }
 
             // expects str in format 'mm/yyyy'
@@ -205,10 +205,10 @@
                     var expiryDate = new Date(year, month);
 
                     if (expiryDate < currentDate) {
-                        return { isValid: false, error: 'This date is past. Your card has expired.' };
+                        return {isValid: false, error: 'This date is past. Your card has expired.'};
                     }
                 } else if (onBlur) {
-                    return { isValid: false, error: 'This is a required field.' };// Validate onBlur as required field
+                    return {isValid: false, error: 'This is a required field.'}; // Validate onBlur as required field
                 }
             }
             if (onBlur) {
@@ -222,11 +222,11 @@
                 var expiryDate = new Date(year, month);
 
                 if (expiryDate < currentDate) {
-                    return { isValid: false, error: 'This date is past. Your card has expired.' };
+                    return {isValid: false, error: 'This date is past. Your card has expired.'};
                 }
             }
 
-            return { isValid: true, error: '' };
+            return {isValid: true, error: ''};
         }
 
         function getCardType(str) {
@@ -234,11 +234,11 @@
 
             loop1:
 
-            for (var i = 0;i < cards.length;i++) {
+            for (var i = 0; i < cards.length; i++) {
                 var patterns = cards[i].patterns;
                 loop2:
 
-                for (var j = 0;j < patterns.length;j++) {
+                for (var j = 0; j < patterns.length; j++) {
                     var pos = str.indexOf(patterns[j]);
 
                     if (pos === 0) {
@@ -266,18 +266,18 @@
 
             if (onBlur) {
                 if (str.length === 0) {
-                    return { isValid: false, error: 'This is a required field.' };// Validate onBlur as required field
+                    return {isValid: false, error: 'This is a required field.'};// Validate onBlur as required field
                 } else if (cardType === '') {
-                    return { isValid: true, error: '' };
+                    return {isValid: true, error: ''};
                 } else if (str.length < min) {
-                    return { isValid: false, error: 'This card number is too short.' };// if onBlur and str not complete
+                    return {isValid: false, error: 'This card number is too short.'};// if onBlur and str not complete
                 } else {
                     var luhn = getLuhnChecksum(str);
 
                     if (luhn) {
-                        return { isValid: true, error: '' };
+                        return {isValid: true, error: ''};
                     } else {
-                        return { isValid: false, error: 'This is an invalid card number.' };
+                        return {isValid: false, error: 'This is an invalid card number.'};
                     }
                 }
 
@@ -286,33 +286,33 @@
                     var luhn = getLuhnChecksum(str);
 
                     if (luhn) {
-                        return { isValid: true, error: '' };
+                        return {isValid: true, error: ''};
                     } else {
-                        return { isValid: false, error: 'This is an invalid card number.' };
+                        return {isValid: false, error: 'This is an invalid card number.'};
                     }
                 }
 
             }
 
-            return { isValid: true, error: '' };// Report valid while user is inputting str
+            return {isValid: true, error: ''};// Report valid while user is inputting str
         }
 
         function isValidCvc(cardType, str, onBlur) {
             if (onBlur && str.length === 0) {
-                return { isValid: false, error: 'This is a required field.' };
+                return {isValid: false, error: 'This is a required field.'};
             }
 
             if (cardType === '') {
-                return { isValid: true, error: '' };// Unknown card type. Default to true
+                return {isValid: true, error: ''}; // Unknown card type. Default to true
             }
 
             var min = getMinLength('cvcLength', cardType);
 
             if (str.length < min && onBlur === true) {
-                return { isValid: false, error: 'This card number is too short.' };
+                return {isValid: false, error: 'This card number is too short.'};
             }
 
-            return { isValid: true, error: '' };
+            return {isValid: true, error: ''};
         }
 
         return {

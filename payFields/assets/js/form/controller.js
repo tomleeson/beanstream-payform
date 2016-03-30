@@ -1,4 +1,4 @@
-(function (window) {
+(function(window) {
     'use strict';
 
     /**
@@ -10,20 +10,21 @@
         self._view = view;
 
         self._view.init();
-        self._view.submit.attach(function (sender, e) {
+        self._view.submit.attach(function(sender, e) {
             self.onSubmit(e);
         });
     }
 
     FormController.prototype = {
-        init: function () {
+        init: function() {
             var self = this;
-            self._view.render('injectStyles', 'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/style.css');
+            self._view.render('injectStyles',
+                                'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/style.css');
             // self._view.render('injectStyles', '../assets/css/style.css');
             self.injectFields();
             self.fireEvent('beanstream_loaded');
         },
-        onSubmit: function (e) {
+        onSubmit: function(e) {
             var self = this;
             e.preventDefault();
 
@@ -33,13 +34,13 @@
             if (!beanstream.Helper.isEmpty(fields)) {
                 self._view.render('enableSubmitButton', 'false');
 
-                var data = { 'number': fields.number,
+                var data = {'number': fields.number,
                         'expiry_month': fields.expiryMonth,
                         'expiry_year': fields.expiryYear,
-                        'cvd': fields.cvd };
+                        'cvd': fields.cvd};
 
                 var ajaxHelper = new beanstream.AjaxHelper();
-                ajaxHelper.getToken(data, function (args) {
+                ajaxHelper.getToken(data, function(args) {
                     if (args.success) {
                         self._view.render('appendToken', args.token);
                     } else {
@@ -57,7 +58,7 @@
                 self._view.render('enableSubmitButton', 'true');
             }
         },
-        appendToken: function (form, value) {
+        appendToken: function(form, value) {
             var input = form.querySelector('input[name=singleUseToken]');
 
             if (input) {
@@ -70,7 +71,7 @@
                 form.appendChild(input);
             }
         },
-        injectFields: function (filename) {
+        injectFields: function(filename) {
             this.fieldObjs = [];
 
             var fields = this._model.getFields();
@@ -127,7 +128,7 @@
                 }.bind(self));
             }
         },
-        setCardType: function (cardType) {
+        setCardType: function(cardType) {
             var field = this.fieldObjs.filter(function(f) {
                     return f.controller._config.id === 'ccCvv';
                 });

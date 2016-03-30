@@ -1,4 +1,4 @@
-(function (window) {
+(function(window) {
     'use strict';
 
     /**
@@ -28,37 +28,37 @@
             }
         };
 
-        this._domTargetsFound = { inputs: false, errors: false };
+        this._domTargetsFound = {inputs: false, errors: false};
         this.tokenChanged = new beanstream.Event(this);
         this.domTargetsFoundChanged = new beanstream.Event(this);
     }
 
     FormModel.prototype = {
-        getToken: function () {
+        getToken: function() {
             return this._token;
         },
-        setToken: function (token) {
+        setToken: function(token) {
             if (token !== this._token) {
                 this._token = token;
                 this.tokenChanged.notify();
             }
         },
-        getFields: function () {
+        getFields: function() {
             return this._fields;
         },
-        getDomTargetsFound: function (key) {
+        getDomTargetsFound: function(key) {
             return this._domTargetsFound[key];
         },
-        setDomTargetsFound: function (key, value) {
+        setDomTargetsFound: function(key, value) {
             if (value !== this._domTargetsFound[key]) {
                 this._domTargetsFound[key] = value;
                 this.domTargetsFoundChanged.notify();
             }
         },
-        getSubmitForm: function () {
+        getSubmitForm: function() {
             return this._submitForm;
         },
-        setSubmitForm: function (value) {
+        setSubmitForm: function(value) {
             this._submitForm = value;
         }
     };

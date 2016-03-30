@@ -1,8 +1,9 @@
-(function (window) {
+(function(window) {
     'use strict';
 
     /**
     * Simple event object that is encapsulated in most other objects
+    *
     * @param {this} sender
     */
     function Event(sender) {
@@ -11,10 +12,10 @@
     }
 
     Event.prototype = {
-        attach: function (Inputener) {
+        attach: function(Inputener) {
             this._listeners.push(Inputener);
         },
-        notify: function (args) {
+        notify: function(args) {
             var index;
 
             for (index = 0; index < this._listeners.length; index += 1) {
