@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    console.log("Starting Beanstream Payfields...");
+    console.log('Starting Beanstream Payfields...');
 
     var form = {};
     form.model = new beanstream.FormModel();

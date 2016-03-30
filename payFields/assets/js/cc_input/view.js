@@ -44,7 +44,7 @@
                     var labelFrag = _this.createDocFrag(template.label);
                     var errorFrag = _this.createDocFrag(template.error);
 
-                    if (parameter.domTargetsFound_input) {
+                    if (parameter.inputDomTargets) {
                         // If a dom target is found do not append label
                         _this._domParentElements.input.appendChild(inputFrag);
                     } else {
@@ -52,9 +52,9 @@
                         _this._domParentElements.form.appendChild(inputFrag);
                     }
 
-                    if (parameter.domTargetsFound_error) {
+                    if (parameter.errorDomTargets) {
                         _this._domParentElements.error.appendChild(errorFrag);
-                    } else if (!parameter.domTargetsFound_error && parameter.domTargetsFound_input) {
+                    } else if (!parameter.errorDomTargets && parameter.inputDomTargets) {
                         _this._domParentElements.input.appendChild(errorFrag);
                     } else {
                         _this._domParentElements.form.appendChild(errorFrag);
@@ -127,8 +127,8 @@
             viewCommands[viewCmd]();
         },
         cacheDom: function(id) {
-            this._domInputElement = this._domParentElements.form.querySelector('[data-beanstream-id="' + id + '""]');
-            this._domErrorElement = this._domParentElements.form.querySelector('[data-beanstream-id="' + id + '_error"]');
+            this._domInputElement = this._domParentElements.form.querySelector('[data-beanstream-id=' + id + ']');
+            this._domErrorElement = this._domParentElements.form.querySelector('[data-beanstream-id=' + id + '_error]');
         },
         attachDomListeners: function() {
             var _this = this;

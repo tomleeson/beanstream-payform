@@ -72,7 +72,7 @@
                 digit = +digit;
 
                 if (i % 2) {
-                    digit *= 2; d
+                    digit *= 2;
 
                     if (digit < 10) {
                         sum += digit;

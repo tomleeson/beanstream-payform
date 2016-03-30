@@ -12,7 +12,7 @@ describe('Payfields', function() {
     browser.driver.ignoreSynchronization = true;
     browser.driver.get('http://localhost:8000/demos/bootstrap.html');
 
-    browser.driver.findElement(by.css('input[data-beanstream-id="cc_number"]')).then(function(element) {
+    browser.driver.findElement(by.css('input[data-beanstream-id="ccNumber"]')).then(function(element) {
       //alert('Found an element that was not expected to be there!');
       expect(true).toEqual(true);
     }, function(error) {
@@ -26,7 +26,7 @@ describe('Payfields', function() {
     browser.driver.ignoreSynchronization = true;
     browser.driver.get('http://localhost:8000/demos/bootstrap.html');
 
-    var input = browser.driver.findElement(by.css('input[data-beanstream-id="cc_number"]'));
+    var input = browser.driver.findElement(by.css('input[data-beanstream-id="ccNumber"]'));
     input.sendKeys('4485248840847322');
     expect(input.getAttribute('value')).toEqual("4485 2488 4084 7322");
   });
@@ -35,7 +35,7 @@ describe('Payfields', function() {
     browser.driver.ignoreSynchronization = true;
     browser.driver.get('http://localhost:8000/demos/bootstrap.html');
 
-    var input = browser.driver.findElement(by.css('input[data-beanstream-id="cc_number"]'));
+    var input = browser.driver.findElement(by.css('input[data-beanstream-id="ccNumber"]'));
     input.sendKeys('5259376611894651');
     expect(input.getAttribute('value')).toEqual("5259 3766 1189 4651");
   });
@@ -44,7 +44,7 @@ describe('Payfields', function() {
     browser.driver.ignoreSynchronization = true;
     browser.driver.get('http://localhost:8000/demos/bootstrap.html');
 
-    var input = browser.driver.findElement(by.css('input[data-beanstream-id="cc_number"]'));
+    var input = browser.driver.findElement(by.css('input[data-beanstream-id="ccNumber"]'));
     input.sendKeys('347472653651920');
     expect(input.getAttribute('value')).toEqual("3474 726536 51920");
   });
@@ -57,7 +57,7 @@ describe('Payfields', function() {
     browser.driver.ignoreSynchronization = true;
     browser.driver.get('http://localhost:8000/demos/bootstrap.html');
 
-    var input = browser.driver.findElement(by.css('input[data-beanstream-id="cc_number"]'));
+    var input = browser.driver.findElement(by.css('input[data-beanstream-id="ccNumber"]'));
     input.sendKeys('347472653651920');
     console.log("foo");
     //console.log("input: "+input.style);

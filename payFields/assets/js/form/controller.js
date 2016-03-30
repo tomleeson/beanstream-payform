@@ -76,8 +76,8 @@
                 domTargets.form = this._view.form;
 
                 var config = new Object;
-                config.domTargetsFound_input = this._model.getDomTargetsFound('inputs');
-                config.domTargetsFound_error = this._model.getDomTargetsFound('errors');
+                config.inputDomTargets = this._model.getDomTargetsFound('inputs');
+                config.errorDomTargets = this._model.getDomTargetsFound('errors');
                 config.id = field;
                 config.name = fields[field].name;
                 config.labelText = fields[field].labelText;
@@ -94,7 +94,7 @@
 
             // register listener on controller for cardType changed
             var field = this.fieldObjs.filter(function(f) {
-                return f.controller._config.id === 'cc_number';
+                return f.controller._config.id === 'ccNumber';
             });
             field = field[0];
 
@@ -119,7 +119,7 @@
         },
         setCardType: function (cardType) {
             var field = this.fieldObjs.filter(function(f) {
-                    return f.controller._config.id === 'cc_cvv';
+                    return f.controller._config.id === 'ccCvv';
                 });
             field = field[0];
 
@@ -150,19 +150,19 @@
             if (invalidFields.length === 0 && emptyFields.length === 0) {
                 for (var i = 0; i < this.fieldObjs.length; i++) {
                     switch (this.fieldObjs[i].controller._config.id) {
-                        case 'cc_number': {
+                        case 'ccNumber': {
                             data.number = this.fieldObjs[i].controller._model.getValue();
                             break;
                         }
-                        case 'cc_cvv': {
+                        case 'ccCvv': {
                             data.cvd = this.fieldObjs[i].controller._model.getValue();
                             break;
                         }
-                        case 'cc_exp': {
+                        case 'ccExp': {
                             var str = this.fieldObjs[i].controller._model.getValue();
                             var arr = str.split('/');
-                            data.expiry_month = arr[0].trim();
-                            data.expiry_year = '20' + arr[1].trim();
+                            data.expiryMonth = arr[0].trim();
+                            data.expiryYear = '20' + arr[1].trim();
                             break;
                         }
                         default: {

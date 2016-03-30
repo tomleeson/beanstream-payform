@@ -38,10 +38,10 @@
                 var error = field + '_error';
 
                 this.domTargets[input] =
-                    this.form.querySelector('[data-beanstream-target="' + input + '"]');
+                    this.form.querySelector('[data-beanstream-target=' + input + ']');
 
                 this.domTargets[error] =
-                    this.form.querySelector('[data-beanstream-target="' + error + '"]');
+                    this.form.querySelector('[data-beanstream-target=' + error + ']');
 
                 // Set flags. If target missing for any input, ignore all input targets
                 this._model.setDomTargetsFound('inputs', true);

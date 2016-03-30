@@ -8,19 +8,19 @@
         this._token = '';
 
         this._fields = {
-            cc_number: {
+            ccNumber: {
                 name: 'cardnumber',
                 labelText: 'Credit Card Number',
                 placeholder: '',
                 autocomplete: 'cc-number'
             },
-            cc_cvv: {
+            ccCvv: {
                 name: 'cvc',
                 labelText: 'CVC',
                 placeholder: '',
                 autocomplete: 'cc-csc'
             },
-            cc_exp: {
+            ccExp: {
                 name: 'cc-exp',
                 labelText: 'Expires MM/YY',
                 placeholder: '',

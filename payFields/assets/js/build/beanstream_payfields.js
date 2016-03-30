@@ -145,7 +145,7 @@
                 digit = +digit;
 
                 if (i % 2) {
-                    digit *= 2; d
+                    digit *= 2;
 
                     if (digit < 10) {
                         sum += digit;
@@ -625,7 +625,7 @@
                     var labelFrag = _this.createDocFrag(template.label);
                     var errorFrag = _this.createDocFrag(template.error);
 
-                    if (parameter.domTargetsFound_input) {
+                    if (parameter.inputDomTargets) {
                         // If a dom target is found do not append label
                         _this._domParentElements.input.appendChild(inputFrag);
                     } else {
@@ -633,9 +633,9 @@
                         _this._domParentElements.form.appendChild(inputFrag);
                     }
 
-                    if (parameter.domTargetsFound_error) {
+                    if (parameter.errorDomTargets) {
                         _this._domParentElements.error.appendChild(errorFrag);
-                    } else if (!parameter.domTargetsFound_error && parameter.domTargetsFound_input) {
+                    } else if (!parameter.errorDomTargets && parameter.inputDomTargets) {
                         _this._domParentElements.input.appendChild(errorFrag);
                     } else {
                         _this._domParentElements.form.appendChild(errorFrag);
@@ -708,8 +708,8 @@
             viewCommands[viewCmd]();
         },
         cacheDom: function(id) {
-            this._domInputElement = this._domParentElements.form.querySelector('[data-beanstream-id="' + id + '""]');
-            this._domErrorElement = this._domParentElements.form.querySelector('[data-beanstream-id="' + id + '_error"]');
+            this._domInputElement = this._domParentElements.form.querySelector('[data-beanstream-id=' + id + ']');
+            this._domErrorElement = this._domParentElements.form.querySelector('[data-beanstream-id=' + id + '_error]');
         },
         attachDomListeners: function() {
             var _this = this;
@@ -1072,19 +1072,19 @@
         this._token = '';
 
         this._fields = {
-            cc_number: {
+            ccNumber: {
                 name: 'cardnumber',
                 labelText: 'Credit Card Number',
                 placeholder: '',
                 autocomplete: 'cc-number'
             },
-            cc_cvv: {
+            ccCvv: {
                 name: 'cvc',
                 labelText: 'CVC',
                 placeholder: '',
                 autocomplete: 'cc-csc'
             },
-            cc_exp: {
+            ccExp: {
                 name: 'cc-exp',
                 labelText: 'Expires MM/YY',
                 placeholder: '',
@@ -1172,10 +1172,10 @@
                 var error = field + '_error';
 
                 this.domTargets[input] =
-                    this.form.querySelector('[data-beanstream-target="' + input + '"]');
+                    this.form.querySelector('[data-beanstream-target=' + input + ']');
 
                 this.domTargets[error] =
-                    this.form.querySelector('[data-beanstream-target="' + error + '"]');
+                    this.form.querySelector('[data-beanstream-target=' + error + ']');
 
                 // Set flags. If target missing for any input, ignore all input targets
                 this._model.setDomTargetsFound('inputs', true);
@@ -1348,8 +1348,8 @@
                 domTargets.form = this._view.form;
 
                 var config = new Object;
-                config.domTargetsFound_input = this._model.getDomTargetsFound('inputs');
-                config.domTargetsFound_error = this._model.getDomTargetsFound('errors');
+                config.inputDomTargets = this._model.getDomTargetsFound('inputs');
+                config.errorDomTargets = this._model.getDomTargetsFound('errors');
                 config.id = field;
                 config.name = fields[field].name;
                 config.labelText = fields[field].labelText;
@@ -1366,7 +1366,7 @@
 
             // register listener on controller for cardType changed
             var field = this.fieldObjs.filter(function(f) {
-                return f.controller._config.id === 'cc_number';
+                return f.controller._config.id === 'ccNumber';
             });
             field = field[0];
 
@@ -1391,7 +1391,7 @@
         },
         setCardType: function (cardType) {
             var field = this.fieldObjs.filter(function(f) {
-                    return f.controller._config.id === 'cc_cvv';
+                    return f.controller._config.id === 'ccCvv';
                 });
             field = field[0];
 
@@ -1422,19 +1422,19 @@
             if (invalidFields.length === 0 && emptyFields.length === 0) {
                 for (var i = 0; i < this.fieldObjs.length; i++) {
                     switch (this.fieldObjs[i].controller._config.id) {
-                        case 'cc_number': {
+                        case 'ccNumber': {
                             data.number = this.fieldObjs[i].controller._model.getValue();
                             break;
                         }
-                        case 'cc_cvv': {
+                        case 'ccCvv': {
                             data.cvd = this.fieldObjs[i].controller._model.getValue();
                             break;
                         }
-                        case 'cc_exp': {
+                        case 'ccExp': {
                             var str = this.fieldObjs[i].controller._model.getValue();
                             var arr = str.split('/');
-                            data.expiry_month = arr[0].trim();
-                            data.expiry_year = '20' + arr[1].trim();
+                            data.expiryMonth = arr[0].trim();
+                            data.expiryYear = '20' + arr[1].trim();
                             break;
                         }
                         default: {
@@ -1484,7 +1484,7 @@
 (function () {
     'use strict';
 
-    console.log("Starting Beanstream Payfields...");
+    console.log('Starting Beanstream Payfields...');
 
     var form = {};
     form.model = new beanstream.FormModel();
