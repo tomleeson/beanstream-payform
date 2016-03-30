@@ -3,6 +3,7 @@ var Server = require('karma').Server;
 var concat = require('gulp-concat');
 var gulpProtractorAngular = require('gulp-angular-protractor');
 const jscs = require('gulp-jscs');
+var runSequence = require('gulp-run-sequence');
 
 /**
  * Concat JS files
@@ -30,7 +31,7 @@ gulp.task('concat', function() {
  */
 gulp.task('lint', ['pre-lint'], function() {
     return gulp.src(['./assets/js/**/*.js'])
-        .pipe(jscs({ fix: true }))
+        .pipe(jscs({fix: true}))
         .pipe(jscs.reporter())
         .pipe(jscs.reporter('fail'))
         .pipe(gulp.dest('./assets/js/'));
@@ -44,7 +45,7 @@ gulp.task('lint', ['pre-lint'], function() {
  */
 gulp.task('pre-lint', function() {
     return gulp.src(['./assets/js/**/*.js'])
-        .pipe(jscs({ fix: true }))
+        .pipe(jscs({fix: true}))
         .pipe(jscs.reporter())
         .pipe(jscs.reporter('fail'));
 });
@@ -52,7 +53,7 @@ gulp.task('pre-lint', function() {
 /**
  * Run unit test (karma) once and exit
  */
-gulp.task('unit', function (done) {
+gulp.task('unit', function(done) {
     new Server({
         configFile: __dirname + '/tests/karma.conf.js',
         singleRun: true
@@ -62,7 +63,7 @@ gulp.task('unit', function (done) {
 /**
  * Watch for file changes and re-run tests on each change
  */
-gulp.task('tdd', function (done) {
+gulp.task('tdd', function(done) {
     new Server({
         configFile: __dirname + '/tests/karma.conf.js'
     }, done).start();
@@ -85,7 +86,6 @@ gulp.task('e2e', function(callback) {
         .on('end', callback);
 });
 
-/**
- * Default task
- */
-gulp.task('default', ['tdd']);
+gulp.task('default', function(cb) {
+    runSequence('concat', 'lint', 'unit', cb);
+});
