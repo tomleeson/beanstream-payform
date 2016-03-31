@@ -1,7 +1,62 @@
 beanstream-payform 
 =================
+##### Table of Contents  
+###### Overview
+[Overview](#overview)   
+ * [Payfields](#payfields-overview)        
+ * [Payform: Tokenisation](#payform-tokenisation-overview)            
+ * [Payform: Payment](#payform-payment-overview)        
 
-The PayForms project umbrella covers two distinct features: injected PayFields and hosted PayForms. The Hosted PayForms feature comes in two flavours: a hosted tokenization form and a hosted payment form.
+[Browser Support](#browser-support)  
+[Building Locally and Contributing](#contributing)   
+###### Payfields
+[Functionality](#payfields-functionality)         
+[Process Flow](#payfields-process-flow)           
+[Integration Guide](#payfields-integration-guide)           
+###### Payform
+[Functionality](#payform-tokenisation-functionality)         
+[Process Flow](#payform-tokenisation-process-flow)   
+[Integration Guide](#payform-tokenisation-guide)  
+
+## Overview <a name="overview"/>
+The PayForms project umbrella covers three related products: Payfields, PayForm: Tokenisation and PayForm: Payment (Fully Hosted).
+
+##### Payfields <a name="payfields-overview"/>
+Payfields is a Beanstream client-side JavaScript library that handles a customers credit card input within the merchant's web page. It limits the scope of the merchant's PCI compliance by removing the need for them to pass the sensitive information (credit card number, CVD, or expiry) through their servers.
+
+Payfields injects credit card related input fields into the merchant's web page, formats and validates the user input, and makes an AJAX request to Beanstream's tokenisation REST API. It then appends the token to the payment form in the web page and either submits the form or notifies the page that the token has been updated.
+
+Payfields allows the merchant full control of their web site's UX while limiting the scope of their PCI compliance.
+
+Note: Similar to Beanstream Legato
+
+##### PayForm: Tokenisation <a name="payform-tokenisation-overview"/>
+PayForm is a Beanstream client-side JavaScript library that handle a customers credit card input, and provides options for collecting shipping and delivery information. As with Payfields it limits the scope of the merchant's PCI compliance by removing the need for them to pass the sensitive information (credit card number, CVD, or expiry) through their servers.
+
+PayForm injects a "Pay with Card" button into the merchant's web page. Clicking the button displayes payment form in a popover within the merchant's page. The form can be configured to collect just credit card information, or a combination of credit card information, and shipping and/or billing information. 
+
+The credit card information is formated, validated and tokenised. PayForm then returns the token and any address information collected to the merchant's web page.
+
+PayForm: Tokenisation allows the merchant to easily collect payment information on their web site, without to add any payment forms to their page. It limits the scope of their PCI compliance, but allows them to retain control of how the payment itself is processed.
+
+Note: Similar to Stripe Checkout
+
+##### PayForm: Payment (Fully Hosted) <a name="payform-payment-overview"/>
+
+Note: Similar to PayPal Express Checkout 
+
+## Browser Support <a name="browser-support"/>
+ * Internet Explorer 8+ (via XDomainRequest and XMLHttpRequest)         
+ * Chrome 6.0+          
+ * Firefox 3.6+         
+ * Opera 12.1+          
+ * Safari 4.0+          
+
+<a name="contributing"/>
+## Building Locally and Contributing
+
+---
+---
 
 Demo:
 * [PayFields](https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/bootstrap.html)
@@ -13,7 +68,7 @@ References:
 * [REST API](http://developer.beanstream.com/documentation/rest-api-reference/)
 * [Tokenization](http://developer.beanstream.com/documentation/take-payments/purchases/take-payment-legato-token/)
 * [Payment](http://developer.beanstream.com/documentation/take-payments/purchases/card/)
-
+* [Legato](http://developer.beanstream.com/documentation/legato/)
 
 How to consume:
 The PayFields library is intended to be consumed as a remotely hosted dependency via a CDN. 
