@@ -2,11 +2,10 @@ beanstream-payform
 =================
 ##### Table of Contents  
 ###### Overview
-[Overview](#overview)   
- * [Payfields](#payfields-overview)        
- * [Payform: Tokenisation](#payform-tokenisation-overview)            
- * [Payform: Payment](#payform-payment-overview)        
-
+[Overview](#overview)     
+&nbsp;&nbsp;&nbsp;&nbsp;[Payfields](#payfields-overview)        
+&nbsp;&nbsp;&nbsp;&nbsp;[Payform: Tokenisation](#payform-tokenisation-overview)            
+&nbsp;&nbsp;&nbsp;&nbsp;[Payform: Payment](#payform-payment-overview)  
 [Browser Support](#browser-support)  
 [Building Locally and Contributing](#contributing)   
 ###### Payfields
@@ -65,6 +64,47 @@ Note: Similar to PayPal Express Checkout
  2 `$ gulp` Runs runs JSCS linting task, concatonates scripts, and runs unt tests.      
  3 `$ git push`         
  
+## Payfields
+##### Payfields <a name="payfields-functionality"/>     
+ * Injects input fields into page. (credit card number, CVD, or expiry)    
+ * Assesses card type (Mastercard, Visa, etc.) and restricts, formats and validates input accordingly.   
+ * Toknises card data, clears fields, and appends hidden field containing token to form.
+ * Fires event onLoad to allow custom styling. Fires event onValidationChange to allow custom error messaging. Fires event onTokenUpdated to allow merchant to control form submission flow. (By default the form is submitted when the token is appended)
+ 
+##### Process Flow <a name="payfields-process-flow"/>   
+
+##### Integration Guide <a name="payfields-integration-guide"/>   
+The minimal intigration involves adding the script tag to a webpage within a form containing a submit button.
+```javascript
+<form action='foo.php'>
+  <script src='https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/beanstream_payfields.js'></script>
+  <button type='submit'>Submit</button>
+</form>
+```
+
+The more 'real world' intigration involves adding the script tag to a webpage within a form containing a submit button and adding placeholders to specify where the inputs should be injected within the page's markup. The example below shows Payfields placeholders within the markup of a Bootstrap styled form.
+```javascript
+<form action='foo.php'>
+  <div class='form-group'>
+    <label>Card Number</label>
+    <div data-beanstream-target='ccNumber_input'></div>
+    <div data-beanstream-target='ccNumber_error' class='help-block'></div>
+  </div>
+  <div class='form-group'>
+    <label>Expiry (MM/YY)</label>
+    <div data-beanstream-target='ccExp_input'></div>
+    <div data-beanstream-target='ccExp_error' class='help-block'></div>
+  </div>
+  <div class='form-group'>
+    <label>CVV</label>
+    <div data-beanstream-target='ccCvv_input'></div>
+    <div data-beanstream-target='ccCvv_error' class='help-block'></div>
+  </div>
+  <script src='https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/beanstream_payfields.js'     
+          data-submit-form='false'></script>
+  <button type='submit' class='btn btn-default'>Submit</button>
+</form>
+```
 
 ---
 ---
