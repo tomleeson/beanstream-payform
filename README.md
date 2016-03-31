@@ -82,7 +82,12 @@ The minimal integration involves adding the script tag to a webpage within a for
 </form>
 ```
 
-The more 'real world' intigration involves adding the script tag to a webpage within a form containing a submit button and adding placeholders to specify where the inputs should be injected within the page's markup. The example below shows Payfields placeholders within the markup of a Bootstrap styled form.
+The above example uses Payforms' default display and behaviour, but it is also possible to configure both. 
+ * Placeholders can be added to the HTML markup to specify where the fields are injected.  
+ * The web page can listen for callbacks from Payfields to handle styling and error states
+ * The 'data-submit-form' attribute on the script tag can be used to specify if the Payflelds should submit the form after tokenisation, or just fire an event.
+
+The integration below shows placeholders and the data attribute inuse. It shows Payfields placeholders within the markup of a Bootstrap styled form.
 ```javascript
 <form action='foo.php'>
   <div class='form-group'>
