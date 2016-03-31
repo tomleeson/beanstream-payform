@@ -54,6 +54,17 @@ Note: Similar to PayPal Express Checkout
 
 <a name="contributing"/>
 ## Building Locally and Contributing
+ * Check out repo: `$ git clone git@github.com:Beanstream/beanstream-payform.git`
+ * Navigate to sub-project:  `$ cd /beanstream-payform/payFields`
+ * Run local server: `$ python -m SimpleHTTPServer 8000`
+ * Open page in browser: `localhost:8000/demos/test.html` 
+   * Note: test.html loads locally hosted script. Other demo pages load remotely hosted script
+
+##### Commit process
+ 1 `$ git rebase`       
+ 2 `$ gulp` Runs runs JSCS linting task, concatonates scripts, and runs unt tests.      
+ 3 `$ git push`         
+ 
 
 ---
 ---
