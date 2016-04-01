@@ -24,7 +24,7 @@
             var self = this;
 
             // Too: Update to hosted form
-            return 'http://localhost:8000/demo/remotePage.html?' + self.serialize(self._view.readAttributes())
+            return 'http://localhost:8000/demo/remotePage.html?' + self.serialize(self._view.readAttributes());
         },
 
         serialize: function(obj) {

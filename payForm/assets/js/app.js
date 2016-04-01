@@ -1,6 +1,6 @@
 (function() {
 
-    console.log("Starting Beanstream Payform...");
+    console.log('Starting Beanstream Payform...');
 
     var iframe = {};
     iframe.model = new beanstream.IframeModel();

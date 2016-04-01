@@ -3,16 +3,14 @@ exports.config = {
     framework: 'jasmine',
     seleniumAddress: 'http://localhost:4444/wd/hub',
     multiCapabilities: [
-    { 'browserName': 'chrome' }
+    {'browserName': 'chrome'}
     // ,{'browserName': 'firefox'}
     // ,{'browserName': 'safari'}
   ],
 
-
     maxSessions: 1,
     specs: ['spec.js']
-}
-
+};
 
 /*
 Manual configuration needed for Safari

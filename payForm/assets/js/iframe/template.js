@@ -11,9 +11,11 @@
 				'src="{{path}}"' +
 				'name="stripe_checkout_app"' +
 				'class="stripe_checkout_app"' +
-				'style="z-index: 2147483647; display: none; border: 0px none transparent; overflow-x: hidden; overflow-y: auto; visibility: visible; margin: 0px; padding: 0px; -webkit-tap-highlight-color: transparent; position: fixed; left: 0px; top: 0px; width: 100%; height: 100%;">' +
+				'style="z-index: 2147483647; display: none; border: 0px none transparent;' +
+                        'overflow-x: hidden; overflow-y: auto; visibility: visible; margin: ' +
+                        '0px; padding: 0px; -webkit-tap-highlight-color: transparent; position: fixed; ' +
+                        'left: 0px; top: 0px; width: 100%; height: 100%;">' +
 			'</iframe>';
-
     }
 
     IframeTemplate.prototype = {
@@ -26,7 +28,6 @@
             return template;
         }
     };
-
 
     // Export to window
     window.beanstream = window.beanstream || {};

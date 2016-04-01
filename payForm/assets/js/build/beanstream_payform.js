@@ -18,7 +18,6 @@
     window.beanstream.IframeModel = IframeModel;
 })(window);
 
-
 (function(window) {
     'use strict';
 
@@ -89,7 +88,9 @@
                 this.iframe.style.display = 'block';
             }.bind(self), false);
 
-            // toDo: listen for close event on window fored from embeded page
+            document.addEventListener('beanstream_closePayform', function() {
+                this.iframe.style.display = 'none';
+            }.bind(self), false);
         }
 
     };
@@ -98,7 +99,6 @@
     window.beanstream = window.beanstream || {};
     window.beanstream.IframeView = IframeView;
 })(window);
-
 
 (function(window) {
     'use strict';
@@ -125,7 +125,7 @@
             var self = this;
 
             // Too: Update to hosted form
-            return 'http://localhost:8000/demo/remotePage.html?' + self.serialize(self._view.readAttributes())
+            return 'http://localhost:8000/demo/remotePage.html?' + self.serialize(self._view.readAttributes());
         },
 
         serialize: function(obj) {
@@ -147,7 +147,6 @@
     window.beanstream.IframeController = IframeController;
 })(window);
 
-
 (function(window) {
     'use strict';
 
@@ -160,9 +159,11 @@
 				'src="{{path}}"' +
 				'name="stripe_checkout_app"' +
 				'class="stripe_checkout_app"' +
-				'style="z-index: 2147483647; display: none; border: 0px none transparent; overflow-x: hidden; overflow-y: auto; visibility: visible; margin: 0px; padding: 0px; -webkit-tap-highlight-color: transparent; position: fixed; left: 0px; top: 0px; width: 100%; height: 100%;">' +
+				'style="z-index: 2147483647; display: none; border: 0px none transparent;' +
+                        'overflow-x: hidden; overflow-y: auto; visibility: visible; margin: ' +
+                        '0px; padding: 0px; -webkit-tap-highlight-color: transparent; position: fixed; ' +
+                        'left: 0px; top: 0px; width: 100%; height: 100%;">' +
 			'</iframe>';
-
     }
 
     IframeTemplate.prototype = {
@@ -176,7 +177,6 @@
         }
     };
 
-
     // Export to window
     window.beanstream = window.beanstream || {};
     window.beanstream.IframeTemplate = IframeTemplate;
@@ -184,7 +184,7 @@
 
 (function() {
 
-    console.log("Starting Beanstream Payform...");
+    console.log('Starting Beanstream Payform...');
 
     var iframe = {};
     iframe.model = new beanstream.IframeModel();

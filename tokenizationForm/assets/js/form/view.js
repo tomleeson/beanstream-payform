@@ -19,14 +19,14 @@
         init: function(config, panels) {
             var self = this;
 
-            self.render('elements', { config: config, panels: panels });
+            self.render('elements', {config: config, panels: panels});
             self.attachPayfieldsListeners();
             self.render('script');
             self.cacheDom(panels);
             self.attachListeners(panels);
 
             if (panels.shipping && panels.billing) {
-                self.render('navigationRelativeToAddressSync', { sync: true, panels: panels });
+                self.render('navigationRelativeToAddressSync', {sync: true, panels: panels});
             }
 
         },
@@ -45,7 +45,8 @@
                 },
                 script: function() {
                     var script = document.createElement('script');
-                    script.src = 'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/beanstream_payfields.js';
+                    script.src =
+                        'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/beanstream_payfields.js';
                     script.setAttribute('data-submit-form', 'false');
                     var form = document.getElementsByTagName('form')[0];
                     form.appendChild(script);
@@ -53,7 +54,8 @@
                 currentPanel: function() {
                     // parameter.panels, parameter.old, arameter.new
 
-                    self._domPanels[parameter.new].className = self._domPanels[parameter.new].className.replace(' hidden', '');
+                    self._domPanels[parameter.new].className =
+                        self._domPanels[parameter.new].className.replace(' hidden', '');
                     if (parameter.old) {
                         self._domPanels[parameter.old].className += ' hidden';
                     }

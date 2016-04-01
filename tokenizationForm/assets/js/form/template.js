@@ -145,7 +145,6 @@
         }
     };
 
-
     // Export to window
     window.beanstream = window.beanstream || {};
     window.beanstream.payform = window.beanstream.payform || {};

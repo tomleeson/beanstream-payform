@@ -3,64 +3,6 @@
     'use strict';
 
     /**
-     * The Model stores data and notifies the View of changes.
-     */
-    function FormModel() {
-        this._addressSync = true;
-        this._billingAddress = {};
-        this._shippingAddress = {};
-        this._shippingAddress = '';
-        this._token = '';
-
-        // this.addressSyncChanged = new beanstream.Event(this);
-    }
-
-    FormModel.prototype = {
-        getAddressSync: function() {
-            return this._addressSync;
-        },
-        setAddressSync: function(value) {
-            if (value != this._addressSync) {
-                this._addressSync = value;
-            }
-        },
-        getShippingAddress: function() {
-            return this._shippingAddress;
-        },
-        setShippingAddress: function(value) {
-            if (value != this._shippingAddress) {
-                this._shippingAddress = value;
-            }
-        },
-        getBillingAddress: function() {
-            return this._billingAddress;
-        },
-        setBillingAddress: function(value) {
-            if (value != this._billingAddress) {
-                this._billingAddress = value;
-            }
-        },
-        getToken: function() {
-            return this._token;
-        },
-        setToken: function(value) {
-            if (value != this._token) {
-                this._token = value;
-            }
-        }
-    };
-
-    // Export to window
-    window.beanstream = window.beanstream || {};
-    window.beanstream.payform = window.beanstream.payform || {};
-    window.beanstream.payform.FormModel = FormModel;
-})(window);
-
-
-(function(window) {
-    'use strict';
-
-    /**
      * The View presents the model and notifies the Controller of UI events.
      */
     function FormView(model, template) {
@@ -77,14 +19,14 @@
         init: function(config, panels) {
             var self = this;
 
-            self.render('elements', { config: config, panels: panels });
+            self.render('elements', {config: config, panels: panels});
             self.attachPayfieldsListeners();
             self.render('script');
             self.cacheDom(panels);
             self.attachListeners(panels);
 
             if (panels.shipping && panels.billing) {
-                self.render('navigationRelativeToAddressSync', { sync: true, panels: panels });
+                self.render('navigationRelativeToAddressSync', {sync: true, panels: panels});
             }
 
         },
@@ -103,7 +45,8 @@
                 },
                 script: function() {
                     var script = document.createElement('script');
-                    script.src = 'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/beanstream_payfields.js';
+                    script.src =
+                        'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/beanstream_payfields.js';
                     script.setAttribute('data-submit-form', 'false');
                     var form = document.getElementsByTagName('form')[0];
                     form.appendChild(script);
@@ -111,7 +54,8 @@
                 currentPanel: function() {
                     // parameter.panels, parameter.old, arameter.new
 
-                    self._domPanels[parameter.new].className = self._domPanels[parameter.new].className.replace(' hidden', '');
+                    self._domPanels[parameter.new].className =
+                        self._domPanels[parameter.new].className.replace(' hidden', '');
                     if (parameter.old) {
                         self._domPanels[parameter.old].className += ' hidden';
                     }
@@ -288,7 +232,6 @@
     window.beanstream.payform.FormView = FormView;
 })(window);
 
-
 (function(window) {
     'use strict';
 
@@ -309,7 +252,6 @@
             self.panels = self.setPanelFlow(self.config);
             self._view.init(self.config, self.panels);
 
-
             self.setCurrentPanel();
 
             self._view.nextPanel.attach(function(sender, panel) {
@@ -325,7 +267,7 @@
             self._view.syncAddresses.attach(function(sender, sync) {
 
                 self._model.setAddressSync(sync);
-                self._view.render('navigationRelativeToAddressSync', { sync: sync, panels: self.panels });
+                self._view.render('navigationRelativeToAddressSync', {sync: sync, panels: self.panels});
 
                 self._model.setBillingAddress(self._model.getShippingAddress());
                 // toDo: add logic to listen for keyup's and update billing address if synced
@@ -363,12 +305,9 @@
                   },
                 */
 
-
                 self._view.closeIframe();
 
             }.bind(self));
-
-
         },
 
         /**
@@ -388,7 +327,7 @@
 
             for (var i = 0; i < panelNames.length; i++) {
 
-                panels[panelNames[i]] = { name: panelNames[i], previous: '', next: '' };
+                panels[panelNames[i]] = {name: panelNames[i], previous: '', next: ''};
 
                 if (i - 1 >= 0) {
                     panels[panelNames[i]].previous = panelNames[i - 1];
@@ -407,7 +346,8 @@
                 url = window.location.href;
             }
             url = url.toLowerCase(); // This is just to avoid case sensitiveness
-            name = name.replace(/[\[\]]/g, '\\$&').toLowerCase();// This is just to avoid case sensitiveness for query parameter name
+            // This is just to avoid case sensitiveness for query parameter name
+            name = name.replace(/[\[\]]/g, '\\$&').toLowerCase();
             var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
             var results = regex.exec(url);
             if (!results) {
@@ -452,7 +392,7 @@
                 }
             }
 
-            self._view.render('currentPanel', { old: self.currentPanel, new: panel, panels: self.panels });
+            self._view.render('currentPanel', {old: self.currentPanel, new: panel, panels: self.panels});
             self.currentPanel = panel;
         }
 
@@ -463,7 +403,6 @@
     window.beanstream.payform = window.beanstream.payform || {};
     window.beanstream.payform.FormController = FormController;
 })(window);
-
 
 (function(window) {
     'use strict';
@@ -611,33 +550,32 @@
         }
     };
 
-
     // Export to window
     window.beanstream = window.beanstream || {};
     window.beanstream.payform = window.beanstream.payform || {};
     window.beanstream.payform.FormTemplate = FormTemplate;
 })(window);
 
-(function (window) {
+(function(window) {
     'use strict';
 
-function Event(sender) {
-    this._sender = sender;
-    this._listeners = [];
-}
-
-Event.prototype = {
-    attach: function (Inputener) {
-        this._listeners.push(Inputener);
-    },
-    notify: function (args) {
-        var index;
-
-        for (index = 0; index < this._listeners.length; index += 1) {
-            this._listeners[index](this._sender, args);
-        }
+    function Event(sender) {
+        this._sender = sender;
+        this._listeners = [];
     }
-};
+
+    Event.prototype = {
+        attach: function(Inputener) {
+            this._listeners.push(Inputener);
+        },
+        notify: function(args) {
+            var index;
+
+            for (index = 0; index < this._listeners.length; index += 1) {
+                this._listeners[index](this._sender, args);
+            }
+        }
+    };
 
     // Export to window
     window.beanstream = window.beanstream || {};

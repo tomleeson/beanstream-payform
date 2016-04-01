@@ -19,7 +19,6 @@
             self.panels = self.setPanelFlow(self.config);
             self._view.init(self.config, self.panels);
 
-
             self.setCurrentPanel();
 
             self._view.nextPanel.attach(function(sender, panel) {
@@ -35,7 +34,7 @@
             self._view.syncAddresses.attach(function(sender, sync) {
 
                 self._model.setAddressSync(sync);
-                self._view.render('navigationRelativeToAddressSync', { sync: sync, panels: self.panels });
+                self._view.render('navigationRelativeToAddressSync', {sync: sync, panels: self.panels});
 
                 self._model.setBillingAddress(self._model.getShippingAddress());
                 // toDo: add logic to listen for keyup's and update billing address if synced
@@ -73,12 +72,9 @@
                   },
                 */
 
-
                 self._view.closeIframe();
 
             }.bind(self));
-
-
         },
 
         /**
@@ -98,7 +94,7 @@
 
             for (var i = 0; i < panelNames.length; i++) {
 
-                panels[panelNames[i]] = { name: panelNames[i], previous: '', next: '' };
+                panels[panelNames[i]] = {name: panelNames[i], previous: '', next: ''};
 
                 if (i - 1 >= 0) {
                     panels[panelNames[i]].previous = panelNames[i - 1];
@@ -117,7 +113,8 @@
                 url = window.location.href;
             }
             url = url.toLowerCase(); // This is just to avoid case sensitiveness
-            name = name.replace(/[\[\]]/g, '\\$&').toLowerCase();// This is just to avoid case sensitiveness for query parameter name
+            // This is just to avoid case sensitiveness for query parameter name
+            name = name.replace(/[\[\]]/g, '\\$&').toLowerCase();
             var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
             var results = regex.exec(url);
             if (!results) {
@@ -162,7 +159,7 @@
                 }
             }
 
-            self._view.render('currentPanel', { old: self.currentPanel, new: panel, panels: self.panels });
+            self._view.render('currentPanel', {old: self.currentPanel, new: panel, panels: self.panels});
             self.currentPanel = panel;
         }
 
