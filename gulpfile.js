@@ -42,7 +42,7 @@ function concatPayform() {
 }
 
 function concatTokenizationform() {
-    return gulp.src(['./tokenizationForm/assets/assets/js/form/model.js',
+    return gulp.src(['./tokenizationForm/assets/js/form/model.js',
                     './tokenizationForm/assets/js/form/view.js',
                     './tokenizationForm/assets/js/form/controller.js',
                     './tokenizationForm/assets/js/form/template.js',

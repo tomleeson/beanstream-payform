@@ -23,6 +23,11 @@
 
             self._view.nextPanel.attach(function(sender, panel) {
 
+                // Do not move to next panel if fields not valid
+                if (!self._view.validateFields(panel)) {
+                    return;
+                }
+
                 // If addresses are synced a click on 'shipping next' will mimic a click on 'billing next'
                 if (panel  === self.panels.shipping.name && self._model.getAddressSync()) {
                     panel = self.panels.billing.name;
@@ -41,38 +46,24 @@
 
             }.bind(self));
 
-            self._view.submit.attach(function(sender, e) {
-                console.log('Controller submit');
+            self._view.tokenUpdated.attach(function(sender, e) {
+                var data = {};
+                data.cardInfo = self._model.getCardInfo();
+                data.billingAddress = self._model.getBillingAddress();
+                data.shippingAddress = self._model.getShippingAddress();
 
-                var billing = self._model.getBillingAddress();
-                var shipping = self._model.getShippingAddress();
-                var token = self._model.getToken();
-
-                console.log('billing: ' + billing);
-                console.log('shipping: ' + shipping);
-                console.log('token: ' + token);
-
-                self._view.fireEvent('beanstream_Payform_complete', {});
-
-                /*
-                  "token": {
-                    "name": "string",
-                    "code": "string"
-                  },
-                  "billing": {
-                    "name": "string",
-                    "address_line1": "string",
-                    "address_line2": "string",
-                    "city": "string",
-                    "province": "string",
-                    "country": "string",
-                    "postal_code": "string",
-                    "phone_number": "string",
-                    "email_address": "string"
-                  },
-                */
+                self._view.fireEventToParent('beanstream_Payform_complete', data);
 
                 self._view.closeIframe();
+
+            }.bind(self));
+
+            self._view.tokenize.attach(function(sender, e) {
+                if (!self._view.validateFields('card')) {
+                    return;
+                }
+
+                self._view.fireEvent('beanstream_tokenize', {}, self._view.form);
 
             }.bind(self));
         },
@@ -129,12 +120,12 @@
         getConfig: function() {
             var self = this;
             var config = {};
-            config.image = self.getParameterByName('data-image');
-            config.name = self.getParameterByName('data-name');
-            config.description = self.getParameterByName('data-description');
-            config.amount = self.getParameterByName('data-amount');
-            config.billing = self.getParameterByName('data-billingAddress');
-            config.shipping = self.getParameterByName('data-shippingAddress');
+            config.image = self.getParameterByName('image');
+            config.name = self.getParameterByName('name');
+            config.description = self.getParameterByName('description');
+            config.amount = self.getParameterByName('amount');
+            config.billing = self.getParameterByName('billingAddress');
+            config.shipping = self.getParameterByName('shippingAddress');
 
             return config;
         },

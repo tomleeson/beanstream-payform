@@ -123,10 +123,9 @@
                     var isValid = _this._model.getIsValid();
 
                     if (isValid) {
-                        _this._domInputElement.className =
-                            _this._domInputElement.className.replace(' beanstream_invalid', '');
+                        _this._domInputElement.classList.remove('beanstream_invalid');
                     } else {
-                        _this._domInputElement.className += ' beanstream_invalid';
+                        _this._domInputElement.classList.add('beanstream_invalid');
                     }
                     _this._domErrorElement.innerHTML = _this._model.getError();
                 }

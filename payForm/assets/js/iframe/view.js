@@ -71,7 +71,18 @@
 
             document.addEventListener('beanstream_closePayform', function() {
                 this.iframe.style.display = 'none';
+                this.iframe.contentWindow.location.reload();
             }.bind(self), false);
+
+            /*
+            document.addEventListener('beanstream_Payform_complete', function(args) {
+                console.log('payForm - beanstream_Payform_complete');
+                console.log('beanstream_Payform_complete: ' + JSON.stringify(args));
+                // toDo: move function to demo page
+                // toDo: outPut to screen for demo
+
+            }.bind(self), false);
+            */
         }
 
     };

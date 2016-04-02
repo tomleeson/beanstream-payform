@@ -12,7 +12,8 @@
 
         this.nextPanel = new beanstream.Event(this);
         this.syncAddresses = new beanstream.Event(this);
-        this.submit = new beanstream.Event(this);
+        this.tokenUpdated = new beanstream.Event(this);
+        this.tokenize = new beanstream.Event(this);
     }
 
     FormView.prototype = {
@@ -45,9 +46,14 @@
                 },
                 script: function() {
                     var script = document.createElement('script');
+                    /*
                     script.src =
                         'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/beanstream_payfields.js';
+                    */
+                    script.src =
+                        'http://localhost:8000/payFields/assets/js/build/beanstream_payfields.js';
                     script.setAttribute('data-submit-form', 'false');
+                    script.setAttribute('data-tokenize-onSubmit', 'false');
                     var form = document.getElementsByTagName('form')[0];
                     form.appendChild(script);
                 },
@@ -55,9 +61,10 @@
                     // parameter.panels, parameter.old, arameter.new
 
                     self._domPanels[parameter.new].className =
-                        self._domPanels[parameter.new].className.replace(' hidden', '');
+                        self._domPanels[parameter.new].classList.remove('hidden');
                     if (parameter.old) {
-                        self._domPanels[parameter.old].className += ' hidden';
+                        self._domPanels[parameter.old].classList.add('hidden');
+
                     }
                 },
                 navigationRelativeToAddressSync: function() {
@@ -79,6 +86,8 @@
         },
         cacheDom(panels) {
             var self = this;
+            self.form = document.getElementsByTagName('form')[0];
+
             self._domPanels = {};
             for (var key in panels) {
                 self._domPanels[key] = document.getElementById(key + '_panel');
@@ -111,6 +120,16 @@
                 }, false);
             }
 
+            if (panels.card) {
+                var button = self._domPanels.card.getElementsByTagName('button')[0];
+                button.addEventListener('click', function(e) {
+                    e = e || window.event;
+                    e.preventDefault();
+                    self.tokenize.notify();
+
+                }.bind(self), false);
+            }
+
             var closeButton = document.getElementsByTagName('a')[0];
             closeButton.addEventListener('click', function(e) {
                 var self = this;
@@ -124,7 +143,6 @@
             var billingInputs = [];
 
             if (self._domPanels.shipping) {
-                // shippingInputs = self._domPanels.shipping.getElementsByTagName('input');
                 shippingInputs = self._domPanels.shipping.querySelectorAll('input[type=text]');
                 shippingInputs = Array.prototype.slice.call(shippingInputs);
             }
@@ -149,7 +167,7 @@
             if (self.isDescendant(self._domPanels.shipping, e.target)) {
                 var inputs = self._domPanels.shipping.querySelectorAll('input[type=text]');
                 for (var i = 0; i < inputs.length; i++) {
-                    var key = inputs[i].getAttribute('data-id');
+                    var key = inputs[i].getAttribute('name');
                     blob[key] = inputs[i].value;
                 }
                 self._model.setShippingAddress(blob);
@@ -161,7 +179,7 @@
             } else {
                 var inputs = self._domPanels.billing.querySelectorAll('input[type=text]');
                 for (var i = 0; i < inputs.length; i++) {
-                    var key = inputs[i].getAttribute('data-id');
+                    var key = inputs[i].getAttribute('name');
                     blob[key] = inputs[i].value;
                 }
                 self._model.setBillingAddress(blob);
@@ -169,18 +187,24 @@
         },
         closeIframe: function() {
             var self = this;
-            console.log('closeIframe');
-            self.fireEvent('beanstream_closePayform');
+            self.fireEventToParent('beanstream_closePayform');
         },
-        fireEvent: function(title, eventDetail) {
+        fireEvent: function(title, eventDetail, element = document) {
             var event = new CustomEvent(title);
             event.eventDetail = eventDetail;
-            document.dispatchEvent(event);
+            element.dispatchEvent(event);
+        },
+        fireEventToParent: function(title, eventDetail) {
+            var event = new CustomEvent(title);
+            event.eventDetail = eventDetail;
+            if (window.parent) {
+                window.parent.document.dispatchEvent(event);
+            }
         },
         attachPayfieldsListeners: function() {
             var self = this;
             document.addEventListener('beanstream_loaded', this.addStylingToPayfields);
-            document.addEventListener('beanstream_tokenUpdated', this.onSubmit.bind(self));
+            document.addEventListener('beanstream_tokenUpdated', this.onTokenUpdated.bind(self));
         },
         isDescendant: function(parent, child) {
             var node = child.parentNode;
@@ -193,23 +217,24 @@
 
             return false;
         },
-        onSubmit: function() {
-            console.log('onSubmit: ' + document.getElementsByName('singleUseToken')[0].value);
-
+        onTokenUpdated: function() {
             var self = this;
-            var token = document.getElementsByName('singleUseToken')[0].value;
-            self._model.setToken(token);
+            var blob = {};
 
-            self.submit.notify();
+            var token = document.getElementsByName('singleUseToken')[0].value;
+            var name = self._domPanels.card.querySelector('input[name="name"]').value;
+            blob.name = name;
+            blob.code = token;
+
+            self._model.setCardInfo(blob);
+            self.tokenUpdated.notify();
         },
 
         addStylingToPayfields: function() {
-            console.log('addStylingToPayfields');
-
             var cardPanel = document.getElementById('card_panel');
             var inputs = cardPanel.getElementsByTagName('input');
             for (var i = 0; i < inputs.length; i++) {
-                inputs[i].className += ' u-full-width';
+                inputs[i].classList.add('u-full-width');
                 inputs[i].type = 'text';
             }
         },
@@ -222,6 +247,42 @@
                 frag.appendChild(temp.firstChild);
             }
             return frag;
+        },
+        validateFields: function(panel) {
+            var self = this;
+            var valid = true;
+            var inputs = self._domPanels[panel].getElementsByTagName('input');
+
+            for (var i = 0; i < inputs.length; i++) {
+                // if input string length is not 0
+                if (inputs[i].value.length) {
+                    inputs[i].classList.remove('beanstream_invalid');
+                } else {
+                    valid = false;
+                    if (!inputs[i].classList.contains('beanstream_invalid')) {
+                        inputs[i].classList.add('beanstream_invalid');
+                    }
+                }
+            }
+
+            if (panel === 'card') {
+                var inputs = Array.prototype.slice.call(inputs);
+                var name = inputs.filter(function(c) {
+                    return c.name === 'name';
+                });
+                name = name[0];
+
+                var email = inputs.filter(function(c) {
+                    return c.name === 'email';
+                });
+                email = email[0];
+
+                // let payfields validate its own fields
+                if (name.value.length && email.value.length) {
+                    valid = true;
+                }
+            }
+            return valid;
         }
 
     };

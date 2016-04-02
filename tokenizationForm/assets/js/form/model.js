@@ -9,10 +9,7 @@
         this._addressSync = true;
         this._billingAddress = {};
         this._shippingAddress = {};
-        this._shippingAddress = '';
-        this._token = '';
-
-        // this.addressSyncChanged = new beanstream.Event(this);
+        this._cardInfo = {};
     }
 
     FormModel.prototype = {
@@ -40,12 +37,12 @@
                 this._billingAddress = value;
             }
         },
-        getToken: function() {
-            return this._token;
+        getCardInfo: function() {
+            return this._cardInfo;
         },
-        setToken: function(value) {
-            if (value != this._token) {
-                this._token = value;
+        setCardInfo: function(value) {
+            if (value != this._cardInfo) {
+                this._cardInfo = value;
             }
         }
     };

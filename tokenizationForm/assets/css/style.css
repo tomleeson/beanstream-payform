@@ -104,6 +104,10 @@ button{
     width:100%;
 }
 
+.beanstream_invalid{
+    border-color: #e9322d !important;
+}
+
 
 /* Larger than mobile */
 @media (min-width: 400px) {

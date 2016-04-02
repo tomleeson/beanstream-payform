@@ -12,7 +12,9 @@
                     '<div class="row heading main-heading">' +
                         '<div class="icon">' +
                             '<a>' +
-                                '<img src="assets/css/images/ic_clear_white_24px.svg">' +
+                                // '<img src="assets/css/images/ic_clear_white_24px.svg">' +
+                                '<img src="https://s3-us-west-2.amazonaws.com/payform-staging/' +
+                                    'payForm/tokenizationForm/images/ic_clear_white_24px.svg">' +
                             '</a>' +
                         '</div>' +
                         '<div class="container">' +
@@ -42,6 +44,16 @@
         self.template.card =
             '<div class="row">' +
                 '<div class="twelve columns">' +
+                    '<input class="u-full-width" type="text" placeholder="Email" name="email">' +
+                '</div>' +
+            '</div>' +
+            '<div class="row">' +
+                '<div class="twelve columns">' +
+                    '<input class="u-full-width" type="text" placeholder="Cardholder&#39;s name" name="name">' +
+                '</div>' +
+            '</div>' +
+            '<div class="row">' +
+                '<div class="twelve columns">' +
                     '<div data-beanstream-target="ccNumber_input"></div>' +
                     '<div data-beanstream-target="ccNumber_error" class="help-block"></div>' +
                 '</div>' +
@@ -60,28 +72,28 @@
         self.template.address =
             '<div class="row">' +
                 '<div class="twelve columns">' +
-                    '<input class="u-full-width" type="text" placeholder="Name" data-id="name">' +
+                    '<input class="u-full-width" type="text" placeholder="Name" name="name">' +
                 '</div>' +
             '</div>' +
             '<div class="row">' +
                 '<div class="twelve columns">' +
-                    '<input class="u-full-width" type="text" placeholder="Street Address" data-id="address_line1">' +
+                    '<input class="u-full-width" type="text" placeholder="Street Address" name="address_line1">' +
                 '</div>' +
             '</div>' +
             '<div class="row">' +
                 '<div class="six columns">' +
-                    '<input class="u-full-width" type="text" placeholder="Zip" data-id="postal_code">' +
+                    '<input class="u-full-width" type="text" placeholder="Zip" name="postal_code">' +
                 '</div>' +
                 '<div class="six columns">' +
-                    '<input class="u-full-width" type="text" placeholder="City" data-id="city">' +
+                    '<input class="u-full-width" type="text" placeholder="City" name="city">' +
                 '</div>' +
             '</div>' +
             '<div class="row">' +
                 '<div class="six columns">' +
-                    '<input class="u-full-width" type="text" placeholder="State" data-id="province">' +
+                    '<input class="u-full-width" type="text" placeholder="State" name="province">' +
                 '</div>' +
                 '<div class="six columns">' +
-                    '<input class="u-full-width" type="text" placeholder="Country" data-id="country">' +
+                    '<input class="u-full-width" type="text" placeholder="Country" name="country">' +
                 '</div>' +
             '</div>' +
             '{{checkbox}}';
@@ -133,7 +145,7 @@
             template.card = template.card.replace('{{panelId}}', panels.card.name);
             template.card = template.card.replace('{{panelName}}', 'Card Info');
             template.card = template.card.replace('{{nextButtonLabel}}', 'Pay $' + config.amount);
-            template.card = template.card.replace('{{nextButtonType}}', 'submit');
+            template.card = template.card.replace('{{nextButtonType}}', 'button');
 
             template.main = self.template.main;
             template.main = template.main.replace('{{name}}', config.name);

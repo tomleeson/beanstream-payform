@@ -23,8 +23,12 @@
         createQueryString: function() {
             var self = this;
 
-            // Too: Update to hosted form
-            return 'http://localhost:8000/demo/remotePage.html?' + self.serialize(self._view.readAttributes());
+            return 'http://localhost:8000/tokenizationForm/test.html?' +
+                self.serialize(self._view.readAttributes());
+            /*
+            return 'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/tokenizationForm/index.html?' +
+                self.serialize(self._view.readAttributes());
+            */
         },
 
         serialize: function(obj) {

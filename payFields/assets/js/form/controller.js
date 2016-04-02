@@ -143,15 +143,12 @@
             self.fireEvent('beanstream_inputValidityChanged', args);
         },
         fireEvent: function(title, eventDetail) {
+            // toDo: add thid IE fix to other custom events
+            // toDo: move this to helper library
             var event = document.createEvent('Event');
             event.initEvent(title, true, true);
             event.eventDetail = eventDetail;
             document.dispatchEvent(event);
-            /*
-            var event = new CustomEvent(title);
-            event.eventDetail = eventDetail;
-            document.dispatchEvent(event);
-            */
         },
         /**
         * Gets card field values from model

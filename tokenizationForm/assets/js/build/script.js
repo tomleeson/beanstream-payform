@@ -3,6 +3,60 @@
     'use strict';
 
     /**
+     * The Model stores data and notifies the View of changes.
+     */
+    function FormModel() {
+        this._addressSync = true;
+        this._billingAddress = {};
+        this._shippingAddress = {};
+        this._cardInfo = {};
+    }
+
+    FormModel.prototype = {
+        getAddressSync: function() {
+            return this._addressSync;
+        },
+        setAddressSync: function(value) {
+            if (value != this._addressSync) {
+                this._addressSync = value;
+            }
+        },
+        getShippingAddress: function() {
+            return this._shippingAddress;
+        },
+        setShippingAddress: function(value) {
+            if (value != this._shippingAddress) {
+                this._shippingAddress = value;
+            }
+        },
+        getBillingAddress: function() {
+            return this._billingAddress;
+        },
+        setBillingAddress: function(value) {
+            if (value != this._billingAddress) {
+                this._billingAddress = value;
+            }
+        },
+        getCardInfo: function() {
+            return this._cardInfo;
+        },
+        setCardInfo: function(value) {
+            if (value != this._cardInfo) {
+                this._cardInfo = value;
+            }
+        }
+    };
+
+    // Export to window
+    window.beanstream = window.beanstream || {};
+    window.beanstream.payform = window.beanstream.payform || {};
+    window.beanstream.payform.FormModel = FormModel;
+})(window);
+
+(function(window) {
+    'use strict';
+
+    /**
      * The View presents the model and notifies the Controller of UI events.
      */
     function FormView(model, template) {
@@ -12,7 +66,8 @@
 
         this.nextPanel = new beanstream.Event(this);
         this.syncAddresses = new beanstream.Event(this);
-        this.submit = new beanstream.Event(this);
+        this.tokenUpdated = new beanstream.Event(this);
+        this.tokenize = new beanstream.Event(this);
     }
 
     FormView.prototype = {
@@ -45,9 +100,14 @@
                 },
                 script: function() {
                     var script = document.createElement('script');
+                    /*
                     script.src =
                         'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/beanstream_payfields.js';
+                    */
+                    script.src =
+                        'http://localhost:8000/payFields/assets/js/build/beanstream_payfields.js';
                     script.setAttribute('data-submit-form', 'false');
+                    script.setAttribute('data-tokenize-onSubmit', 'false');
                     var form = document.getElementsByTagName('form')[0];
                     form.appendChild(script);
                 },
@@ -55,9 +115,10 @@
                     // parameter.panels, parameter.old, arameter.new
 
                     self._domPanels[parameter.new].className =
-                        self._domPanels[parameter.new].className.replace(' hidden', '');
+                        self._domPanels[parameter.new].classList.remove('hidden');
                     if (parameter.old) {
-                        self._domPanels[parameter.old].className += ' hidden';
+                        self._domPanels[parameter.old].classList.add('hidden');
+
                     }
                 },
                 navigationRelativeToAddressSync: function() {
@@ -79,6 +140,8 @@
         },
         cacheDom(panels) {
             var self = this;
+            self.form = document.getElementsByTagName('form')[0];
+
             self._domPanels = {};
             for (var key in panels) {
                 self._domPanels[key] = document.getElementById(key + '_panel');
@@ -111,6 +174,16 @@
                 }, false);
             }
 
+            if (panels.card) {
+                var button = self._domPanels.card.getElementsByTagName('button')[0];
+                button.addEventListener('click', function(e) {
+                    e = e || window.event;
+                    e.preventDefault();
+                    self.tokenize.notify();
+
+                }.bind(self), false);
+            }
+
             var closeButton = document.getElementsByTagName('a')[0];
             closeButton.addEventListener('click', function(e) {
                 var self = this;
@@ -124,7 +197,6 @@
             var billingInputs = [];
 
             if (self._domPanels.shipping) {
-                // shippingInputs = self._domPanels.shipping.getElementsByTagName('input');
                 shippingInputs = self._domPanels.shipping.querySelectorAll('input[type=text]');
                 shippingInputs = Array.prototype.slice.call(shippingInputs);
             }
@@ -149,7 +221,7 @@
             if (self.isDescendant(self._domPanels.shipping, e.target)) {
                 var inputs = self._domPanels.shipping.querySelectorAll('input[type=text]');
                 for (var i = 0; i < inputs.length; i++) {
-                    var key = inputs[i].getAttribute('data-id');
+                    var key = inputs[i].getAttribute('name');
                     blob[key] = inputs[i].value;
                 }
                 self._model.setShippingAddress(blob);
@@ -161,7 +233,7 @@
             } else {
                 var inputs = self._domPanels.billing.querySelectorAll('input[type=text]');
                 for (var i = 0; i < inputs.length; i++) {
-                    var key = inputs[i].getAttribute('data-id');
+                    var key = inputs[i].getAttribute('name');
                     blob[key] = inputs[i].value;
                 }
                 self._model.setBillingAddress(blob);
@@ -169,18 +241,24 @@
         },
         closeIframe: function() {
             var self = this;
-            console.log('closeIframe');
-            self.fireEvent('beanstream_closePayform');
+            self.fireEventToParent('beanstream_closePayform');
         },
-        fireEvent: function(title, eventDetail) {
+        fireEvent: function(title, eventDetail, element = document) {
             var event = new CustomEvent(title);
             event.eventDetail = eventDetail;
-            document.dispatchEvent(event);
+            element.dispatchEvent(event);
+        },
+        fireEventToParent: function(title, eventDetail) {
+            var event = new CustomEvent(title);
+            event.eventDetail = eventDetail;
+            if (window.parent) {
+                window.parent.document.dispatchEvent(event);
+            }
         },
         attachPayfieldsListeners: function() {
             var self = this;
             document.addEventListener('beanstream_loaded', this.addStylingToPayfields);
-            document.addEventListener('beanstream_tokenUpdated', this.onSubmit.bind(self));
+            document.addEventListener('beanstream_tokenUpdated', this.onTokenUpdated.bind(self));
         },
         isDescendant: function(parent, child) {
             var node = child.parentNode;
@@ -193,23 +271,24 @@
 
             return false;
         },
-        onSubmit: function() {
-            console.log('onSubmit: ' + document.getElementsByName('singleUseToken')[0].value);
-
+        onTokenUpdated: function() {
             var self = this;
-            var token = document.getElementsByName('singleUseToken')[0].value;
-            self._model.setToken(token);
+            var blob = {};
 
-            self.submit.notify();
+            var token = document.getElementsByName('singleUseToken')[0].value;
+            var name = self._domPanels.card.querySelector('input[name="name"]').value;
+            blob.name = name;
+            blob.code = token;
+
+            self._model.setCardInfo(blob);
+            self.tokenUpdated.notify();
         },
 
         addStylingToPayfields: function() {
-            console.log('addStylingToPayfields');
-
             var cardPanel = document.getElementById('card_panel');
             var inputs = cardPanel.getElementsByTagName('input');
             for (var i = 0; i < inputs.length; i++) {
-                inputs[i].className += ' u-full-width';
+                inputs[i].classList.add('u-full-width');
                 inputs[i].type = 'text';
             }
         },
@@ -222,6 +301,42 @@
                 frag.appendChild(temp.firstChild);
             }
             return frag;
+        },
+        validateFields: function(panel) {
+            var self = this;
+            var valid = true;
+            var inputs = self._domPanels[panel].getElementsByTagName('input');
+
+            for (var i = 0; i < inputs.length; i++) {
+                // if input string length is not 0
+                if (inputs[i].value.length) {
+                    inputs[i].classList.remove('beanstream_invalid');
+                } else {
+                    valid = false;
+                    if (!inputs[i].classList.contains('beanstream_invalid')) {
+                        inputs[i].classList.add('beanstream_invalid');
+                    }
+                }
+            }
+
+            if (panel === 'card') {
+                var inputs = Array.prototype.slice.call(inputs);
+                var name = inputs.filter(function(c) {
+                    return c.name === 'name';
+                });
+                name = name[0];
+
+                var email = inputs.filter(function(c) {
+                    return c.name === 'email';
+                });
+                email = email[0];
+
+                // let payfields validate its own fields
+                if (name.value.length && email.value.length) {
+                    valid = true;
+                }
+            }
+            return valid;
         }
 
     };
@@ -256,6 +371,11 @@
 
             self._view.nextPanel.attach(function(sender, panel) {
 
+                // Do not move to next panel if fields not valid
+                if (!self._view.validateFields(panel)) {
+                    return;
+                }
+
                 // If addresses are synced a click on 'shipping next' will mimic a click on 'billing next'
                 if (panel  === self.panels.shipping.name && self._model.getAddressSync()) {
                     panel = self.panels.billing.name;
@@ -274,38 +394,24 @@
 
             }.bind(self));
 
-            self._view.submit.attach(function(sender, e) {
-                console.log('Controller submit');
+            self._view.tokenUpdated.attach(function(sender, e) {
+                var data = {};
+                data.cardInfo = self._model.getCardInfo();
+                data.billingAddress = self._model.getBillingAddress();
+                data.shippingAddress = self._model.getShippingAddress();
 
-                var billing = self._model.getBillingAddress();
-                var shipping = self._model.getShippingAddress();
-                var token = self._model.getToken();
-
-                console.log('billing: ' + billing);
-                console.log('shipping: ' + shipping);
-                console.log('token: ' + token);
-
-                self._view.fireEvent('beanstream_Payform_complete', {});
-
-                /*
-                  "token": {
-                    "name": "string",
-                    "code": "string"
-                  },
-                  "billing": {
-                    "name": "string",
-                    "address_line1": "string",
-                    "address_line2": "string",
-                    "city": "string",
-                    "province": "string",
-                    "country": "string",
-                    "postal_code": "string",
-                    "phone_number": "string",
-                    "email_address": "string"
-                  },
-                */
+                self._view.fireEventToParent('beanstream_Payform_complete', data);
 
                 self._view.closeIframe();
+
+            }.bind(self));
+
+            self._view.tokenize.attach(function(sender, e) {
+                if (!self._view.validateFields('card')) {
+                    return;
+                }
+
+                self._view.fireEvent('beanstream_tokenize', {}, self._view.form);
 
             }.bind(self));
         },
@@ -362,12 +468,12 @@
         getConfig: function() {
             var self = this;
             var config = {};
-            config.image = self.getParameterByName('data-image');
-            config.name = self.getParameterByName('data-name');
-            config.description = self.getParameterByName('data-description');
-            config.amount = self.getParameterByName('data-amount');
-            config.billing = self.getParameterByName('data-billingAddress');
-            config.shipping = self.getParameterByName('data-shippingAddress');
+            config.image = self.getParameterByName('image');
+            config.name = self.getParameterByName('name');
+            config.description = self.getParameterByName('description');
+            config.amount = self.getParameterByName('amount');
+            config.billing = self.getParameterByName('billingAddress');
+            config.shipping = self.getParameterByName('shippingAddress');
 
             return config;
         },
@@ -417,7 +523,9 @@
                     '<div class="row heading main-heading">' +
                         '<div class="icon">' +
                             '<a>' +
-                                '<img src="assets/css/images/ic_clear_white_24px.svg">' +
+                                // '<img src="assets/css/images/ic_clear_white_24px.svg">' +
+                                '<img src="https://s3-us-west-2.amazonaws.com/payform-staging/' +
+                                    'payForm/tokenizationForm/images/ic_clear_white_24px.svg">' +
                             '</a>' +
                         '</div>' +
                         '<div class="container">' +
@@ -447,6 +555,16 @@
         self.template.card =
             '<div class="row">' +
                 '<div class="twelve columns">' +
+                    '<input class="u-full-width" type="text" placeholder="Email" name="email">' +
+                '</div>' +
+            '</div>' +
+            '<div class="row">' +
+                '<div class="twelve columns">' +
+                    '<input class="u-full-width" type="text" placeholder="Cardholder&#39;s name" name="name">' +
+                '</div>' +
+            '</div>' +
+            '<div class="row">' +
+                '<div class="twelve columns">' +
                     '<div data-beanstream-target="ccNumber_input"></div>' +
                     '<div data-beanstream-target="ccNumber_error" class="help-block"></div>' +
                 '</div>' +
@@ -465,28 +583,28 @@
         self.template.address =
             '<div class="row">' +
                 '<div class="twelve columns">' +
-                    '<input class="u-full-width" type="text" placeholder="Name" data-id="name">' +
+                    '<input class="u-full-width" type="text" placeholder="Name" name="name">' +
                 '</div>' +
             '</div>' +
             '<div class="row">' +
                 '<div class="twelve columns">' +
-                    '<input class="u-full-width" type="text" placeholder="Street Address" data-id="address_line1">' +
+                    '<input class="u-full-width" type="text" placeholder="Street Address" name="address_line1">' +
                 '</div>' +
             '</div>' +
             '<div class="row">' +
                 '<div class="six columns">' +
-                    '<input class="u-full-width" type="text" placeholder="Zip" data-id="postal_code">' +
+                    '<input class="u-full-width" type="text" placeholder="Zip" name="postal_code">' +
                 '</div>' +
                 '<div class="six columns">' +
-                    '<input class="u-full-width" type="text" placeholder="City" data-id="city">' +
+                    '<input class="u-full-width" type="text" placeholder="City" name="city">' +
                 '</div>' +
             '</div>' +
             '<div class="row">' +
                 '<div class="six columns">' +
-                    '<input class="u-full-width" type="text" placeholder="State" data-id="province">' +
+                    '<input class="u-full-width" type="text" placeholder="State" name="province">' +
                 '</div>' +
                 '<div class="six columns">' +
-                    '<input class="u-full-width" type="text" placeholder="Country" data-id="country">' +
+                    '<input class="u-full-width" type="text" placeholder="Country" name="country">' +
                 '</div>' +
             '</div>' +
             '{{checkbox}}';
@@ -538,7 +656,7 @@
             template.card = template.card.replace('{{panelId}}', panels.card.name);
             template.card = template.card.replace('{{panelName}}', 'Card Info');
             template.card = template.card.replace('{{nextButtonLabel}}', 'Pay $' + config.amount);
-            template.card = template.card.replace('{{nextButtonType}}', 'submit');
+            template.card = template.card.replace('{{nextButtonType}}', 'button');
 
             template.main = self.template.main;
             template.main = template.main.replace('{{name}}', config.name);
@@ -584,7 +702,7 @@
 
 (function() {
 
-    console.log('Starting Beanstream Payform...');
+    console.log('Starting Beanstream Payform: Tokenization...');
 
     var form = {};
     form.model = new beanstream.payform.FormModel();

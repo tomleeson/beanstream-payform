@@ -1,6 +1,6 @@
 (function() {
 
-    console.log('Starting Beanstream Payform...');
+    console.log('Starting Beanstream Payform: Tokenization...');
 
     var form = {};
     form.model = new beanstream.payform.FormModel();

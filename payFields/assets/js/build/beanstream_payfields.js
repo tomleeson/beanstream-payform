@@ -725,10 +725,9 @@
                     var isValid = _this._model.getIsValid();
 
                     if (isValid) {
-                        _this._domInputElement.className =
-                            _this._domInputElement.className.replace(' beanstream_invalid', '');
+                        _this._domInputElement.classList.remove('beanstream_invalid');
                     } else {
-                        _this._domInputElement.className += ' beanstream_invalid';
+                        _this._domInputElement.classList.add('beanstream_invalid');
                     }
                     _this._domErrorElement.innerHTML = _this._model.getError();
                 }
@@ -1219,21 +1218,32 @@
             window.onload = function(e) {
                 // validate and get token before submit event
                 // button is below script tag, so we wait until it loads
+                // toDo: change put button above script tag. drop onload event???
                 self.submitBtn = self.form.querySelector('input[type=submit]');
                 if (!self.submitBtn) {
                     self.submitBtn = self.form.querySelector('button[type=submit]');
                 }
 
-                self.submitBtn.addEventListener('click', function(e) {
+                // if there is no submit button don't submit
+                if (self.submitBtn) {
+                    self.submitBtn.addEventListener('click', function(e) {
+                        self.submit.notify(e);
+                    }, false);
+                }
+
+                self.form.addEventListener('beanstream_tokenize', function(e) {
                     self.submit.notify(e);
-                }, false);
+                }.bind(self), false);
+
             }.bind(self);
         },
         render: function(viewCmd, parameter) {
             var self = this;
             var viewCommands = {
                 enableSubmitButton: function(parameter) {
-                    self.submitBtn.disabled = Boolean(!parameter);
+                    if (self.submitBtn) {
+                        self.submitBtn.disabled = Boolean(!parameter);
+                    }
                 },
                 injectStyles: function(parameter) {
                     var fileref = document.createElement('link');
@@ -1269,7 +1279,9 @@
                     if (inputs[currentInput + 1]) {
                         inputs[currentInput + 1].focus();
                     } else {
-                        self.submitBtn.focus();
+                        if (self.submitBtn) {
+                            self.submitBtn.focus();
+                        }
                     }
                 }
             };
@@ -1435,15 +1447,12 @@
             self.fireEvent('beanstream_inputValidityChanged', args);
         },
         fireEvent: function(title, eventDetail) {
+            // toDo: add thid IE fix to other custom events
+            // toDo: move this to helper library
             var event = document.createEvent('Event');
             event.initEvent(title, true, true);
             event.eventDetail = eventDetail;
             document.dispatchEvent(event);
-            /*
-            var event = new CustomEvent(title);
-            event.eventDetail = eventDetail;
-            document.dispatchEvent(event);
-            */
         },
         /**
         * Gets card field values from model

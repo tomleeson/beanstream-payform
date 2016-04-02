@@ -65,21 +65,32 @@
             window.onload = function(e) {
                 // validate and get token before submit event
                 // button is below script tag, so we wait until it loads
+                // toDo: change put button above script tag. drop onload event???
                 self.submitBtn = self.form.querySelector('input[type=submit]');
                 if (!self.submitBtn) {
                     self.submitBtn = self.form.querySelector('button[type=submit]');
                 }
 
-                self.submitBtn.addEventListener('click', function(e) {
+                // if there is no submit button don't submit
+                if (self.submitBtn) {
+                    self.submitBtn.addEventListener('click', function(e) {
+                        self.submit.notify(e);
+                    }, false);
+                }
+
+                self.form.addEventListener('beanstream_tokenize', function(e) {
                     self.submit.notify(e);
-                }, false);
+                }.bind(self), false);
+
             }.bind(self);
         },
         render: function(viewCmd, parameter) {
             var self = this;
             var viewCommands = {
                 enableSubmitButton: function(parameter) {
-                    self.submitBtn.disabled = Boolean(!parameter);
+                    if (self.submitBtn) {
+                        self.submitBtn.disabled = Boolean(!parameter);
+                    }
                 },
                 injectStyles: function(parameter) {
                     var fileref = document.createElement('link');
@@ -115,7 +126,9 @@
                     if (inputs[currentInput + 1]) {
                         inputs[currentInput + 1].focus();
                     } else {
-                        self.submitBtn.focus();
+                        if (self.submitBtn) {
+                            self.submitBtn.focus();
+                        }
                     }
                 }
             };
