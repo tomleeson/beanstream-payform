@@ -10,6 +10,7 @@
         this._billingAddress = {};
         this._shippingAddress = {};
         this._cardInfo = {};
+        this._currentPanel = '';
     }
 
     FormModel.prototype = {
@@ -43,6 +44,14 @@
         setCardInfo: function(value) {
             if (value != this._cardInfo) {
                 this._cardInfo = value;
+            }
+        },
+        getCurrentPanel: function() {
+            return this._currentPanel;
+        },
+        setCurrentPanel: function(value) {
+            if (value != this._currentPanel) {
+                this._currentPanel = value;
             }
         }
     };

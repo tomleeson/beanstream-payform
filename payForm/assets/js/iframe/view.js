@@ -67,6 +67,11 @@
                 e.preventDefault();
                 e = e || window.event;
                 this.iframe.style.display = 'block';
+
+                var innerDoc = this.iframe.contentDocument || this.iframe.contentWindow.document;
+                var form = innerDoc.getElementsByTagName('form')[0];
+                beanstream.Helper.fireEvent('beanstream_Payform_visible', {}, form);
+
             }.bind(self), false);
 
             document.addEventListener('beanstream_closePayform', function() {

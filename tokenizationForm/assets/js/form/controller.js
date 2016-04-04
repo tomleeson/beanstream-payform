@@ -52,7 +52,7 @@
                 data.billingAddress = self._model.getBillingAddress();
                 data.shippingAddress = self._model.getShippingAddress();
 
-                self._view.fireEventToParent('beanstream_Payform_complete', data);
+                beanstream.Helper.fireEvent('beanstream_Payform_complete', data, window.parent.document);
 
                 self._view.closeIframe();
 
@@ -63,7 +63,7 @@
                     return;
                 }
 
-                self._view.fireEvent('beanstream_tokenize', {}, self._view.form);
+                beanstream.Helper.fireEvent('beanstream_tokenize', {}, self._view.form);
 
             }.bind(self));
         },
@@ -133,12 +133,6 @@
         setCurrentPanel: function(panel) {
             var self = this;
 
-            // toDo: add validation. only allow progression if fields complete
-
-            if (!self.currentPanel) {
-                self.currentPanel = '';
-            }
-
             // 'panel' parameter not defined on initial call. set initil panel according to flow
             if (!panel) {
                 if (self.panels.shipping) {
@@ -150,8 +144,8 @@
                 }
             }
 
-            self._view.render('currentPanel', {old: self.currentPanel, new: panel, panels: self.panels});
-            self.currentPanel = panel;
+            self._view.render('currentPanel', {old: self._model.getCurrentPanel(), new: panel, panels: self.panels});
+            self._model.setCurrentPanel(panel);
         }
 
     };

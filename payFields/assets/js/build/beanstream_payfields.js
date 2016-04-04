@@ -78,10 +78,18 @@
             return true;
         }
 
+        function fireEvent(title, eventDetail, element = document) {
+            var event = document.createEvent('Event');
+            event.initEvent(title, true, true);
+            event.eventDetail = eventDetail;
+            element.dispatchEvent(event);
+        }
+
         return {
             isNonInputKey: isNonInputKey,
             createDocFrag: createDocFrag,
-            isEmpty: isEmpty
+            isEmpty: isEmpty,
+            fireEvent: fireEvent
         };
     })();
 
@@ -1326,7 +1334,7 @@
                                 'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/style.css');
             // self._view.render('injectStyles', '../assets/css/style.css');
             self.injectFields();
-            self.fireEvent('beanstream_loaded');
+            beanstream.Helper.fireEvent('beanstream_loaded', {}, document);
         },
         onSubmit: function(e) {
             var self = this;
@@ -1354,7 +1362,7 @@
                     if (this._model.getSubmitForm()) {
                         self._view.form.submit();
                     } else {
-                        self.fireEvent('beanstream_tokenUpdated');
+                        beanstream.Helper.fireEvent('beanstream_tokenUpdated', args, document);
                     }
                     self._view.render('enableSubmitButton', 'true');
                 }.bind(self));
@@ -1443,16 +1451,7 @@
             }
         },
         inputValidityChanged: function(args) {
-            var self = this;
-            self.fireEvent('beanstream_inputValidityChanged', args);
-        },
-        fireEvent: function(title, eventDetail) {
-            // toDo: add thid IE fix to other custom events
-            // toDo: move this to helper library
-            var event = document.createEvent('Event');
-            event.initEvent(title, true, true);
-            event.eventDetail = eventDetail;
-            document.dispatchEvent(event);
+            beanstream.Helper.fireEvent('beanstream_inputValidityChanged', args, document);
         },
         /**
         * Gets card field values from model

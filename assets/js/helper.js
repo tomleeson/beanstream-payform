@@ -78,10 +78,18 @@
             return true;
         }
 
+        function fireEvent(title, eventDetail, element = document) {
+            var event = document.createEvent('Event');
+            event.initEvent(title, true, true);
+            event.eventDetail = eventDetail;
+            element.dispatchEvent(event);
+        }
+
         return {
             isNonInputKey: isNonInputKey,
             createDocFrag: createDocFrag,
-            isEmpty: isEmpty
+            isEmpty: isEmpty,
+            fireEvent: fireEvent
         };
     })();
 

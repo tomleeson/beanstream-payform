@@ -25,6 +25,29 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
   </script>
 </form>
 
+<script>
+
+    /**
+    * Registered as callback function for 'beanstream_Payform_complete' event
+    *
+    * @param {Event} e
+    */
+    document.addEventListener('beanstream_Payform_complete', function(e) {
+
+        var responsePanel = document.getElementById('response');
+        var responsePanel_token = document.getElementById('data');
+        responsePanel_token.innerText = JSON.stringify(e);
+        responsePanel.style.display = 'block';
+    }, false);
+
+</script>
+
+        <div class='container' id='response' style='display:none;'>
+            <h2>Success!</h2>
+            <p>Response: 
+                <span id='data'></span>
+            </p>
+        </div>
 
 </body>
 </html>

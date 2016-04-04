@@ -14,9 +14,9 @@ gulp.task('concat', function() {
 });
 
 function concatPayfields() {
-    return gulp.src(['./payFields/assets/js/helper.js',
-                    './payFields/assets/js/validator.js',
-                    './payFields/assets/js/ajaxHelper.js',
+    return gulp.src(['./assets/js/helper.js',
+                    './assets/js/validator.js',
+                    './assets/js/ajaxHelper.js',
                     './payFields/assets/js/cc_input/model.js',
                     './payFields/assets/js/cc_input/view.js',
                     './payFields/assets/js/cc_input/controller.js',
@@ -24,7 +24,7 @@ function concatPayfields() {
                     './payFields/assets/js/form/model.js',
                     './payFields/assets/js/form/view.js',
                     './payFields/assets/js/form/controller.js',
-                    './payFields/assets/js/event.js',
+                    './assets/js/event.js',
                     './payFields/assets/js/app.js'])
     .pipe(concat('beanstream_payfields.js'))
     .pipe(gulp.dest('./payFields/assets/js/build/'));
@@ -35,7 +35,8 @@ function concatPayform() {
                     './payForm/assets/js/iframe/view.js',
                     './payForm/assets/js/iframe/controller.js',
                     './payForm/assets/js/iframe/template.js',
-                    './payForm/assets/js/event.js',
+                    './assets/js/event.js',
+                    './assets/js/helper.js',
                     './payForm/assets/js/app.js'])
     .pipe(concat('beanstream_payform.js'))
     .pipe(gulp.dest('./payForm/assets/js/build/'));
@@ -46,7 +47,8 @@ function concatTokenizationform() {
                     './tokenizationForm/assets/js/form/view.js',
                     './tokenizationForm/assets/js/form/controller.js',
                     './tokenizationForm/assets/js/form/template.js',
-                    './tokenizationForm/assets/js/event.js',
+                    './assets/js/event.js',
+                    './assets/js/helper.js',
                     './tokenizationForm/assets/js/app.js'])
     .pipe(concat('script.js'))
     .pipe(gulp.dest('./tokenizationForm/assets/js/build/'));

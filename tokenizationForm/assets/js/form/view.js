@@ -64,7 +64,7 @@
                         self._domPanels[parameter.new].classList.remove('hidden');
                     if (parameter.old) {
                         self._domPanels[parameter.old].classList.add('hidden');
-
+                        self.focusFirstElement(self._domPanels[parameter.new]);
                     }
                 },
                 navigationRelativeToAddressSync: function() {
@@ -83,6 +83,9 @@
             };
 
             viewCommands[viewCmd]();
+        },
+        focusFirstElement: function(panel) {
+            panel.querySelectorAll('input[type=text]')[0].focus();
         },
         cacheDom(panels) {
             var self = this;
@@ -138,6 +141,12 @@
                 self.closeIframe();
             }.bind(self), false);
 
+            self.form.addEventListener('beanstream_Payform_visible', function(e) {
+                var self = this;
+                self.focusFirstElement(self._domPanels[self._model.getCurrentPanel()]);
+                console.log('beanstream_Payform_visible');
+            }.bind(self), false);
+
             // Add listeners to all inputs on shipping and billing panels
             var shippingInputs = [];
             var billingInputs = [];
@@ -187,19 +196,7 @@
         },
         closeIframe: function() {
             var self = this;
-            self.fireEventToParent('beanstream_closePayform');
-        },
-        fireEvent: function(title, eventDetail, element = document) {
-            var event = new CustomEvent(title);
-            event.eventDetail = eventDetail;
-            element.dispatchEvent(event);
-        },
-        fireEventToParent: function(title, eventDetail) {
-            var event = new CustomEvent(title);
-            event.eventDetail = eventDetail;
-            if (window.parent) {
-                window.parent.document.dispatchEvent(event);
-            }
+            beanstream.Helper.fireEvent('beanstream_closePayform', {}, window.parent.document);
         },
         attachPayfieldsListeners: function() {
             var self = this;
