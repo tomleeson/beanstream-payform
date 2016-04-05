@@ -11,6 +11,8 @@
         this._shippingAddress = {};
         this._cardInfo = {};
         this._currentPanel = '';
+        this._isValid = false;
+        this._cardErrors = [];
     }
 
     FormModel.prototype = {
@@ -53,6 +55,29 @@
             if (value != this._currentPanel) {
                 this._currentPanel = value;
             }
+        },
+        getIsCurrentPanelValid: function() {
+            return this._isValid;
+        },
+        setIsCurrentPanelValid: function(value) {
+            if (value != this._isValid) {
+                this._isValid = value;
+            }
+        },
+        getCardErrors: function() {
+            return this._cardErrors;
+        },
+        setCardErrors: function(value) {
+            // Remove previous error for field
+            var cardErrors = this._cardErrors.filter(function(f) {
+                return f.fieldType != value.fieldType;
+            });
+
+            // only add error message if field invalid
+            if (value.isValid != true) {
+                cardErrors.push(value);
+            }
+            this._cardErrors = cardErrors;
         }
     };
 
@@ -74,9 +99,11 @@
         this._template = template;
 
         this.nextPanel = new beanstream.Event(this);
+        this.previousPanel = new beanstream.Event(this);
         this.syncAddresses = new beanstream.Event(this);
         this.tokenUpdated = new beanstream.Event(this);
         this.tokenize = new beanstream.Event(this);
+        this.errorsUpdated = new beanstream.Event(this);
     }
 
     FormView.prototype = {
@@ -103,7 +130,7 @@
                     if (!self.body) {
                         self.body = document.getElementsByTagName('body')[0];
                     }
-                    var template = self._template.show(parameter.config, parameter.panels);
+                    var template = self._template.show('elements', parameter);
                     var frag = self.createDocFrag(template);
                     self.body.appendChild(frag);
                 },
@@ -123,8 +150,8 @@
                 currentPanel: function() {
                     // parameter.panels, parameter.old, arameter.new
 
-                    self._domPanels[parameter.new].className =
-                        self._domPanels[parameter.new].classList.remove('hidden');
+                    self._domPanels[parameter.new].classList.remove('hidden');
+
                     if (parameter.old) {
                         self._domPanels[parameter.old].classList.add('hidden');
                         self.focusFirstElement(self._domPanels[parameter.new]);
@@ -133,14 +160,40 @@
                 navigationRelativeToAddressSync: function() {
                     // parameter.panels, parameter.sync
 
-                    var button = self._domPanels.shipping.getElementsByTagName('button')[0];
+                    var shippingNextButton = self._domPanels.shipping.getElementsByTagName('button')[0];
+                    var cardBackButton = self._domPanels.card.getElementsByTagName('a')[1];
+
                     if (parameter.sync) {
-                        button.innerHTML = parameter.panels.billing.next + ' &gt;';
+                        shippingNextButton.innerHTML = parameter.panels.billing.next + ' &gt;';
+                        cardBackButton.innerHTML = '<h6>' + parameter.panels.billing.previous + '</h6>';
                     } else {
-                        button.innerHTML = parameter.panels.shipping.next + ' &gt;';
+                        shippingNextButton.innerHTML = parameter.panels.shipping.next + ' &gt;';
+                        cardBackButton.innerHTML = '<h6>' + parameter.panels.card.previous + '</h6>';
                     }
 
-                    // toDo: update previous button on card panel
+                },
+                errorBlock: function() {
+                    // parameter.errorMessages, parameter.panel
+
+                    var errorBlock = self._domPanels[parameter.panel].getElementsByClassName('error')[0];
+
+                    // errorBlock.innerHTML = '';
+                    while (errorBlock.firstChild) {
+                        errorBlock.removeChild(errorBlock.firstChild);
+                    }
+
+                    if (parameter.errorMessages.length) {
+                        var template = self._template.show('errors', parameter);
+                        var frag = self.createDocFrag(template);
+                        errorBlock.appendChild(frag);
+
+                        console.log('template: ' + template);
+                        console.log('parameter.errorMessages: ' + parameter.errorMessages);
+
+                        errorBlock.classList.remove('hidden');
+                    } else {
+                        errorBlock.classList.add('hidden');
+                    }
 
                 }
             };
@@ -163,12 +216,33 @@
             var self = this;
 
             if (panels.shipping) {
+                // Next button
                 var button = self._domPanels.shipping.getElementsByTagName('button')[0];
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
                     e = e || window.event;
                     self.nextPanel.notify(panels.shipping.name);
                 }.bind(self), false);
+
+                // Previous button
+                var billingBackButtons = Array.prototype.slice.call(self._domPanels.billing.getElementsByTagName('a'));
+                var cardBackButtons = Array.prototype.slice.call(self._domPanels.card.getElementsByTagName('a'));
+                var backButtons = billingBackButtons.concat(cardBackButtons);
+
+                for (var i = 0; i < backButtons.length; i++) {
+                    backButtons[i].addEventListener('click', previousPanel.bind(self), false);
+                }
+
+                function previousPanel(e) {
+                    e = e || window.event;
+                    e.preventDefault();
+
+                    if (self.isDescendant(self._domPanels.billing, e.target)) {
+                        self.previousPanel.notify(panels.billing.name);
+                    } else if (self.isDescendant(self._domPanels.card, e.target)) {
+                        self.previousPanel.notify(panels.card.name);
+                    }
+                }
             }
             if (panels.billing) {
                 var button = self._domPanels.billing.getElementsByTagName('button')[0];
@@ -196,7 +270,7 @@
                 }.bind(self), false);
             }
 
-            var closeButton = document.getElementsByTagName('a')[0];
+            var closeButton = document.getElementById('close-button');
             closeButton.addEventListener('click', function(e) {
                 var self = this;
                 e.preventDefault();
@@ -263,8 +337,9 @@
         },
         attachPayfieldsListeners: function() {
             var self = this;
-            document.addEventListener('beanstream_loaded', this.addStylingToPayfields);
+            document.addEventListener('beanstream_loaded', this.addStylingToPayfields.bind(self));
             document.addEventListener('beanstream_tokenUpdated', this.onTokenUpdated.bind(self));
+            document.addEventListener('beanstream_inputValidityChanged', this.onCardValidityChanged.bind(self));
         },
         isDescendant: function(parent, child) {
             var node = child.parentNode;
@@ -289,13 +364,36 @@
             self._model.setCardInfo(blob);
             self.tokenUpdated.notify();
         },
+        onCardValidityChanged: function(e) {
+            var self = this;
+            self._model.setCardErrors(e.eventDetail);
+            self.errorsUpdated.notify();
+        },
 
         addStylingToPayfields: function() {
+            var self = this;
             var cardPanel = document.getElementById('card_panel');
             var inputs = cardPanel.getElementsByTagName('input');
+
+            // get placehokders - check if input is child
+            // isDescendant
+
+            var numberPlaceholder = document.querySelector('[data-beanstream-target="ccNumber_input"]');
+            var cvvPlaceholder = document.querySelector('[data-beanstream-target="ccExp_input"]');
+            var expiryPlaceholder = document.querySelector('[data-beanstream-target="ccCvv_input"]');
+
             for (var i = 0; i < inputs.length; i++) {
                 inputs[i].classList.add('u-full-width');
                 inputs[i].type = 'text';
+
+                if (self.isDescendant(numberPlaceholder, inputs[i])) {
+                    inputs[i].placeholder = 'Card number';
+
+                } else if (self.isDescendant(expiryPlaceholder, inputs[i])) {
+                    inputs[i].placeholder = 'Expiry MM/YY';
+                } else if (self.isDescendant(cvvPlaceholder, inputs[i])) {
+                    inputs[i].placeholder = 'CVV';
+                }
             }
         },
         createDocFrag: function(htmlStr) {
@@ -308,41 +406,31 @@
             }
             return frag;
         },
+
+        /**
+         * Checks that no fields on current panel are empty
+         *
+         * @param {String} panel
+         * @return {Boole} isValid
+         */
         validateFields: function(panel) {
             var self = this;
-            var valid = true;
+            var isValid = true;
             var inputs = self._domPanels[panel].getElementsByTagName('input');
 
             for (var i = 0; i < inputs.length; i++) {
                 // if input string length is not 0
-                if (inputs[i].value.length) {
-                    inputs[i].classList.remove('beanstream_invalid');
+                if (!inputs[i].value.length) {
+                    isValid = false;
+                    inputs[i].classList.add('beanstream_invalid');
                 } else {
-                    valid = false;
-                    if (!inputs[i].classList.contains('beanstream_invalid')) {
-                        inputs[i].classList.add('beanstream_invalid');
-                    }
+                    inputs[i].classList.remove('beanstream_invalid');
                 }
             }
 
-            if (panel === 'card') {
-                var inputs = Array.prototype.slice.call(inputs);
-                var name = inputs.filter(function(c) {
-                    return c.name === 'name';
-                });
-                name = name[0];
-
-                var email = inputs.filter(function(c) {
-                    return c.name === 'email';
-                });
-                email = email[0];
-
-                // let payfields validate its own fields
-                if (name.value.length && email.value.length) {
-                    valid = true;
-                }
-            }
-            return valid;
+            self._model.setIsCurrentPanelValid(isValid);
+            self.errorsUpdated.notify();
+            return isValid;
         }
 
     };
@@ -390,13 +478,22 @@
                 self.setCurrentPanel(self.panels[panel].next);
             }.bind(self));
 
+            self._view.previousPanel.attach(function(sender, panel) {
+
+                // If addresses are synced a click on 'card previous' will mimic a click on 'billing previous'
+                if (panel  === self.panels.card.name && self._model.getAddressSync()) {
+                    panel = self.panels.billing.name;
+                }
+
+                self.setCurrentPanel(self.panels[panel].previous);
+            }.bind(self));
+
             self._view.syncAddresses.attach(function(sender, sync) {
 
                 self._model.setAddressSync(sync);
                 self._view.render('navigationRelativeToAddressSync', {sync: sync, panels: self.panels});
 
                 self._model.setBillingAddress(self._model.getShippingAddress());
-                // toDo: add logic to listen for keyup's and update billing address if synced
 
             }.bind(self));
 
@@ -419,6 +516,36 @@
 
                 beanstream.Helper.fireEvent('beanstream_tokenize', {}, self._view.form);
 
+            }.bind(self));
+
+            self._view.errorsUpdated.attach(function(sender, e) {
+                console.log('errorsUpdated');
+
+                var cardErrors = self._model.getCardErrors();
+                var isValid = self._model.getIsCurrentPanelValid();
+
+                var errorMessages = [];
+                if (!isValid) {
+                    errorMessages.push('Please fill all fields.');
+                }
+
+                if (cardErrors.length) {;
+                    for (var i = 0; i < cardErrors.length; i++) {
+                        // This is a required field.
+                        if ((cardErrors[i].error === 'Please enter a CVV number.' ||
+                            cardErrors[i].error === 'Please enter an expiry date.' ||
+                            cardErrors[i].error === 'Please enter a credit card number.')) {
+
+                            if (errorMessages.indexOf('Please fill all fields.') === -1) {
+                                errorMessages.push('Please fill all fields.');
+                            }
+                        } else {
+                            errorMessages.push(cardErrors[i].error);
+                        }
+                    }
+                }
+
+                self._view.render('errorBlock', {errorMessages: errorMessages, panel: self._model.getCurrentPanel()});
             }.bind(self));
         },
 
@@ -522,14 +649,14 @@
                 '<form>' +
                     '<div class="row heading main-heading">' +
                         '<div class="icon">' +
-                            '<a>' +
-                                // '<img src="assets/css/images/ic_clear_white_24px.svg">' +
+                            '<a id="close-button">' +
                                 '<img src="https://s3-us-west-2.amazonaws.com/payform-staging/' +
                                     'payForm/tokenizationForm/images/ic_clear_white_24px.svg">' +
                             '</a>' +
                         '</div>' +
                         '<div class="container">' +
-                            '<div class="circle"></div>' +
+                            '<div class="circle" style="background-image: url({{image}})"></div>' +
+                            // '<img src="{{image}}">' +
                             '<div>' +
                                 '<h5>{{name}}</h5>' +
                                 '<p>{{description}}</p>' +
@@ -542,13 +669,14 @@
 
         self.template.panel =
             '<div class="container hidden" id="{{panelId}}_panel">' +
-
+                '{{backButton}}' +
                 '<div class="row heading">' +
-                    '<div class="container">' +
+                    '<div class="inner">' +
                         '<h6>{{panelName}}</h6>' +
                     '</div>' +
                 '</div>' +
                 '{{content}}' +
+                '<div class="row error hidden"></div>' +
                 '<button type="{{nextButtonType}}">{{nextButtonLabel}}</button>' +
             '</div>';
 
@@ -560,23 +688,20 @@
             '</div>' +
             '<div class="row">' +
                 '<div class="twelve columns">' +
-                    '<input class="u-full-width" type="text" placeholder="Cardholder&#39;s name" name="name">' +
+                    '<input class="u-full-width" type="text" placeholder="Name" name="name">' +
                 '</div>' +
             '</div>' +
             '<div class="row">' +
                 '<div class="twelve columns">' +
                     '<div data-beanstream-target="ccNumber_input"></div>' +
-                    '<div data-beanstream-target="ccNumber_error" class="help-block"></div>' +
                 '</div>' +
             '</div>' +
             '<div class="row">' +
                 '<div class="six columns">' +
                     '<div data-beanstream-target="ccExp_input"></div>' +
-                    '<div data-beanstream-target="ccExp_error" class="help-block"></div>' +
                 '</div>' +
                 '<div class="six columns">' +
                     '<div data-beanstream-target="ccCvv_input"></div>' +
-                    '<div data-beanstream-target="ccCvv_error" class="help-block"></div>' +
                 '</div>' +
             '</div>';
 
@@ -617,54 +742,117 @@
                 '</label>' +
             '</div>';
 
+        self.template.backButton =
+            '<div class="row back-button">' +
+                '<div class="icon">' +
+                    '<a>' +
+                        '<img src="assets/css/images/ic_keyboard_arrow_left_white_24px.svg">' +
+                        // '<img src="https://s3-us-west-2.amazonaws.com/payform-staging/' +
+                        //        'payForm/tokenizationForm/images/ic_keyboard_arrow_left_white_24px.svg">' +
+                    '</a>' +
+                '</div>' +
+                '<a><h6>{{backButtonLabel}}</h6></a>' +
+            '</div>';
+
+        self.template.errorList =
+            '<ul>' +
+                '{{errorListContent}}' +
+            '</ul>';
+
+        self.template.errorListItem =
+            '<li>' +
+                '{{errorItem}}' +
+            '</li>';
+
     }
 
     FormTemplate.prototype = {
 
-        show: function(config, panels) {
+        show: function(templateCmd, parameter) {
             var self = this;
-            var template = {};
-            template.shipping = '';
-            template.billing = '';
 
-            if (config.shipping) {
-                template.shipping = self.template.panel;
-                template.shipping = template.shipping.replace('{{content}}', self.template.address);
-                template.shipping = template.shipping.replace('{{panelId}}', panels.shipping.name);
-                template.shipping = template.shipping.replace('{{panelName}}', 'Shippig Info');
-                template.shipping = template.shipping.replace('{{nextButtonLabel}}', panels.shipping.next + ' &gt;');
-                template.shipping = template.shipping.replace('{{nextButtonType}}', 'button');
+            var templateCommands = {
+                elements: function() {
+                    // parameter.config , parameter.panels
 
-                if (config.billing) {
-                    template.shipping = template.shipping.replace('{{checkbox}}', self.template.syncAddressesCheckbox);
-                } else {
-                    template.shipping = template.shipping.replace('{{checkbox}}', '');
+                    var template = {};
+                    template.shipping = '';
+                    template.billing = '';
+
+                    if (parameter.config.shipping) {
+                        template.shipping = self.template.panel;
+                        template.shipping = template.shipping.replace('{{content}}', self.template.address);
+                        template.shipping = template.shipping.replace('{{panelId}}', parameter.panels.shipping.name);
+                        template.shipping = template.shipping.replace('{{panelName}}', 'Shippig Info');
+                        template.shipping = template.shipping.replace('{{nextButtonLabel}}',
+                                                parameter.panels.shipping.next + ' &gt;');
+                        template.shipping = template.shipping.replace('{{nextButtonType}}', 'button');
+                        template.shipping = template.shipping.replace('{{backButton}}', '');
+
+                        if (parameter.config.billing) {
+                            template.shipping = template.shipping.replace('{{checkbox}}',
+                                                    self.template.syncAddressesCheckbox);
+                        } else {
+                            template.shipping = template.shipping.replace('{{checkbox}}', '');
+                        }
+                    }
+                    if (parameter.config.billing) {
+                        template.billing = self.template.panel;
+                        template.billing = template.billing.replace('{{content}}', self.template.address);
+                        template.billing = template.billing.replace('{{checkbox}}', '');
+                        template.billing = template.billing.replace('{{panelId}}', parameter.panels.billing.name);
+                        template.billing = template.billing.replace('{{panelName}}', 'Billing Info');
+                        template.billing = template.billing.replace('{{nextButtonLabel}}',
+                                                parameter.panels.billing.next + ' &gt;');
+                        template.billing = template.billing.replace('{{nextButtonType}}', 'button');
+
+                        if (parameter.config.shipping) {
+                            template.billing = template.billing.replace('{{backButton}}', self.template.backButton);
+                            template.billing = template.billing.replace('{{backButtonLabel}}',
+                                                parameter.panels.billing.previous);
+                        }
+                    }
+
+                    template.card = self.template.panel;
+                    template.card = template.card.replace('{{content}}', self.template.card);
+                    template.card = template.card.replace('{{panelId}}', parameter.panels.card.name);
+                    template.card = template.card.replace('{{panelName}}', 'Card Info');
+                    template.card = template.card.replace('{{nextButtonLabel}}', 'Pay $' + parameter.config.amount);
+                    template.card = template.card.replace('{{nextButtonType}}', 'button');
+
+                    if (parameter.config.billing || parameter.config.shipping) {
+                        template.card = template.card.replace('{{backButton}}', self.template.backButton);
+                        template.card = template.card.replace('{{backButtonLabel}}', parameter.panels.card.previous);
+                    }
+
+                    template.main = self.template.main;
+                    template.main = template.main.replace('{{name}}', parameter.config.name);
+                    template.main = template.main.replace('{{image}}', parameter.config.image);
+                    template.main = template.main.replace('{{description}}', parameter.config.description);
+                    template.main = template.main.replace('{{content}}',
+                                        template.shipping + template.billing + template.card);
+                    template = template.main;
+
+                    return template;
+
+                },
+                errors: function() {
+                    // parameter.errorMessages
+
+                    var template = self.template.errorList;
+                    var errorList = '';
+
+                    for (var i = 0; i < parameter.errorMessages.length; i++) {
+                        errorList = errorList + self.template.errorListItem;
+                        errorList = errorList.replace('{{errorItem}}', parameter.errorMessages[i]);
+                    }
+
+                    template = template.replace('{{errorListContent}}', errorList);
+                    return template;
                 }
-            }
-            if (config.billing) {
-                template.billing = self.template.panel;
-                template.billing = template.billing.replace('{{content}}', self.template.address);
-                template.billing = template.billing.replace('{{checkbox}}', '');
-                template.billing = template.billing.replace('{{panelId}}', panels.billing.name);
-                template.billing = template.billing.replace('{{panelName}}', 'Billing Info');
-                template.billing = template.billing.replace('{{nextButtonLabel}}', panels.billing.next + ' &gt;');
-                template.billing = template.billing.replace('{{nextButtonType}}', 'button');
-            }
+            };
 
-            template.card = self.template.panel;
-            template.card = template.card.replace('{{content}}', self.template.card);
-            template.card = template.card.replace('{{panelId}}', panels.card.name);
-            template.card = template.card.replace('{{panelName}}', 'Card Info');
-            template.card = template.card.replace('{{nextButtonLabel}}', 'Pay $' + config.amount);
-            template.card = template.card.replace('{{nextButtonType}}', 'button');
-
-            template.main = self.template.main;
-            template.main = template.main.replace('{{name}}', config.name);
-            template.main = template.main.replace('{{description}}', config.description);
-            template.main = template.main.replace('{{content}}', template.shipping + template.billing + template.card);
-            template = template.main;
-
-            return template;
+            return templateCommands[templateCmd]();
         }
     };
 

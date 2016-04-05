@@ -11,6 +11,8 @@
         this._shippingAddress = {};
         this._cardInfo = {};
         this._currentPanel = '';
+        this._isValid = false;
+        this._cardErrors = [];
     }
 
     FormModel.prototype = {
@@ -53,6 +55,29 @@
             if (value != this._currentPanel) {
                 this._currentPanel = value;
             }
+        },
+        getIsCurrentPanelValid: function() {
+            return this._isValid;
+        },
+        setIsCurrentPanelValid: function(value) {
+            if (value != this._isValid) {
+                this._isValid = value;
+            }
+        },
+        getCardErrors: function() {
+            return this._cardErrors;
+        },
+        setCardErrors: function(value) {
+            // Remove previous error for field
+            var cardErrors = this._cardErrors.filter(function(f) {
+                return f.fieldType != value.fieldType;
+            });
+
+            // only add error message if field invalid
+            if (value.isValid != true) {
+                cardErrors.push(value);
+            }
+            this._cardErrors = cardErrors;
         }
     };
 

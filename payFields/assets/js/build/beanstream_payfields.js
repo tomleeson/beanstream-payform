@@ -282,7 +282,8 @@
 
         function isValidExpiryDate(str, currentDate, onBlur) {
             if (onBlur && str === '') {
-                return {isValid: false, error: 'This is a required field.'}; // Validate onBlur as required field
+                // Validate onBlur as required field
+                return {isValid: false, error: 'Please enter an expiry date.', fieldType: 'expiry'};
             }
 
             // expects str in format 'mm/yyyy'
@@ -305,10 +306,12 @@
                     var expiryDate = new Date(year, month);
 
                     if (expiryDate < currentDate) {
-                        return {isValid: false, error: 'This date is past. Your card has expired.'};
+                        return {isValid: false, error: 'Please enter a valid expiry date. The date entered is past.',
+                            fieldType: 'expiry'};
                     }
                 } else if (onBlur) {
-                    return {isValid: false, error: 'This is a required field.'}; // Validate onBlur as required field
+                    // Validate onBlur as required field
+                    return {isValid: false, error: 'Please enter an expiry date.', fieldType: 'expiry'};
                 }
             }
             if (onBlur) {
@@ -322,11 +325,12 @@
                 var expiryDate = new Date(year, month);
 
                 if (expiryDate < currentDate) {
-                    return {isValid: false, error: 'This date is past. Your card has expired.'};
+                    return {isValid: false, error: 'Please enter a valid expiry date. The date entered is past.',
+                        fieldType: 'expiry'};
                 }
             }
 
-            return {isValid: true, error: ''};
+            return {isValid: true, error: '', fieldType: 'expiry'};
         }
 
         function getCardType(str) {
@@ -366,18 +370,22 @@
 
             if (onBlur) {
                 if (str.length === 0) {
-                    return {isValid: false, error: 'This is a required field.'};// Validate onBlur as required field
+                    // Validate onBlur as required field
+                    return {isValid: false, error: 'Please enter a credit card number.', fieldType: 'number'};
                 } else if (cardType === '') {
                     return {isValid: true, error: ''};
                 } else if (str.length < min) {
-                    return {isValid: false, error: 'This card number is too short.'};// if onBlur and str not complete
+                    // if onBlur and str not complete
+                    return {isValid: false,
+                            error: 'Please enter a valid credit card number. The number entered is too short.',
+                            fieldType: 'number'};
                 } else {
                     var luhn = getLuhnChecksum(str);
 
                     if (luhn) {
-                        return {isValid: true, error: ''};
+                        return {isValid: true, error: '', fieldType: 'number'};
                     } else {
-                        return {isValid: false, error: 'This is an invalid card number.'};
+                        return {isValid: false, error: 'Please enter a vlaid credit card number.', fieldType: 'number'};
                     }
                 }
 
@@ -386,33 +394,35 @@
                     var luhn = getLuhnChecksum(str);
 
                     if (luhn) {
-                        return {isValid: true, error: ''};
+                        return {isValid: true, error: '', fieldType: 'number'};
                     } else {
-                        return {isValid: false, error: 'This is an invalid card number.'};
+                        return {isValid: false, error: 'Please enter a vlaid credit card number.', fieldType: 'number'};
                     }
                 }
 
             }
 
-            return {isValid: true, error: ''};// Report valid while user is inputting str
+            return {isValid: true, error: '', fieldType: 'number'};// Report valid while user is inputting str
         }
 
         function isValidCvc(cardType, str, onBlur) {
             if (onBlur && str.length === 0) {
-                return {isValid: false, error: 'This is a required field.'};
+                return {isValid: false, error: 'Please enter a CVV number.', fieldType: 'cvv'};
             }
 
             if (cardType === '') {
-                return {isValid: true, error: ''}; // Unknown card type. Default to true
+                return {isValid: true, error: '', fieldType: 'cvv'}; // Unknown card type. Default to true
             }
 
             var min = getMinLength('cvcLength', cardType);
 
             if (str.length < min && onBlur === true) {
-                return {isValid: false, error: 'This card number is too short.'};
+                return {isValid: false,
+                        error: 'Please enter a vlaid CVV number. The number entered is too short.',
+                        fieldType: 'cvv'};
             }
 
-            return {isValid: true, error: ''};
+            return {isValid: true, error: '', fieldType: 'cvv'};
         }
 
         return {
@@ -665,7 +675,8 @@
                     if (parameter.errorDomTargets) {
                         _this._domParentElements.error.appendChild(errorFrag);
                     } else if (!parameter.errorDomTargets && parameter.inputDomTargets) {
-                        _this._domParentElements.input.appendChild(errorFrag);
+                        // don't append an error if...
+                        // _this._domParentElements.input.appendChild(errorFrag);
                     } else {
                         _this._domParentElements.form.appendChild(errorFrag);
                     }
@@ -737,7 +748,9 @@
                     } else {
                         _this._domInputElement.classList.add('beanstream_invalid');
                     }
-                    _this._domErrorElement.innerHTML = _this._model.getError();
+                    if (_this._domErrorElement) {
+                        _this._domErrorElement.innerHTML = _this._model.getError();
+                    }
                 }
             };
 

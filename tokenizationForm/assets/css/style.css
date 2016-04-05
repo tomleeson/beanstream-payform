@@ -41,6 +41,15 @@ body{
     position: relative;
 }
 
+.heading .inner{
+    display: flex;
+    align-items: center;
+
+    height:38px; /* Matching height of inputs */
+    position: relative;
+    padding-left: 10px;
+}
+
 .main-heading .container{
     height:76px !important; /* double height of inputs */
 }
@@ -48,12 +57,13 @@ body{
 .heading .icon{
     position: absolute;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
+    margin-top: 7px;
     height:38px;
     width:38px;
     top: 0;
-    left: 0;
+    right: 0;
 }
 
 .main-heading .icon{
@@ -66,7 +76,43 @@ body{
     width: 60px;
     height: 60px; 
     background-color: white;
+    background-size: contain;
+    background-repeat: no-repeat;
     margin-right:10px;
+}
+
+.back-button {
+    margin-bottom: 10px;
+}
+
+.back-button h6{
+    color: #D1D1D1;
+    display: flex;
+    align-items: center;
+
+    height:38px; /* Matching height of inputs */
+    position: relative;
+    padding-left: 10px;
+}
+
+.back-button a{
+    height:24px;
+    width:24px;
+}
+
+a {
+    cursor:pointer;
+}
+
+.back-button .icon{
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height:38px;
+    width:38px;
+    top: 0;
+    left: -24px;
 }
 
 p,h4,h5,h6{
@@ -105,9 +151,36 @@ button{
 }
 
 .beanstream_invalid{
-    border-color: #e9322d !important;
+    border-color: #ebccd1 !important;
 }
 
+.error{
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    padding: 10px;
+}
+
+.error ul{
+    margin-bottom: 0;
+}
+
+.error ul li{
+    margin-bottom: 0;
+    list-style-type: none;
+    position: relative;
+    padding-left:30px;
+}
+
+.error li::before { 
+    content: "";
+    background: transparent url('images/ic_error_outline_white_24px.svg') no-repeat;
+    position: absolute;
+    left: 0;
+    top: 0;
+    height:24px;
+    width:24px;
+}
 
 /* Larger than mobile */
 @media (min-width: 400px) {

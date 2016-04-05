@@ -11,9 +11,11 @@
         this._template = template;
 
         this.nextPanel = new beanstream.Event(this);
+        this.previousPanel = new beanstream.Event(this);
         this.syncAddresses = new beanstream.Event(this);
         this.tokenUpdated = new beanstream.Event(this);
         this.tokenize = new beanstream.Event(this);
+        this.errorsUpdated = new beanstream.Event(this);
     }
 
     FormView.prototype = {
@@ -40,7 +42,7 @@
                     if (!self.body) {
                         self.body = document.getElementsByTagName('body')[0];
                     }
-                    var template = self._template.show(parameter.config, parameter.panels);
+                    var template = self._template.show('elements', parameter);
                     var frag = self.createDocFrag(template);
                     self.body.appendChild(frag);
                 },
@@ -60,8 +62,8 @@
                 currentPanel: function() {
                     // parameter.panels, parameter.old, arameter.new
 
-                    self._domPanels[parameter.new].className =
-                        self._domPanels[parameter.new].classList.remove('hidden');
+                    self._domPanels[parameter.new].classList.remove('hidden');
+
                     if (parameter.old) {
                         self._domPanels[parameter.old].classList.add('hidden');
                         self.focusFirstElement(self._domPanels[parameter.new]);
@@ -70,14 +72,40 @@
                 navigationRelativeToAddressSync: function() {
                     // parameter.panels, parameter.sync
 
-                    var button = self._domPanels.shipping.getElementsByTagName('button')[0];
+                    var shippingNextButton = self._domPanels.shipping.getElementsByTagName('button')[0];
+                    var cardBackButton = self._domPanels.card.getElementsByTagName('a')[1];
+
                     if (parameter.sync) {
-                        button.innerHTML = parameter.panels.billing.next + ' &gt;';
+                        shippingNextButton.innerHTML = parameter.panels.billing.next + ' &gt;';
+                        cardBackButton.innerHTML = '<h6>' + parameter.panels.billing.previous + '</h6>';
                     } else {
-                        button.innerHTML = parameter.panels.shipping.next + ' &gt;';
+                        shippingNextButton.innerHTML = parameter.panels.shipping.next + ' &gt;';
+                        cardBackButton.innerHTML = '<h6>' + parameter.panels.card.previous + '</h6>';
                     }
 
-                    // toDo: update previous button on card panel
+                },
+                errorBlock: function() {
+                    // parameter.errorMessages, parameter.panel
+
+                    var errorBlock = self._domPanels[parameter.panel].getElementsByClassName('error')[0];
+
+                    // errorBlock.innerHTML = '';
+                    while (errorBlock.firstChild) {
+                        errorBlock.removeChild(errorBlock.firstChild);
+                    }
+
+                    if (parameter.errorMessages.length) {
+                        var template = self._template.show('errors', parameter);
+                        var frag = self.createDocFrag(template);
+                        errorBlock.appendChild(frag);
+
+                        console.log('template: ' + template);
+                        console.log('parameter.errorMessages: ' + parameter.errorMessages);
+
+                        errorBlock.classList.remove('hidden');
+                    } else {
+                        errorBlock.classList.add('hidden');
+                    }
 
                 }
             };
@@ -100,12 +128,33 @@
             var self = this;
 
             if (panels.shipping) {
+                // Next button
                 var button = self._domPanels.shipping.getElementsByTagName('button')[0];
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
                     e = e || window.event;
                     self.nextPanel.notify(panels.shipping.name);
                 }.bind(self), false);
+
+                // Previous button
+                var billingBackButtons = Array.prototype.slice.call(self._domPanels.billing.getElementsByTagName('a'));
+                var cardBackButtons = Array.prototype.slice.call(self._domPanels.card.getElementsByTagName('a'));
+                var backButtons = billingBackButtons.concat(cardBackButtons);
+
+                for (var i = 0; i < backButtons.length; i++) {
+                    backButtons[i].addEventListener('click', previousPanel.bind(self), false);
+                }
+
+                function previousPanel(e) {
+                    e = e || window.event;
+                    e.preventDefault();
+
+                    if (self.isDescendant(self._domPanels.billing, e.target)) {
+                        self.previousPanel.notify(panels.billing.name);
+                    } else if (self.isDescendant(self._domPanels.card, e.target)) {
+                        self.previousPanel.notify(panels.card.name);
+                    }
+                }
             }
             if (panels.billing) {
                 var button = self._domPanels.billing.getElementsByTagName('button')[0];
@@ -133,7 +182,7 @@
                 }.bind(self), false);
             }
 
-            var closeButton = document.getElementsByTagName('a')[0];
+            var closeButton = document.getElementById('close-button');
             closeButton.addEventListener('click', function(e) {
                 var self = this;
                 e.preventDefault();
@@ -200,8 +249,9 @@
         },
         attachPayfieldsListeners: function() {
             var self = this;
-            document.addEventListener('beanstream_loaded', this.addStylingToPayfields);
+            document.addEventListener('beanstream_loaded', this.addStylingToPayfields.bind(self));
             document.addEventListener('beanstream_tokenUpdated', this.onTokenUpdated.bind(self));
+            document.addEventListener('beanstream_inputValidityChanged', this.onCardValidityChanged.bind(self));
         },
         isDescendant: function(parent, child) {
             var node = child.parentNode;
@@ -226,13 +276,36 @@
             self._model.setCardInfo(blob);
             self.tokenUpdated.notify();
         },
+        onCardValidityChanged: function(e) {
+            var self = this;
+            self._model.setCardErrors(e.eventDetail);
+            self.errorsUpdated.notify();
+        },
 
         addStylingToPayfields: function() {
+            var self = this;
             var cardPanel = document.getElementById('card_panel');
             var inputs = cardPanel.getElementsByTagName('input');
+
+            // get placehokders - check if input is child
+            // isDescendant
+
+            var numberPlaceholder = document.querySelector('[data-beanstream-target="ccNumber_input"]');
+            var cvvPlaceholder = document.querySelector('[data-beanstream-target="ccExp_input"]');
+            var expiryPlaceholder = document.querySelector('[data-beanstream-target="ccCvv_input"]');
+
             for (var i = 0; i < inputs.length; i++) {
                 inputs[i].classList.add('u-full-width');
                 inputs[i].type = 'text';
+
+                if (self.isDescendant(numberPlaceholder, inputs[i])) {
+                    inputs[i].placeholder = 'Card number';
+
+                } else if (self.isDescendant(expiryPlaceholder, inputs[i])) {
+                    inputs[i].placeholder = 'Expiry MM/YY';
+                } else if (self.isDescendant(cvvPlaceholder, inputs[i])) {
+                    inputs[i].placeholder = 'CVV';
+                }
             }
         },
         createDocFrag: function(htmlStr) {
@@ -245,41 +318,31 @@
             }
             return frag;
         },
+
+        /**
+         * Checks that no fields on current panel are empty
+         *
+         * @param {String} panel
+         * @return {Boole} isValid
+         */
         validateFields: function(panel) {
             var self = this;
-            var valid = true;
+            var isValid = true;
             var inputs = self._domPanels[panel].getElementsByTagName('input');
 
             for (var i = 0; i < inputs.length; i++) {
                 // if input string length is not 0
-                if (inputs[i].value.length) {
-                    inputs[i].classList.remove('beanstream_invalid');
+                if (!inputs[i].value.length) {
+                    isValid = false;
+                    inputs[i].classList.add('beanstream_invalid');
                 } else {
-                    valid = false;
-                    if (!inputs[i].classList.contains('beanstream_invalid')) {
-                        inputs[i].classList.add('beanstream_invalid');
-                    }
+                    inputs[i].classList.remove('beanstream_invalid');
                 }
             }
 
-            if (panel === 'card') {
-                var inputs = Array.prototype.slice.call(inputs);
-                var name = inputs.filter(function(c) {
-                    return c.name === 'name';
-                });
-                name = name[0];
-
-                var email = inputs.filter(function(c) {
-                    return c.name === 'email';
-                });
-                email = email[0];
-
-                // let payfields validate its own fields
-                if (name.value.length && email.value.length) {
-                    valid = true;
-                }
-            }
-            return valid;
+            self._model.setIsCurrentPanelValid(isValid);
+            self.errorsUpdated.notify();
+            return isValid;
         }
 
     };

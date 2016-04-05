@@ -55,7 +55,8 @@
                     if (parameter.errorDomTargets) {
                         _this._domParentElements.error.appendChild(errorFrag);
                     } else if (!parameter.errorDomTargets && parameter.inputDomTargets) {
-                        _this._domParentElements.input.appendChild(errorFrag);
+                        // don't append an error if...
+                        // _this._domParentElements.input.appendChild(errorFrag);
                     } else {
                         _this._domParentElements.form.appendChild(errorFrag);
                     }
@@ -127,7 +128,9 @@
                     } else {
                         _this._domInputElement.classList.add('beanstream_invalid');
                     }
-                    _this._domErrorElement.innerHTML = _this._model.getError();
+                    if (_this._domErrorElement) {
+                        _this._domErrorElement.innerHTML = _this._model.getError();
+                    }
                 }
             };
 

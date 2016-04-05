@@ -36,13 +36,22 @@
                 self.setCurrentPanel(self.panels[panel].next);
             }.bind(self));
 
+            self._view.previousPanel.attach(function(sender, panel) {
+
+                // If addresses are synced a click on 'card previous' will mimic a click on 'billing previous'
+                if (panel  === self.panels.card.name && self._model.getAddressSync()) {
+                    panel = self.panels.billing.name;
+                }
+
+                self.setCurrentPanel(self.panels[panel].previous);
+            }.bind(self));
+
             self._view.syncAddresses.attach(function(sender, sync) {
 
                 self._model.setAddressSync(sync);
                 self._view.render('navigationRelativeToAddressSync', {sync: sync, panels: self.panels});
 
                 self._model.setBillingAddress(self._model.getShippingAddress());
-                // toDo: add logic to listen for keyup's and update billing address if synced
 
             }.bind(self));
 
@@ -65,6 +74,36 @@
 
                 beanstream.Helper.fireEvent('beanstream_tokenize', {}, self._view.form);
 
+            }.bind(self));
+
+            self._view.errorsUpdated.attach(function(sender, e) {
+                console.log('errorsUpdated');
+
+                var cardErrors = self._model.getCardErrors();
+                var isValid = self._model.getIsCurrentPanelValid();
+
+                var errorMessages = [];
+                if (!isValid) {
+                    errorMessages.push('Please fill all fields.');
+                }
+
+                if (cardErrors.length) {;
+                    for (var i = 0; i < cardErrors.length; i++) {
+                        // This is a required field.
+                        if ((cardErrors[i].error === 'Please enter a CVV number.' ||
+                            cardErrors[i].error === 'Please enter an expiry date.' ||
+                            cardErrors[i].error === 'Please enter a credit card number.')) {
+
+                            if (errorMessages.indexOf('Please fill all fields.') === -1) {
+                                errorMessages.push('Please fill all fields.');
+                            }
+                        } else {
+                            errorMessages.push(cardErrors[i].error);
+                        }
+                    }
+                }
+
+                self._view.render('errorBlock', {errorMessages: errorMessages, panel: self._model.getCurrentPanel()});
             }.bind(self));
         },
 
