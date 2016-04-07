@@ -18,7 +18,6 @@
     window.beanstream.IframeModel = IframeModel;
 })(window);
 
-
 (function(window) {
     'use strict';
 
@@ -117,7 +116,6 @@
     window.beanstream.IframeView = IframeView;
 })(window);
 
-
 (function(window) {
     'use strict';
 
@@ -168,7 +166,6 @@
     window.beanstream = window.beanstream || {};
     window.beanstream.IframeController = IframeController;
 })(window);
-
 
 (function(window) {
     'use strict';
@@ -316,7 +313,8 @@
             return true;
         }
 
-        function fireEvent(title, eventDetail, element = document) {
+        function fireEvent(title, eventDetail, element) {
+            var element = typeof element !== 'undefined' ?  element : document;
             var event = document.createEvent('Event');
             event.initEvent(title, true, true);
             event.eventDetail = eventDetail;

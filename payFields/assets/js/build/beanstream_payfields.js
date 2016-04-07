@@ -78,7 +78,8 @@
             return true;
         }
 
-        function fireEvent(title, eventDetail, element = document) {
+        function fireEvent(title, eventDetail, element) {
+            var element = typeof element !== 'undefined' ?  element : document;
             var event = document.createEvent('Event');
             event.initEvent(title, true, true);
             event.eventDetail = eventDetail;

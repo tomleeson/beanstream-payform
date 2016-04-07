@@ -145,18 +145,7 @@
                 var backButtons = billingBackButtons.concat(cardBackButtons);
 
                 for (var i = 0; i < backButtons.length; i++) {
-                    backButtons[i].addEventListener('click', previousPanel.bind(self), false);
-                }
-
-                function previousPanel(e) {
-                    e = e || window.event;
-                    e.preventDefault();
-
-                    if (self.isDescendant(self._domPanels.billing, e.target)) {
-                        self.previousPanel.notify(panels.billing.name);
-                    } else if (self.isDescendant(self._domPanels.card, e.target)) {
-                        self.previousPanel.notify(panels.card.name);
-                    }
+                    backButtons[i].addEventListener('click', self.onPreviousPanelClick.bind(self), false);
                 }
             }
             if (panels.billing) {
@@ -218,6 +207,16 @@
                 inputs[i].addEventListener('keyup', self.updateAddresses.bind(self), false);
             }
 
+        },
+        onPreviousPanelClick: function(e) {
+            e = e || window.event;
+            e.preventDefault();
+
+            if (self.isDescendant(self._domPanels.billing, e.target)) {
+                self.previousPanel.notify(panels.billing.name);
+            } else if (self.isDescendant(self._domPanels.card, e.target)) {
+                self.previousPanel.notify(panels.card.name);
+            }
         },
         updateAddresses: function(e) {
             var self = this;
@@ -294,8 +293,8 @@
             // isDescendant
 
             var numberPlaceholder = document.querySelector('[data-beanstream-target="ccNumber_input"]');
-            var cvvPlaceholder = document.querySelector('[data-beanstream-target="ccExp_input"]');
-            var expiryPlaceholder = document.querySelector('[data-beanstream-target="ccCvv_input"]');
+            var cvvPlaceholder = document.querySelector('[data-beanstream-target="ccCvv_input"]');
+            var expiryPlaceholder = document.querySelector('[data-beanstream-target="ccExp_input"]');
 
             for (var i = 0; i < inputs.length; i++) {
                 inputs[i].classList.add('u-full-width');
