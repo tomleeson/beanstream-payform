@@ -4,6 +4,7 @@ var concat = require('gulp-concat');
 var gulpProtractorAngular = require('gulp-angular-protractor');
 const jscs = require('gulp-jscs');
 var runSequence = require('gulp-run-sequence');
+var autoprefixer = require('gulp-autoprefixer');
 
 
 /**
@@ -155,3 +156,30 @@ function e2e(callback, configFile) {
 gulp.task('default', function(cb) {
     runSequence('concat', 'lint', 'unit', cb);
 });
+
+
+/**
+ * autoprefixe CSS for cfoss browser support
+ */
+gulp.task('css', function() {
+    return gulp.src('./tokenizationForm/assets/css/style.css')
+        .pipe(autoprefixer({
+            browsers: ['last 2 versions'],
+            cascade: false
+        }))
+        .pipe(gulp.dest('./tokenizationForm/assets/css/build/'));
+});
+
+gulp.task('css', function() {
+    return prefixCssTokenizationform();
+});
+
+function prefixCssTokenizationform() {
+    return gulp.src('./tokenizationForm/assets/css/style.css')
+        .pipe(autoprefixer({
+            browsers: ['last 2 versions'],
+            cascade: false
+        }))
+        .pipe(gulp.dest('./tokenizationForm/assets/css/build/'));
+}
+

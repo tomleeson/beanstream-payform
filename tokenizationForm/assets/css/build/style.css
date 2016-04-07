@@ -2,8 +2,16 @@
     min-height: 100%; 
     min-height: 100vh;
 
+    display: -webkit-flex;
+
+    display: -ms-flexbox;
+
     display: flex;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
     align-items: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
     justify-content: center;
 }
 
@@ -42,7 +50,11 @@ body{
 }
 
 .heading .container{
+    display: -webkit-flex;
+    display: -ms-flexbox;
     display: flex;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
     align-items: center;
 
     height:38px; /* Matching height of inputs */
@@ -50,7 +62,11 @@ body{
 }
 
 .heading .inner{
+    display: -webkit-flex;
+    display: -ms-flexbox;
     display: flex;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
     align-items: center;
 
     height:38px; /* Matching height of inputs */
@@ -71,8 +87,14 @@ body{
 
 .heading .icon{
     position: absolute;
+    display: -webkit-flex;
+    display: -ms-flexbox;
     display: flex;
+    -webkit-align-items: flex-start;
+    -ms-flex-align: start;
     align-items: flex-start;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
     justify-content: center;
     margin-top: 7px;
     height:38px;
@@ -105,7 +127,11 @@ body{
 
 .back-button h6{
     color: #D1D1D1;
+    display: -webkit-flex;
+    display: -ms-flexbox;
     display: flex;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
     align-items: center;
 
     height:24px;
@@ -124,8 +150,14 @@ a {
 
 .back-button .icon{
     position: absolute;
+    display: -webkit-flex;
+    display: -ms-flexbox;
     display: flex;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
     align-items: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
     justify-content: center;
     height:24px;
     width:24px;
@@ -210,8 +242,14 @@ button{
     /* background: #2196F3; */
     background: #212121; 
     padding: 10px;
+    display: -webkit-flex;
+    display: -ms-flexbox;
     display: flex;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
     align-items: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
     justify-content: center;
 }
 
@@ -279,8 +317,14 @@ button.button:active:after {
 }
 
 .button .label-outter{
+    display: -webkit-flex;
+    display: -ms-flexbox;
     display: flex;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
     align-items: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
     justify-content: center;
 }
 

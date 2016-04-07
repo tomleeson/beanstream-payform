@@ -85,11 +85,16 @@
             element.dispatchEvent(event);
         }
 
+        function toSentenceCase(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
         return {
             isNonInputKey: isNonInputKey,
             createDocFrag: createDocFrag,
             isEmpty: isEmpty,
-            fireEvent: fireEvent
+            fireEvent: fireEvent,
+            toSentenceCase: toSentenceCase
         };
     })();
 

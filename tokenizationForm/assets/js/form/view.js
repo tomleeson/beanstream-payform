@@ -48,12 +48,14 @@
                 },
                 script: function() {
                     var script = document.createElement('script');
+
                     /*
                     script.src =
                         'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/beanstream_payfields.js';
                     */
                     script.src =
                         'http://localhost:8000/payFields/assets/js/build/beanstream_payfields.js';
+
                     script.setAttribute('data-submit-form', 'false');
                     script.setAttribute('data-tokenize-onSubmit', 'false');
                     var form = document.getElementsByTagName('form')[0];
@@ -76,11 +78,15 @@
                     var cardBackButton = self._domPanels.card.getElementsByTagName('a')[1];
 
                     if (parameter.sync) {
-                        shippingNextButton.innerHTML = parameter.panels.billing.next + ' &gt;';
-                        cardBackButton.innerHTML = '<h6>' + parameter.panels.billing.previous + '</h6>';
+                        shippingNextButton.childNodes[0].childNodes[0].innerHTML =
+                            beanstream.Helper.toSentenceCase(parameter.panels.billing.next) + ' Info';
+                        cardBackButton.innerHTML = '<h6>' +
+                            beanstream.Helper.toSentenceCase(parameter.panels.billing.previous) + ' Info</h6>';
                     } else {
-                        shippingNextButton.innerHTML = parameter.panels.shipping.next + ' &gt;';
-                        cardBackButton.innerHTML = '<h6>' + parameter.panels.card.previous + '</h6>';
+                        shippingNextButton.childNodes[0].childNodes[0].innerHTML =
+                            beanstream.Helper.toSentenceCase(parameter.panels.shipping.next) + ' Info';
+                        cardBackButton.innerHTML = '<h6>' +
+                            beanstream.Helper.toSentenceCase(parameter.panels.card.previous) + ' Info</h6>';
                     }
 
                 },
@@ -98,9 +104,6 @@
                         var template = self._template.show('errors', parameter);
                         var frag = self.createDocFrag(template);
                         errorBlock.appendChild(frag);
-
-                        console.log('template: ' + template);
-                        console.log('parameter.errorMessages: ' + parameter.errorMessages);
 
                         errorBlock.classList.remove('hidden');
                     } else {
@@ -299,11 +302,14 @@
                 inputs[i].type = 'text';
 
                 if (self.isDescendant(numberPlaceholder, inputs[i])) {
+                    inputs[i].id = 'card_number';
                     inputs[i].placeholder = 'Card number';
 
                 } else if (self.isDescendant(expiryPlaceholder, inputs[i])) {
+                    inputs[i].id = 'card_expiry';
                     inputs[i].placeholder = 'Expiry MM/YY';
                 } else if (self.isDescendant(cvvPlaceholder, inputs[i])) {
+                    inputs[i].id = 'card_cvv';
                     inputs[i].placeholder = 'CVV';
                 }
             }
@@ -326,6 +332,7 @@
          * @return {Boole} isValid
          */
         validateFields: function(panel) {
+            console.log('* validateFields');
             var self = this;
             var isValid = true;
             var inputs = self._domPanels[panel].getElementsByTagName('input');
@@ -336,7 +343,9 @@
                     isValid = false;
                     inputs[i].classList.add('beanstream_invalid');
                 } else {
-                    inputs[i].classList.remove('beanstream_invalid');
+                    if (!inputs[i].hasAttribute('data-beanstream-id')) {
+                        inputs[i].classList.remove('beanstream_invalid');
+                    }
                 }
             }
 

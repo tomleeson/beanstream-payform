@@ -68,6 +68,7 @@
             }.bind(self));
 
             self._view.tokenize.attach(function(sender, e) {
+                console.log('* tokenize');
                 if (!self._view.validateFields('card')) {
                     return;
                 }

@@ -85,11 +85,16 @@
             element.dispatchEvent(event);
         }
 
+        function toSentenceCase(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
         return {
             isNonInputKey: isNonInputKey,
             createDocFrag: createDocFrag,
             isEmpty: isEmpty,
-            fireEvent: fireEvent
+            fireEvent: fireEvent,
+            toSentenceCase: toSentenceCase
         };
     })();
 
@@ -1344,8 +1349,8 @@
         init: function() {
             var self = this;
             self._view.render('injectStyles',
-                                'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/style.css');
-            // self._view.render('injectStyles', '../assets/css/style.css');
+                'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/beanstream_payfields_style.css');
+            // self._view.render('injectStyles', '../assets/css/beanstream_payfields_style.css');
             self.injectFields();
             beanstream.Helper.fireEvent('beanstream_loaded', {}, document);
         },

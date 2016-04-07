@@ -18,6 +18,7 @@
     window.beanstream.IframeModel = IframeModel;
 })(window);
 
+
 (function(window) {
     'use strict';
 
@@ -116,6 +117,7 @@
     window.beanstream.IframeView = IframeView;
 })(window);
 
+
 (function(window) {
     'use strict';
 
@@ -166,6 +168,7 @@
     window.beanstream = window.beanstream || {};
     window.beanstream.IframeController = IframeController;
 })(window);
+
 
 (function(window) {
     'use strict';
@@ -320,11 +323,16 @@
             element.dispatchEvent(event);
         }
 
+        function toSentenceCase(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
         return {
             isNonInputKey: isNonInputKey,
             createDocFrag: createDocFrag,
             isEmpty: isEmpty,
-            fireEvent: fireEvent
+            fireEvent: fireEvent,
+            toSentenceCase: toSentenceCase
         };
     })();
 

@@ -31,6 +31,6 @@ input[data-beanstream-id]{
     background-image: url("http://downloads.beanstream.com/images/payform/date.png");
 }
 
-.beanstream_invalid{
-	border-color: #e9322d !important;
+input[type=text].beanstream_invalid{
+	border-color: #F44336;
 }
