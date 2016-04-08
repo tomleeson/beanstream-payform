@@ -87,6 +87,7 @@
     window.beanstream.payform.FormModel = FormModel;
 })(window);
 
+
 (function(window) {
     'use strict';
 
@@ -109,6 +110,7 @@
     FormView.prototype = {
         init: function(config, panels) {
             var self = this;
+            self.panels = panels;
 
             self.render('elements', {config: config, panels: panels});
             self.attachPayfieldsListeners();
@@ -167,14 +169,14 @@
 
                     if (parameter.sync) {
                         shippingNextButton.childNodes[0].childNodes[0].innerHTML =
-                            beanstream.Helper.toSentenceCase(parameter.panels.billing.next) + ' Info';
+                            beanstream.Helper.toSentenceCase(parameter.panels.billing.next) + ' Details';
                         cardBackButton.innerHTML = '<h6>' +
-                            beanstream.Helper.toSentenceCase(parameter.panels.billing.previous) + ' Info</h6>';
+                            beanstream.Helper.toSentenceCase(parameter.panels.billing.previous) + ' Details</h6>';
                     } else {
                         shippingNextButton.childNodes[0].childNodes[0].innerHTML =
-                            beanstream.Helper.toSentenceCase(parameter.panels.shipping.next) + ' Info';
+                            beanstream.Helper.toSentenceCase(parameter.panels.shipping.next) + ' Details';
                         cardBackButton.innerHTML = '<h6>' +
-                            beanstream.Helper.toSentenceCase(parameter.panels.card.previous) + ' Info</h6>';
+                            beanstream.Helper.toSentenceCase(parameter.panels.card.previous) + ' Details</h6>';
                     }
 
                 },
@@ -299,11 +301,12 @@
         onPreviousPanelClick: function(e) {
             e = e || window.event;
             e.preventDefault();
+            var self = this;
 
             if (self.isDescendant(self._domPanels.billing, e.target)) {
-                self.previousPanel.notify(panels.billing.name);
+                self.previousPanel.notify(self.panels.billing.name);
             } else if (self.isDescendant(self._domPanels.card, e.target)) {
-                self.previousPanel.notify(panels.card.name);
+                self.previousPanel.notify(self.panels.card.name);
             }
         },
         updateAddresses: function(e) {
@@ -448,6 +451,7 @@
     window.beanstream.payform = window.beanstream.payform || {};
     window.beanstream.payform.FormView = FormView;
 })(window);
+
 
 (function(window) {
     'use strict';
@@ -646,6 +650,7 @@
     window.beanstream.payform.FormController = FormController;
 })(window);
 
+
 (function(window) {
     'use strict';
 
@@ -769,9 +774,9 @@
 
         self.template.syncAddressesCheckbox =
             '<div class="row">' +
-                '<label class="example-send-yourself-copy">' +
+                '<label class="checkbox">' +
                     '<input type="checkbox" checked>' +
-                    '<span class="label-body">Billing address is same as shipping address</span>' +
+                    '<span class="label-body">My billing address is the same as my shipping address</span>' +
                 '</label>' +
             '</div>';
 
@@ -814,11 +819,11 @@
                         template.shipping = self.template.panel;
                         template.shipping = template.shipping.replace('{{content}}', self.template.address);
                         template.shipping = template.shipping.replace(/{{panelId}}/gi, parameter.panels.shipping.name);
-                        template.shipping = template.shipping.replace('{{panelName}}', 'Shippig Info');
+                        template.shipping = template.shipping.replace('{{panelName}}', 'Shipping Details');
                         template.shipping = template.shipping.replace('{{nextButtonLabel}}',
                             '<div class="label-outter"><div class="label-inner">{{nextButtonLabel}}</div></div>');
                         template.shipping = template.shipping.replace('{{nextButtonLabel}}',
-                            beanstream.Helper.toSentenceCase(parameter.panels.shipping.next) + ' Info');
+                            beanstream.Helper.toSentenceCase(parameter.panels.shipping.next) + ' Details');
                         template.shipping = template.shipping.replace('{{nextButtonType}}', 'button');
                         template.shipping = template.shipping.replace('{{backButton}}', '');
 
@@ -834,31 +839,31 @@
                         template.billing = template.billing.replace('{{content}}', self.template.address);
                         template.billing = template.billing.replace('{{checkbox}}', '');
                         template.billing = template.billing.replace(/{{panelId}}/gi, parameter.panels.billing.name);
-                        template.billing = template.billing.replace('{{panelName}}', 'Billing Info');
+                        template.billing = template.billing.replace('{{panelName}}', 'Billing Details');
                         template.billing = template.billing.replace('{{nextButtonLabel}}',
                             '<div class="label-outter"><div class="label-inner">{{nextButtonLabel}}</div></div>');
                         template.billing = template.billing.replace('{{nextButtonLabel}}',
-                            beanstream.Helper.toSentenceCase(parameter.panels.billing.next) + ' Info');
+                            beanstream.Helper.toSentenceCase(parameter.panels.billing.next) + ' Details');
                         template.billing = template.billing.replace('{{nextButtonType}}', 'button');
 
                         if (parameter.config.shipping) {
                             template.billing = template.billing.replace('{{backButton}}', self.template.backButton);
                             template.billing = template.billing.replace('{{backButtonLabel}}',
-                                beanstream.Helper.toSentenceCase(parameter.panels.billing.previous) + ' Info');
+                                beanstream.Helper.toSentenceCase(parameter.panels.billing.previous) + ' Details');
                         }
                     }
 
                     template.card = self.template.panel;
                     template.card = template.card.replace('{{content}}', self.template.card);
                     template.card = template.card.replace(/{{panelId}}/gi, parameter.panels.card.name);
-                    template.card = template.card.replace('{{panelName}}', 'Card Info');
+                    template.card = template.card.replace('{{panelName}}', 'Card Details');
                     template.card = template.card.replace('{{nextButtonLabel}}', 'Pay');
                     template.card = template.card.replace('{{nextButtonType}}', 'button');
 
                     if (parameter.config.billing || parameter.config.shipping) {
                         template.card = template.card.replace('{{backButton}}', self.template.backButton);
                         template.card = template.card.replace('{{backButtonLabel}}',
-                            beanstream.Helper.toSentenceCase(parameter.panels.card.previous) + ' Info');
+                            beanstream.Helper.toSentenceCase(parameter.panels.card.previous) + ' Details');
                     }
 
                     template.main = self.template.main;

@@ -391,7 +391,7 @@
                     if (luhn) {
                         return {isValid: true, error: '', fieldType: 'number'};
                     } else {
-                        return {isValid: false, error: 'Please enter a vlaid credit card number.', fieldType: 'number'};
+                        return {isValid: false, error: 'Please enter a valid credit card number.', fieldType: 'number'};
                     }
                 }
 
@@ -402,7 +402,7 @@
                     if (luhn) {
                         return {isValid: true, error: '', fieldType: 'number'};
                     } else {
-                        return {isValid: false, error: 'Please enter a vlaid credit card number.', fieldType: 'number'};
+                        return {isValid: false, error: 'Please enter a valid credit card number.', fieldType: 'number'};
                     }
                 }
 
@@ -424,7 +424,7 @@
 
             if (str.length < min && onBlur === true) {
                 return {isValid: false,
-                        error: 'Please enter a vlaid CVV number. The number entered is too short.',
+                        error: 'Please enter a valid CVV number. The number entered is too short.',
                         fieldType: 'cvv'};
             }
 
