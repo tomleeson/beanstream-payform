@@ -7,6 +7,7 @@
         self.template = {};
 
         self.template.main =
+            '<div class="vertical-center">' +
             '<div class="wrapper">' +
                 '<form>' +
                     '<div class="row heading main-heading drop-shaddow">' +
@@ -34,6 +35,7 @@
                         '<img src="assets/css/images/beanstream_logo.png">' +
                     '</a>' +
                 '</div>' +
+            '</div>' +
             '</div>';
 
         self.template.panel =
