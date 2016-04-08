@@ -87,7 +87,6 @@
     window.beanstream.payform.FormModel = FormModel;
 })(window);
 
-
 (function(window) {
     'use strict';
 
@@ -138,7 +137,6 @@
                 },
                 script: function() {
                     var script = document.createElement('script');
-
                     /*
                     script.src =
                         'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/beanstream_payfields.js';
@@ -396,6 +394,7 @@
                     inputs[i].placeholder = 'Card number';
 
                 } else if (self.isDescendant(expiryPlaceholder, inputs[i])) {
+                    inputs[i].classList.add('no-border-right');
                     inputs[i].id = 'card_expiry';
                     inputs[i].placeholder = 'Expiry MM/YY';
                 } else if (self.isDescendant(cvvPlaceholder, inputs[i])) {
@@ -451,7 +450,6 @@
     window.beanstream.payform = window.beanstream.payform || {};
     window.beanstream.payform.FormView = FormView;
 })(window);
-
 
 (function(window) {
     'use strict';
@@ -620,6 +618,7 @@
             config.amount = self.getParameterByName('amount');
             config.billing = self.getParameterByName('billingAddress');
             config.shipping = self.getParameterByName('shippingAddress');
+            config.currency = self.getParameterByName('currency');
 
             return config;
         },
@@ -650,7 +649,6 @@
     window.beanstream.payform.FormController = FormController;
 })(window);
 
-
 (function(window) {
     'use strict';
 
@@ -671,7 +669,7 @@
                             '<div class="circle" style="background-image: url({{image}})"></div>' +
                             '<div>' +
                                 '<h5>{{name}}</h5>' +
-                                '<p>$ {{amount}} CAD</p>' +
+                                '<p>{{currencySign}} {{amount}} {{currency}}</p>' +
                             '</div>' +
                         '</div>' +
                         '<div class="container sub">' +
@@ -710,19 +708,19 @@
                     '<input class="u-full-width" type="text" placeholder="Email" name="email" id="{{panelId}}_email">' +
                 '</div>' +
             '</div>' +
-            '<div class="row">' +
+            '<div class="row no-top-border">' +
                 '<div class="twelve columns">' +
                     '<label for="{{panelId}}_name" class="hidden">Name</label>' +
                     '<input class="u-full-width" type="text" placeholder="Name" name="name" id="{{panelId}}_name">' +
                 '</div>' +
             '</div>' +
-            '<div class="row">' +
+            '<div class="row no-top-border">' +
                 '<div class="twelve columns">' +
                     '<label for="{{panelId}}_number" class="hidden">Credit card number</label>' +
                     '<div data-beanstream-target="ccNumber_input" id="{{panelId}}_number"></div>' +
                 '</div>' +
             '</div>' +
-            '<div class="row">' +
+            '<div class="row no-top-border">' +
                 '<div class="six columns">' +
                     '<label for="{{panelId}}_expiry" class="hidden">Expiry MM/YY</label>' +
                     '<div data-beanstream-target="ccExp_input" id="{{panelId}}_expiry"></div>' +
@@ -740,17 +738,17 @@
                     '<input class="u-full-width" type="text" placeholder="Name" name="name" id="{{panelId}}_name">' +
                 '</div>' +
             '</div>' +
-            '<div class="row">' +
+            '<div class="row no-top-border">' +
                 '<div class="twelve columns">' +
                     '<label for="{{panelId}}_address_line1" class="hidden">Street Address</label>' +
                     '<input class="u-full-width" type="text"' +
                         'placeholder="Street Address" name="address_line1" id="{{panelId}}_address_line1">' +
                 '</div>' +
             '</div>' +
-            '<div class="row">' +
+            '<div class="row no-top-border">' +
                 '<div class="six columns">' +
                     '<label for="{{panelId}}_postal_code" class="hidden">Postal Code</label>' +
-                    '<input class="u-full-width" type="text"' +
+                    '<input class="u-full-width no-border-right" type="text"' +
                         'placeholder="Zip" name="postal_code" id="{{panelId}}_postal_code">' +
                 '</div>' +
                 '<div class="six columns">' +
@@ -758,10 +756,10 @@
                     '<input class="u-full-width" type="text" placeholder="City" name="city" id="{{panelId}}_city">' +
                 '</div>' +
             '</div>' +
-            '<div class="row">' +
+            '<div class="row no-top-border">' +
                 '<div class="six columns">' +
                     '<label for="{{panelId}}_province" class="hidden">Province</label>' +
-                    '<input class="u-full-width" type="text"' +
+                    '<input class="u-full-width no-border-right" type="text"' +
                         'placeholder="State" name="province" id="{{panelId}}_province">' +
                 '</div>' +
                 '<div class="six columns">' +
@@ -870,9 +868,28 @@
                     template.main = template.main.replace('{{name}}', parameter.config.name);
                     template.main = template.main.replace('{{image}}', parameter.config.image);
                     template.main = template.main.replace('{{amount}}', parameter.config.amount);
+                    template.main = template.main.replace('{{currency}}', parameter.config.currency.toUpperCase());
                     template.main = template.main.replace('{{description}}', parameter.config.description);
                     template.main = template.main.replace('{{content}}',
                                         template.shipping + template.billing + template.card);
+
+                    var currencySign = '';
+                    switch (parameter.config.currency.toUpperCase()) {
+                        case 'CAD':
+                        case 'USD':
+                            currencySign = '$';
+                            break;
+                        case 'GBP':
+                            currencySign = '£';
+                            break;
+                        case 'EUR':
+                            currencySign = '€';
+                            break;
+                        default:
+                            currencySign = '$';
+                    }
+                    template.main = template.main.replace('{{currencySign}}', currencySign);
+
                     template = template.main;
 
                     return template;

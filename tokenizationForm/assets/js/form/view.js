@@ -49,7 +49,6 @@
                 },
                 script: function() {
                     var script = document.createElement('script');
-
                     /*
                     script.src =
                         'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/beanstream_payfields.js';
@@ -307,6 +306,7 @@
                     inputs[i].placeholder = 'Card number';
 
                 } else if (self.isDescendant(expiryPlaceholder, inputs[i])) {
+                    inputs[i].classList.add('no-border-right');
                     inputs[i].id = 'card_expiry';
                     inputs[i].placeholder = 'Expiry MM/YY';
                 } else if (self.isDescendant(cvvPlaceholder, inputs[i])) {

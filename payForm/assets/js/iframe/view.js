@@ -50,6 +50,7 @@
             attributes.amount = this.script.getAttribute('data-amount');
             attributes.billingAddress = this.script.getAttribute('data-billingAddress');
             attributes.shippingAddress = this.script.getAttribute('data-shippingAddress');
+            attributes.currency = this.script.getAttribute('data-currency');
 
             return attributes;
         },

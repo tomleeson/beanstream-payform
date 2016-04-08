@@ -166,6 +166,7 @@
             config.amount = self.getParameterByName('amount');
             config.billing = self.getParameterByName('billingAddress');
             config.shipping = self.getParameterByName('shippingAddress');
+            config.currency = self.getParameterByName('currency');
 
             return config;
         },

@@ -18,7 +18,6 @@
     window.beanstream.IframeModel = IframeModel;
 })(window);
 
-
 (function(window) {
     'use strict';
 
@@ -70,6 +69,7 @@
             attributes.amount = this.script.getAttribute('data-amount');
             attributes.billingAddress = this.script.getAttribute('data-billingAddress');
             attributes.shippingAddress = this.script.getAttribute('data-shippingAddress');
+            attributes.currency = this.script.getAttribute('data-currency');
 
             return attributes;
         },
@@ -116,7 +116,6 @@
     window.beanstream = window.beanstream || {};
     window.beanstream.IframeView = IframeView;
 })(window);
-
 
 (function(window) {
     'use strict';
@@ -168,7 +167,6 @@
     window.beanstream = window.beanstream || {};
     window.beanstream.IframeController = IframeController;
 })(window);
-
 
 (function(window) {
     'use strict';

@@ -41,7 +41,7 @@ body{
     margin-bottom: 10px;
     /* background: #9E9E9E; For browsers that do not support gradients 
     background: linear-gradient(#424242 0%, #9E9E9E 100%); */
-    background: #2196F3;
+    background: #067aed;
 }
 
 .drop-shaddow{
@@ -83,6 +83,7 @@ body{
     height:auto !important; 
     padding-left: 70px; /* 60 + 10. width of circle */
     color:#E0E0E0;
+    padding-bottom: 5px;
 }
 
 .heading .icon{
@@ -111,7 +112,7 @@ body{
     background: none !important;
 }
 .section-heading h6{
-    color: #2196F3;
+    color: #067aed;
 }
 
 
@@ -171,14 +172,15 @@ p,h4,h5,h6{
 }
 
 input{
-    margin-bottom: 5px;
+    /* margin-bottom: 5px; */
+    margin-bottom: 0;
 }
 
 .three.columns {
-    width: 23% !important;
+    width: 25% !important;
 }
 .six.columns {
-    width: 49% !important;
+    width: 50% !important;
 }
 .nine.columns {
     width: 75% !important;
@@ -187,17 +189,37 @@ input{
     margin-left: 0 !important;
 }
 .columns {
-    margin-left: 2% !important;
+    margin-left: 0 !important;
 }
 
 .hidden{
     display: none;
 }
 
+.no-top-border input{
+    border-top: 0;
+}
+
+input.no-border-right {
+    border-right: 0;
+}
+
+input{
+    border-radius: 0 !important;
+}
+
+input[type=text]:focus {
+    border-color: #212121;
+}
 
 button{
-    margin-top: 10px;
+    border-radius: 0 !important;
+    margin-top: 20px;
     width:100%;
+}
+
+label{
+    margin-bottom: 0;
 }
 
  button img{
@@ -205,6 +227,7 @@ button{
  }
 
 .beanstream_invalid{
+    border: 1px solid;
     border-color: #F44336 !important;
 }
 
@@ -213,6 +236,7 @@ button{
     background-color: #FFEBEE;
     border-color: #B71C1C;
     padding: 10px;
+    margin-top: 10px;
 }
 
 .error ul{
@@ -239,7 +263,7 @@ button{
 .footer{
     /* background: #9E9E9E; For browsers that do not support gradients 
     background: linear-gradient(#9E9E9E 0%, #424242 100%); */
-    /* background: #2196F3; */
+    /* background: #067aed; */
     background: #212121; 
     padding: 10px;
     display: -webkit-flex;
@@ -268,8 +292,8 @@ button{
 }
 
 button.button{
-    border-color: #2196F3;
-    color: #2196F3;
+    border-color: #067aed;
+    color: #067aed;
     position: relative;
     overflow: hidden;
     transition-duration: 0.4s;
@@ -278,20 +302,21 @@ button.button{
     position: relative;
 }
 button.button:hover{
-    border-color: #2196F3;
+    border-color: #067aed;
     color: #fff;
-    background-color: #2196F3;
+    background-color: #067aed;
 }
 
 button.button:focus {
-    border-color: #2196F3;
-    color: #2196F3;
+    border-color: #067aed;
+    color: #067aed;
+    background-color: #fff;
     outline: 0;
     box-shadow: inset 0 1px 1px rgba(33,150,243,.075),0 0 8px rgba(33,150,243,.6);
 }
 
 button.button:active {
-  background-color: #2196F3;
+  background-color: #067aed;
   color: #fff;
 }
 
@@ -351,11 +376,13 @@ button.button:active:after {
     background: transparent url('../images/arrow_right_white_24px.svg') no-repeat center;
 }
 
+/*
 input[type=text]:focus {
-    border: 1px solid #2196F3;
+    border: 1px solid #067aed;
     outline: 0;
     box-shadow: inset 0 1px 1px rgba(33,150,243,.075),0 0 8px rgba(33,150,243,.6);
 }
+*/
 
 .beanstream_invalid:focus {
     border: 1px solid #F44336 !important;
@@ -371,6 +398,7 @@ a{
     display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
+    margin-top: 10px;
 }
 
 input[type=checkbox]{
