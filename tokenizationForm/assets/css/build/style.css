@@ -1,3 +1,11 @@
+/* Transparant background to look like popover */
+body{
+    background: rgba(0,0,0,.1);
+    padding: 0;
+    margin: 0;
+}
+
+/* Centre form withing screen */
 .vertical-center {
     height: 100%;
     max-width: 100%;
@@ -15,14 +23,7 @@
     justify-content: center;
 }
 
-body{
-    background: rgba(0,0,0,.1);
-    padding: 0;
-    margin: 0;
-}
-
-
-/* Mobile first queries */
+/* The popover element itself */
 .wrapper {
     position: relative;
     width: 100%;
@@ -41,7 +42,6 @@ body{
 }
 
 .drop-shaddow{
-    /* box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.4); */
     box-shadow: 0 2px 5px rgba(0,0,0,0.26);
 }
 
@@ -145,6 +145,16 @@ body{
 
 a {
     cursor:pointer;
+    text-decoration: none;
+}
+
+p,h4,h5,h6{
+    margin:0;
+    color: white;
+}
+
+input{
+    margin-bottom: 0;
 }
 
 .back-button .icon{
@@ -164,16 +174,7 @@ a {
     left: -19px;
 }
 
-p,h4,h5,h6{
-    margin:0;
-    color: white;
-}
-
-input{
-    /* margin-bottom: 5px; */
-    margin-bottom: 0;
-}
-
+/* Overriding Skeleton CSS defaults to remove spacing between columns */
 .three.columns {
     width: 25% !important;
 }
@@ -333,9 +334,6 @@ label{
 }
 
 .footer{
-    /* background: #9E9E9E; For browsers that do not support gradients 
-    background: linear-gradient(#9E9E9E 0%, #424242 100%); */
-    /* background: #067aed; */
     background: #212121; 
     padding: 10px;
     display: -webkit-flex;
@@ -446,10 +444,6 @@ button.button:active:after {
 }
 .button:hover .label-inner:after { 
     background: transparent url('../images/arrow_right_white_24px.svg') no-repeat center;
-}
-
-a{
-    text-decoration: none;
 }
 
 .checkbox{
