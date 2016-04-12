@@ -412,17 +412,17 @@
                 if (self.isDescendant(numberPlaceholder, inputs[i])) {
                     self.cardInputs.number = inputs[i];
                     inputs[i].id = 'card_number';
-                    inputs[i].placeholder = 'Card number';
+                    inputs[i].placeholder = 'card number';
 
                 } else if (self.isDescendant(expiryPlaceholder, inputs[i])) {
                     self.cardInputs.expiry = inputs[i];
                     inputs[i].classList.add('no-border-right');
                     inputs[i].id = 'card_expiry';
-                    inputs[i].placeholder = 'Expiry MM/YY';
+                    inputs[i].placeholder = 'expiry mm/yy';
                 } else if (self.isDescendant(cvvPlaceholder, inputs[i])) {
                     self.cardInputs.cvv = inputs[i];
                     inputs[i].id = 'card_cvv';
-                    inputs[i].placeholder = 'CVV';
+                    inputs[i].placeholder = 'cvv';
                 }
             }
             self.addFocusListeners();
@@ -744,13 +744,13 @@
             '<div class="row email">' +
                 '<div class="twelve columns">' +
                     '<label for="{{panelId}}_email" class="hidden">Email</label>' +
-                    '<input class="u-full-width" type="text" placeholder="Email" name="email" id="{{panelId}}_email">' +
+                    '<input class="u-full-width" type="text" placeholder="email" name="email" id="{{panelId}}_email">' +
                 '</div>' +
             '</div>' +
             '<div class="row">' +
                 '<div class="twelve columns">' +
                     '<label for="{{panelId}}_name" class="hidden">Name</label>' +
-                    '<input class="u-full-width" type="text" placeholder="Name" name="name" id="{{panelId}}_name">' +
+                    '<input class="u-full-width" type="text" placeholder="name" name="name" id="{{panelId}}_name">' +
                 '</div>' +
             '</div>' +
             '<div class="row">' +
@@ -776,37 +776,37 @@
             '<div class="row">' +
                 '<div class="twelve columns">' +
                     '<label for="{{panelId}}_name" class="hidden">Name</label>' +
-                    '<input class="u-full-width" type="text" placeholder="Name" name="name" id="{{panelId}}_name">' +
+                    '<input class="u-full-width" type="text" placeholder="name" name="name" id="{{panelId}}_name">' +
                 '</div>' +
             '</div>' +
             '<div class="row">' +
                 '<div class="twelve columns no-top-border">' +
                     '<label for="{{panelId}}_address_line1" class="hidden">Street Address</label>' +
                     '<input class="u-full-width" type="text"' +
-                        'placeholder="Street Address" name="address_line1" id="{{panelId}}_address_line1">' +
+                        'placeholder="street address" name="address_line1" id="{{panelId}}_address_line1">' +
                 '</div>' +
             '</div>' +
             '<div class="row">' +
                 '<div class="six columns no-right-border no-top-border">' +
                     '<label for="{{panelId}}_postal_code" class="hidden">Postal Code</label>' +
                     '<input class="u-full-width" type="text"' +
-                        'placeholder="Zip" name="postal_code" id="{{panelId}}_postal_code">' +
+                        'placeholder="zip" name="postal_code" id="{{panelId}}_postal_code">' +
                 '</div>' +
                 '<div class="six columns no-top-border">' +
                     '<label for="{{panelId}}_city" class="hidden">City</label>' +
-                    '<input class="u-full-width" type="text" placeholder="City" name="city" id="{{panelId}}_city">' +
+                    '<input class="u-full-width" type="text" placeholder="city" name="city" id="{{panelId}}_city">' +
                 '</div>' +
             '</div>' +
             '<div class="row">' +
                 '<div class="six columns no-right-border no-top-border">' +
                     '<label for="{{panelId}}_province" class="hidden">Province</label>' +
                     '<input class="u-full-width" type="text"' +
-                        'placeholder="State" name="province" id="{{panelId}}_province">' +
+                        'placeholder="state" name="province" id="{{panelId}}_province">' +
                 '</div>' +
                 '<div class="six columns no-top-border">' +
                     '<label for="{{panelId}}_country" class="hidden">Country</label>' +
                     '<input class="u-full-width" type="text"' +
-                        'placeholder="Country" name="country" id="{{panelId}}_country">' +
+                        'placeholder="country" name="country" id="{{panelId}}_country">' +
                 '</div>' +
             '</div>' +
             '{{checkbox}}';

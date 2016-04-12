@@ -323,17 +323,17 @@
                 if (self.isDescendant(numberPlaceholder, inputs[i])) {
                     self.cardInputs.number = inputs[i];
                     inputs[i].id = 'card_number';
-                    inputs[i].placeholder = 'Card number';
+                    inputs[i].placeholder = 'card number';
 
                 } else if (self.isDescendant(expiryPlaceholder, inputs[i])) {
                     self.cardInputs.expiry = inputs[i];
                     inputs[i].classList.add('no-border-right');
                     inputs[i].id = 'card_expiry';
-                    inputs[i].placeholder = 'Expiry MM/YY';
+                    inputs[i].placeholder = 'expiry mm/yy';
                 } else if (self.isDescendant(cvvPlaceholder, inputs[i])) {
                     self.cardInputs.cvv = inputs[i];
                     inputs[i].id = 'card_cvv';
-                    inputs[i].placeholder = 'CVV';
+                    inputs[i].placeholder = 'cvv';
                 }
             }
             self.addFocusListeners();
