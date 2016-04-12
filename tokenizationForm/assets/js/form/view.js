@@ -49,6 +49,7 @@
                 },
                 script: function() {
                     var script = document.createElement('script');
+
                     /*
                     script.src =
                         'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/beanstream_payfields.js';
@@ -78,15 +79,27 @@
                     var cardBackButton = self._domPanels.card.getElementsByTagName('a')[1];
 
                     if (parameter.sync) {
-                        shippingNextButton.childNodes[0].childNodes[0].innerHTML =
-                            beanstream.Helper.toSentenceCase(parameter.panels.billing.next) + ' Details';
+
+                        if (parameter.panels.billing.next.toUpperCase() === 'CARD') {
+                            shippingNextButton.childNodes[0].childNodes[0].innerHTML = 'Pay';
+                        } else {
+                            shippingNextButton.childNodes[0].childNodes[0].innerHTML =
+                                beanstream.Helper.toSentenceCase(parameter.panels.billing.next) + ' Address';
+                        }
+
                         cardBackButton.innerHTML = '<h6>' +
-                            beanstream.Helper.toSentenceCase(parameter.panels.billing.previous) + ' Details</h6>';
+                            beanstream.Helper.toSentenceCase(parameter.panels.billing.previous) + ' Address</h6>';
                     } else {
-                        shippingNextButton.childNodes[0].childNodes[0].innerHTML =
-                            beanstream.Helper.toSentenceCase(parameter.panels.shipping.next) + ' Details';
+
+                        if (parameter.panels.shipping.next.toUpperCase() === 'CARD') {
+                            shippingNextButton.childNodes[0].childNodes[0].innerHTML = 'Pay';
+                        } else {
+                            shippingNextButton.childNodes[0].childNodes[0].innerHTML =
+                                beanstream.Helper.toSentenceCase(parameter.panels.shipping.next) + ' Address';
+                        }
+
                         cardBackButton.innerHTML = '<h6>' +
-                            beanstream.Helper.toSentenceCase(parameter.panels.card.previous) + ' Details</h6>';
+                            beanstream.Helper.toSentenceCase(parameter.panels.card.previous) + ' Address</h6>';
                     }
 
                 },
@@ -283,13 +296,21 @@
             var self = this;
             self._model.setCardErrors(e.eventDetail);
             self.errorsUpdated.notify();
+
+            if (e.eventDetail.isValid) {
+                self.cardInputs[e.eventDetail.fieldType].parentNode.classList.remove('invalid');
+            } else {
+                self.cardInputs[e.eventDetail.fieldType].parentNode.classList.add('invalid');
+            }
+
+            console.log('e.eventDetail: ' + JSON.stringify(e.eventDetail));
         },
 
         addStylingToPayfields: function() {
             var self = this;
             var cardPanel = document.getElementById('card_panel');
             var inputs = cardPanel.getElementsByTagName('input');
-
+            self.cardInputs = {};
             // get placehokders - check if input is child
             // isDescendant
 
@@ -302,17 +323,33 @@
                 inputs[i].type = 'text';
 
                 if (self.isDescendant(numberPlaceholder, inputs[i])) {
+                    self.cardInputs.number = inputs[i];
                     inputs[i].id = 'card_number';
                     inputs[i].placeholder = 'Card number';
 
                 } else if (self.isDescendant(expiryPlaceholder, inputs[i])) {
+                    self.cardInputs.expiry = inputs[i];
                     inputs[i].classList.add('no-border-right');
                     inputs[i].id = 'card_expiry';
                     inputs[i].placeholder = 'Expiry MM/YY';
                 } else if (self.isDescendant(cvvPlaceholder, inputs[i])) {
+                    self.cardInputs.cvv = inputs[i];
                     inputs[i].id = 'card_cvv';
                     inputs[i].placeholder = 'CVV';
                 }
+            }
+            self.addFocusListeners();
+        },
+        addFocusListeners: function() {
+            // Add focus/blur listeners to all inputs
+            var inputs = document.querySelectorAll('input[type=text]');
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].addEventListener('focus', function(e) {
+                    e.target.parentNode.classList.add('focused');
+                }, false);
+                inputs[i].addEventListener('blur', function(e) {
+                    e.target.parentNode.classList.remove('focused');
+                }, false);
             }
         },
         createDocFrag: function(htmlStr) {
@@ -343,9 +380,11 @@
                 if (!inputs[i].value.length) {
                     isValid = false;
                     inputs[i].classList.add('beanstream_invalid');
+                    inputs[i].parentNode.classList.add('invalid');
                 } else {
                     if (!inputs[i].hasAttribute('data-beanstream-id')) {
                         inputs[i].classList.remove('beanstream_invalid');
+                        inputs[i].parentNode.classList.remove('invalid');
                     }
                 }
             }

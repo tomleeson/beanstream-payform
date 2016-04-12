@@ -29,10 +29,11 @@ body{
 }
 
 .heading{
-    margin-bottom: 10px;
-    /* background: #9E9E9E; For browsers that do not support gradients 
-    background: linear-gradient(#424242 0%, #9E9E9E 100%); */
     background: #067aed;
+}
+
+.heading.main-heading{
+    margin-bottom: 20px;
 }
 
 .drop-shaddow{
@@ -54,7 +55,6 @@ body{
 
     height:38px; /* Matching height of inputs */
     position: relative;
-    padding-left: 10px;
 }
 
 .main-heading .container.main{
@@ -110,7 +110,6 @@ body{
 
     height:24px;
     position: relative;
-    padding-left: 10px;
 }
 
 .back-button a{
@@ -130,7 +129,7 @@ a {
     height:24px;
     width:24px;
     top: 0;
-    left: -14px;
+    left: -19px;
 }
 
 p,h4,h5,h6{
@@ -163,13 +162,75 @@ input{
     display: none;
 }
 
-.no-top-border input{
+.no-top-border {
+    position: relative;
+}
+
+.no-top-border input[type=text]{
     border-top: 0;
 }
 
-input.no-border-right {
+.no-top-border::before{
+    background-color: #D1D1D1;
+    height:1px;
+    width: 100%;
+    left: 0;
+    top: -1px;
+    position: absolute;
+    content: '';
+    display: none;
+}
+
+.invalid.no-top-border::before {
+    background-color: #F44336;
+    display: block;
+}
+
+.focused.no-top-border::before {
+    background-color: #212121;
+    display: block;
+}
+
+.focused.invalid.no-top-border::before {
+    background-color: #FFCDD2;
+    display: block;
+}
+
+.no-right-border input[type=text]{
     border-right: 0;
 }
+
+.no-right-border {
+    position: relative;
+}
+
+.no-right-border::after {
+    background-color: #D1D1D1;
+    width:1px;
+    height: 100%;
+    left: 100%;
+    top: 0;
+    position: absolute;
+    content: '';
+    display: none;
+    z-index: 2;
+}
+
+.invalid.no-right-border::after {
+    background-color: #F44336;
+}
+
+.focused.no-right-border::after {
+    background-color: #212121;
+    display: block;
+}
+
+.focused.invalid.no-right-border::after {
+    background-color: #FFCDD2;
+    display: block;
+}
+
+
 
 input{
     border-radius: 0 !important;
@@ -177,6 +238,10 @@ input{
 
 input[type=text]:focus {
     border-color: #212121;
+}
+
+input[type=text]::after:focus {
+    background-color: #212121;
 }
 
 button{
@@ -193,9 +258,17 @@ label{
     vertical-align:middle;
  }
 
+
 .beanstream_invalid{
-    border: 1px solid;
+    border-color: inherit !important;
+}
+
+.invalid input[type=text]{
     border-color: #F44336 !important;
+}
+
+.invalid input[type=text]:focus {
+    border-color: #FFCDD2 !important;
 }
 
 .error{
@@ -331,20 +404,6 @@ button.button:active:after {
     background: transparent url('../images/arrow_right_white_24px.svg') no-repeat center;
 }
 
-/*
-input[type=text]:focus {
-    border: 1px solid #067aed;
-    outline: 0;
-    box-shadow: inset 0 1px 1px rgba(33,150,243,.075),0 0 8px rgba(33,150,243,.6);
-}
-*/
-
-.beanstream_invalid:focus {
-    border: 1px solid #F44336 !important;
-    outline: 0;
-    box-shadow: inset 0 1px 1px rgba(244,67,54,.075),0 0 8px rgba(244,67,54,.6) !important;
-}
-
 a{
     text-decoration: none;
 }
@@ -355,7 +414,16 @@ a{
 }
 
 input[type=checkbox]{
-    margin-top: 8px;
+    margin-top: 6px;
+}
+
+.row.email{
+    margin-top: 20px;
+    margin-bottom: 15px;
+}
+
+.currency{
+    font-size: .75em;
 }
 
 /* Larger than mobile */
