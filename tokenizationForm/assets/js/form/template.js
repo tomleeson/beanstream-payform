@@ -25,7 +25,7 @@
                             '</div>' +
                         '</div>' +
                         '<div class="container sub">' +
-                            '<span>{{description}}</span>' +
+                            '<span class="description">{{description}}</span>' +
                         '</div>' +
                     '</div>' +
                     '{{content}}' +

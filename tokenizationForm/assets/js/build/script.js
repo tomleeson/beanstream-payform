@@ -138,7 +138,6 @@
                 },
                 script: function() {
                     var script = document.createElement('script');
-
                     /*
                     script.src =
                         'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/beanstream_payfields.js';
@@ -218,9 +217,10 @@
             viewCommands[viewCmd]();
         },
         focusFirstElement: function(panel) {
-            panel.querySelectorAll('input[type=text]')[0].focus();
+            // Auto zoom on iOS safari
+            // panel.querySelectorAll('input[type=text]')[0].focus();
         },
-        cacheDom(panels) {
+        cacheDom: function(panels) {
             var self = this;
             self.form = document.getElementsByTagName('form')[0];
 
@@ -391,8 +391,6 @@
             } else {
                 self.cardInputs[e.eventDetail.fieldType].parentNode.classList.add('invalid');
             }
-
-            console.log('e.eventDetail: ' + JSON.stringify(e.eventDetail));
         },
 
         addStylingToPayfields: function() {
@@ -712,12 +710,12 @@
                             '<div class="circle" style="background-image: url({{image}})"></div>' +
                             '<div>' +
                                 '<h5>{{name}}</h5>' +
-                                '<p class="amount">{{currencySign}} {{amount}} ' +
+                                '<p>{{currencySign}} {{amount}} ' +
                                     '<span class="currency">{{currency}}</span></p>' +
                             '</div>' +
                         '</div>' +
                         '<div class="container sub">' +
-                            '<span>{{description}}</span>' +
+                            '<span class="description">{{description}}</span>' +
                         '</div>' +
                     '</div>' +
                     '{{content}}' +

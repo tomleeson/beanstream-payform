@@ -1,14 +1,10 @@
 .vertical-center {
-    min-height: 100%; 
-    min-height: 100vh;
+    height: 100vh;
+    max-width: 100%;
 
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.wrapper{
-
 }
 
 body{
@@ -64,9 +60,12 @@ body{
 
 .main-heading .container.sub{
     height:auto !important; 
-    padding-left: 70px; /* 60 + 10. width of circle */
     color:#E0E0E0;
     padding-bottom: 5px;
+}
+
+.main-heading .container.sub .description{
+    margin-left: 70px;
 }
 
 .heading .icon{
@@ -74,11 +73,12 @@ body{
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    margin-top: 7px;
+    margin-top: 10px;
     height:38px;
     width:38px;
     top: 0;
     right: 0;
+    z-index: 2;
 }
 
 .main-heading .icon{
