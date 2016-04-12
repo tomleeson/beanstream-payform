@@ -7,9 +7,9 @@ body{
 
 /* Centre form withing screen */
 .vertical-center {
-    height: 100%;
+    min-height: 100vh;
     max-width: 100%;
-
+    
     display: flex;
     align-items: center;
     justify-content: center;

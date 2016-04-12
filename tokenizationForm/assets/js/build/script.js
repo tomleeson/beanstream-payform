@@ -698,35 +698,37 @@
 
         self.template.main =
             '<div class="vertical-center">' +
-            '<div class="wrapper">' +
-                '<form>' +
-                    '<div class="row heading main-heading drop-shaddow">' +
-                        '<div class="icon">' +
-                            '<a id="close-button" href="javascript:void(0)">' +
-                                '<img src="assets/css/images/ic_clear_white_24px.svg">' +
+                '<div class="wrapper">' +
+                    '<div>' +
+                        '<form>' +
+                            '<div class="row heading main-heading drop-shaddow">' +
+                                '<div class="icon">' +
+                                    '<a id="close-button" href="javascript:void(0)">' +
+                                        '<img src="assets/css/images/ic_clear_white_24px.svg">' +
+                                    '</a>' +
+                                '</div>' +
+                                '<div class="container main">' +
+                                    '<div class="circle" style="background-image: url({{image}})"></div>' +
+                                    '<div>' +
+                                        '<h5>{{name}}</h5>' +
+                                        '<p>{{currencySign}} {{amount}} ' +
+                                            '<span class="currency">{{currency}}</span></p>' +
+                                    '</div>' +
+                                '</div>' +
+                                '<div class="container sub">' +
+                                    '<span class="description">{{description}}</span>' +
+                                '</div>' +
+                            '</div>' +
+                            '{{content}}' +
+                        '</form>' +
+                        '<div class="footer">' +
+                            '<a href="http://www.beanstream.com" target="_blank">' +
+                                '<span>secured by</span>' +
+                                '<img src="assets/css/images/beanstream_logo.png">' +
                             '</a>' +
                         '</div>' +
-                        '<div class="container main">' +
-                            '<div class="circle" style="background-image: url({{image}})"></div>' +
-                            '<div>' +
-                                '<h5>{{name}}</h5>' +
-                                '<p>{{currencySign}} {{amount}} ' +
-                                    '<span class="currency">{{currency}}</span></p>' +
-                            '</div>' +
-                        '</div>' +
-                        '<div class="container sub">' +
-                            '<span class="description">{{description}}</span>' +
-                        '</div>' +
                     '</div>' +
-                    '{{content}}' +
-                '</form>' +
-                '<div class="footer">' +
-                    '<a href="http://www.beanstream.com" target="_blank">' +
-                        '<span>secured by</span>' +
-                        '<img src="assets/css/images/beanstream_logo.png">' +
-                    '</a>' +
                 '</div>' +
-            '</div>' +
             '</div>';
 
         self.template.panel =
