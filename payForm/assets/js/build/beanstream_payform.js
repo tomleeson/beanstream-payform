@@ -128,7 +128,7 @@
                     for (var key in card) {
                         if (card.hasOwnProperty(key)) {
                             var name = 'cardInfo_' + key;
-                            this.appendValue(name, billing[key]);
+                            this.appendValue(name, card[key]);
                         }
                     }
                 }
