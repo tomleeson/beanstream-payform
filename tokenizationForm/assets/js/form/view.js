@@ -56,8 +56,7 @@
                     script.src =
                         'http://localhost:8000/payFields/assets/js/build/beanstream_payfields.js';
 
-                    script.setAttribute('data-submit-form', 'false');
-                    script.setAttribute('data-tokenize-onSubmit', 'false');
+                    script.setAttribute('data-submitForm', 'false');
                     var form = document.getElementsByTagName('form')[0];
                     form.appendChild(script);
                 },
@@ -195,10 +194,10 @@
                 self.closeIframe();
             }.bind(self), false);
 
-            self.form.addEventListener('beanstream_Payform_visible', function(e) {
+            self.form.addEventListener('beanstream_payform_visible', function(e) {
                 var self = this;
                 self.focusFirstElement(self._domPanels[self._model.getCurrentPanel()]);
-                console.log('beanstream_Payform_visible');
+                console.log('beanstream_payform_visible');
             }.bind(self), false);
 
             // Add listeners to all inputs on shipping and billing panels
@@ -265,9 +264,9 @@
         },
         attachPayfieldsListeners: function() {
             var self = this;
-            document.addEventListener('beanstream_loaded', this.addStylingToPayfields.bind(self));
-            document.addEventListener('beanstream_tokenUpdated', this.onTokenUpdated.bind(self));
-            document.addEventListener('beanstream_inputValidityChanged', this.onCardValidityChanged.bind(self));
+            document.addEventListener('beanstream_payfields_loaded', this.addStylingToPayfields.bind(self));
+            document.addEventListener('beanstream_payfields_tokenUpdated', this.onTokenUpdated.bind(self));
+            document.addEventListener('beanstream_payfields_inputValidityChanged', this.onCardValidityChanged.bind(self));
         },
         isDescendant: function(parent, child) {
             var node = child.parentNode;

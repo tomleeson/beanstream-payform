@@ -57,7 +57,7 @@
         },
         readAttributes: function() {
             var self = this;
-            var submit = self.script.getAttribute('data-submit-form') === 'true';
+            var submit = self.script.getAttribute('data-submitForm') === 'true';
             this._model.setSubmitForm(submit);
         },
         attachDomListeners: function() {
@@ -78,7 +78,7 @@
                     }, false);
                 }
 
-                self.form.addEventListener('beanstream_tokenize', function(e) {
+                self.form.addEventListener('beanstream_payfields_tokenize', function(e) {
                     self.submit.notify(e);
                 }.bind(self), false);
 

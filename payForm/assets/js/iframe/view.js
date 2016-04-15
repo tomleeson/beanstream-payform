@@ -17,9 +17,9 @@
             var self = this;
             self.cacheDom();
         },
-        render: function(path) {
+        render: function(path, config) {
             var self = this;
-            var template = self._template.show(path);
+            var template = self._template.show(path, config);
             var frag = self.createDocFrag(template);
             self.form.appendChild(frag);
         },
@@ -71,7 +71,7 @@
 
                 var innerDoc = this.iframe.contentDocument || this.iframe.contentWindow.document;
                 var form = innerDoc.getElementsByTagName('form')[0];
-                beanstream.Helper.fireEvent('beanstream_Payform_visible', {}, form);
+                beanstream.Helper.fireEvent('beanstream_payform_visible', {}, form);
 
             }.bind(self), false);
 
@@ -80,15 +80,53 @@
                 this.iframe.contentWindow.location.reload();
             }.bind(self), false);
 
-            /*
-            document.addEventListener('beanstream_Payform_complete', function(args) {
-                console.log('payForm - beanstream_Payform_complete');
-                console.log('beanstream_Payform_complete: ' + JSON.stringify(args));
-                // toDo: move function to demo page
-                // toDo: outPut to screen for demo
+            document.addEventListener('beanstream_toknizationForm_complete', function(e) {
 
+                // toDo: append hiddenfields to form and submit if config...
+                // toDo: append fields to doc during original render
+
+                if (e.eventDetail.billingAddress) {
+                    var billing = e.eventDetail.billingAddress;
+                    for (var key in billing) {
+                        if (billing.hasOwnProperty(key)) {
+                            var name = 'billingAddress_' + key;
+                            this.appendValue(name, billing[key]);
+                        }
+                    }
+                }
+                if (e.eventDetail.shippingAddress) {
+                    var shipping = e.eventDetail.shippingAddress;
+                    for (var key in shipping) {
+                        if (shipping.hasOwnProperty(key)) {
+                            var name = 'shippingAddress_' + key;
+                            this.appendValue(name, billing[key]);
+                        }
+                    }
+                }
+                if (e.eventDetail.cardInfo) {
+                    var card = e.eventDetail.cardInfo;
+                    for (var key in card) {
+                        if (card.hasOwnProperty(key)) {
+                            var name = 'cardInfo_' + key;
+                            this.appendValue(name, billing[key]);
+                        }
+                    }
+                }
+
+                // call submit form if configured
+                if (this.script.getAttribute('data-submitForm').toLowerCase() === 'true') {
+                    this.iframe.parentNode.submit();
+                }
+
+                beanstream.Helper.fireEvent('beanstream_payform_complete', e.eventDetail, window.parent.document);
             }.bind(self), false);
-            */
+        },
+        appendValue: function(name, value) {
+            var input = this.iframe.parentNode.querySelector('input[name=' + name + ']');
+
+            if (input) {
+                input.value = value;
+            }
         }
 
     };

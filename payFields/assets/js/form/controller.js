@@ -22,7 +22,7 @@
                 'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/beanstream_payfields_style.css');
             // self._view.render('injectStyles', '../assets/css/beanstream_payfields_style.css');
             self.injectFields();
-            beanstream.Helper.fireEvent('beanstream_loaded', {}, document);
+            beanstream.Helper.fireEvent('beanstream_payfields_loaded', {}, document);
         },
         onSubmit: function(e) {
             var self = this;
@@ -50,7 +50,7 @@
                     if (this._model.getSubmitForm()) {
                         self._view.form.submit();
                     } else {
-                        beanstream.Helper.fireEvent('beanstream_tokenUpdated', args, document);
+                        beanstream.Helper.fireEvent('beanstream_payfields_tokenUpdated', args, document);
                     }
                     self._view.render('enableSubmitButton', 'true');
                 }.bind(self));
@@ -139,7 +139,7 @@
             }
         },
         inputValidityChanged: function(args) {
-            beanstream.Helper.fireEvent('beanstream_inputValidityChanged', args, document);
+            beanstream.Helper.fireEvent('beanstream_payfields_inputValidityChanged', args, document);
         },
         /**
         * Gets card field values from model

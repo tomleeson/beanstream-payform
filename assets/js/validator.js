@@ -273,7 +273,7 @@
                     // Validate onBlur as required field
                     return {isValid: false, error: 'Please enter a credit card number.', fieldType: 'number'};
                 } else if (cardType === '') {
-                    return {isValid: true, error: ''};
+                    return {isValid: true, error: '', fieldType: 'number'};
                 } else if (str.length < min) {
                     // if onBlur and str not complete
                     return {isValid: false,

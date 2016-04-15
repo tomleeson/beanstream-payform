@@ -37,9 +37,9 @@
             var self = this;
             self.cacheDom();
         },
-        render: function(path) {
+        render: function(path, config) {
             var self = this;
-            var template = self._template.show(path);
+            var template = self._template.show(path, config);
             var frag = self.createDocFrag(template);
             self.form.appendChild(frag);
         },
@@ -91,7 +91,7 @@
 
                 var innerDoc = this.iframe.contentDocument || this.iframe.contentWindow.document;
                 var form = innerDoc.getElementsByTagName('form')[0];
-                beanstream.Helper.fireEvent('beanstream_Payform_visible', {}, form);
+                beanstream.Helper.fireEvent('beanstream_payform_visible', {}, form);
 
             }.bind(self), false);
 
@@ -100,15 +100,53 @@
                 this.iframe.contentWindow.location.reload();
             }.bind(self), false);
 
-            /*
-            document.addEventListener('beanstream_Payform_complete', function(args) {
-                console.log('payForm - beanstream_Payform_complete');
-                console.log('beanstream_Payform_complete: ' + JSON.stringify(args));
-                // toDo: move function to demo page
-                // toDo: outPut to screen for demo
+            document.addEventListener('beanstream_toknizationForm_complete', function(e) {
 
+                // toDo: append hiddenfields to form and submit if config...
+                // toDo: append fields to doc during original render
+
+                if (e.eventDetail.billingAddress) {
+                    var billing = e.eventDetail.billingAddress;
+                    for (var key in billing) {
+                        if (billing.hasOwnProperty(key)) {
+                            var name = 'billingAddress_' + key;
+                            this.appendValue(name, billing[key]);
+                        }
+                    }
+                }
+                if (e.eventDetail.shippingAddress) {
+                    var shipping = e.eventDetail.shippingAddress;
+                    for (var key in shipping) {
+                        if (shipping.hasOwnProperty(key)) {
+                            var name = 'shippingAddress_' + key;
+                            this.appendValue(name, billing[key]);
+                        }
+                    }
+                }
+                if (e.eventDetail.cardInfo) {
+                    var card = e.eventDetail.cardInfo;
+                    for (var key in card) {
+                        if (card.hasOwnProperty(key)) {
+                            var name = 'cardInfo_' + key;
+                            this.appendValue(name, billing[key]);
+                        }
+                    }
+                }
+
+                // call submit form if configured
+                if (this.script.getAttribute('data-submitForm').toLowerCase() === 'true') {
+                    this.iframe.parentNode.submit();
+                }
+
+                beanstream.Helper.fireEvent('beanstream_payform_complete', e.eventDetail, window.parent.document);
             }.bind(self), false);
-            */
+        },
+        appendValue: function(name, value) {
+            var input = this.iframe.parentNode.querySelector('input[name=' + name + ']');
+
+            if (input) {
+                input.value = value;
+            }
         }
 
     };
@@ -137,7 +175,7 @@
         init: function() {
             var self = this;
             self._view.init();
-            self._view.render(self.createQueryString());
+            self._view.render(self.createQueryString(), self._view.readAttributes());
             self._view.attachListeners();
         },
         createQueryString: function() {
@@ -176,7 +214,10 @@
 
     function IframeTemplate() {
         var self = this;
-        self.template =
+
+        // toDo: accept config as peramater and build template like tekenization form
+        self.template = {};
+        self.template.main =
             '<button>Pay with Card</button>' +
 			'<iframe frameborder="0"' +
 				'allowtransparency="true"' +
@@ -188,15 +229,44 @@
                         '0px; padding: 0px; -webkit-tap-highlight-color: transparent; position: fixed; ' +
                         'left: 0px; top: 0px; width: 100%; height: 100vh;">' +
 			'</iframe>';
+
+        self.template.cardInfo =
+            '<input type="hidden" name="cardInfo_code" value="">';
+
+        self.template.shippingAddress =
+            '<input type="hidden" name="shippingAddress_name" value="">' +
+            '<input type="hidden" name="shippingAddress_address_line1" value="">' +
+            '<input type="hidden" name="shippingAddress_postal_code" value="">' +
+            '<input type="hidden" name="shippingAddress_city" value="">' +
+            '<input type="hidden" name="shippingAddress_country" value="">' +
+            '<input type="hidden" name="shippingAddress_province" value="">';
+
+        self.template.billingAddress =
+            '<input type="hidden" name="billingAddress_name" value="">' +
+            '<input type="hidden" name="billingAddress_address_line1" value="">' +
+            '<input type="hidden" name="billingAddress_postal_code" value="">' +
+            '<input type="hidden" name="billingAddress_city" value="">' +
+            '<input type="hidden" name="billingAddress_country" value="">' +
+            '<input type="hidden" name="billingAddress_province" value="">';
     }
 
     IframeTemplate.prototype = {
 
-        show: function(path) {
+        show: function(path, config) {
             var self = this;
 
-            var template = self.template;
+            console.log(config.billingAddress);
+
+            var template = self.template.main;
             template = template.replace('{{path}}', path);
+
+            template = template + self.template.cardInfo;
+            if (config.billingAddress) {
+                template = template + self.template.billingAddress;
+            }
+            if (config.shippingAddress) {
+                template = template + self.template.shippingAddress;
+            }
             return template;
         }
     };

@@ -145,8 +145,7 @@
                     script.src =
                         'http://localhost:8000/payFields/assets/js/build/beanstream_payfields.js';
 
-                    script.setAttribute('data-submit-form', 'false');
-                    script.setAttribute('data-tokenize-onSubmit', 'false');
+                    script.setAttribute('data-submitForm', 'false');
                     var form = document.getElementsByTagName('form')[0];
                     form.appendChild(script);
                 },
@@ -284,10 +283,10 @@
                 self.closeIframe();
             }.bind(self), false);
 
-            self.form.addEventListener('beanstream_Payform_visible', function(e) {
+            self.form.addEventListener('beanstream_payform_visible', function(e) {
                 var self = this;
                 self.focusFirstElement(self._domPanels[self._model.getCurrentPanel()]);
-                console.log('beanstream_Payform_visible');
+                console.log('beanstream_payform_visible');
             }.bind(self), false);
 
             // Add listeners to all inputs on shipping and billing panels
@@ -354,9 +353,9 @@
         },
         attachPayfieldsListeners: function() {
             var self = this;
-            document.addEventListener('beanstream_loaded', this.addStylingToPayfields.bind(self));
-            document.addEventListener('beanstream_tokenUpdated', this.onTokenUpdated.bind(self));
-            document.addEventListener('beanstream_inputValidityChanged', this.onCardValidityChanged.bind(self));
+            document.addEventListener('beanstream_payfields_loaded', this.addStylingToPayfields.bind(self));
+            document.addEventListener('beanstream_payfields_tokenUpdated', this.onTokenUpdated.bind(self));
+            document.addEventListener('beanstream_payfields_inputValidityChanged', this.onCardValidityChanged.bind(self));
         },
         isDescendant: function(parent, child) {
             var node = child.parentNode;
@@ -552,24 +551,22 @@
                 data.billingAddress = self._model.getBillingAddress();
                 data.shippingAddress = self._model.getShippingAddress();
 
-                beanstream.Helper.fireEvent('beanstream_Payform_complete', data, window.parent.document);
+                beanstream.Helper.fireEvent('beanstream_toknizationForm_complete', data, window.parent.document);
 
                 self._view.closeIframe();
 
             }.bind(self));
 
             self._view.tokenize.attach(function(sender, e) {
-                console.log('* tokenize');
                 if (!self._view.validateFields('card')) {
                     return;
                 }
 
-                beanstream.Helper.fireEvent('beanstream_tokenize', {}, self._view.form);
+                beanstream.Helper.fireEvent('beanstream_payfields_tokenize', {}, self._view.form);
 
             }.bind(self));
 
             self._view.errorsUpdated.attach(function(sender, e) {
-                console.log('errorsUpdated');
 
                 var cardErrors = self._model.getCardErrors();
                 var isValid = self._model.getIsCurrentPanelValid();

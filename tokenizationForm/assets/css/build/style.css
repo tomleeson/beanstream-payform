@@ -251,6 +251,7 @@ input{
 
 .invalid.no-right-border::after {
     background-color: #F44336;
+    display: block;
 }
 
 .focused.no-right-border::after {

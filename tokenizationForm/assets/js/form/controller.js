@@ -61,24 +61,22 @@
                 data.billingAddress = self._model.getBillingAddress();
                 data.shippingAddress = self._model.getShippingAddress();
 
-                beanstream.Helper.fireEvent('beanstream_Payform_complete', data, window.parent.document);
+                beanstream.Helper.fireEvent('beanstream_toknizationForm_complete', data, window.parent.document);
 
                 self._view.closeIframe();
 
             }.bind(self));
 
             self._view.tokenize.attach(function(sender, e) {
-                console.log('* tokenize');
                 if (!self._view.validateFields('card')) {
                     return;
                 }
 
-                beanstream.Helper.fireEvent('beanstream_tokenize', {}, self._view.form);
+                beanstream.Helper.fireEvent('beanstream_payfields_tokenize', {}, self._view.form);
 
             }.bind(self));
 
             self._view.errorsUpdated.attach(function(sender, e) {
-                console.log('errorsUpdated');
 
                 var cardErrors = self._model.getCardErrors();
                 var isValid = self._model.getIsCurrentPanelValid();

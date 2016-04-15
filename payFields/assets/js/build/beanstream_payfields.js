@@ -379,7 +379,7 @@
                     // Validate onBlur as required field
                     return {isValid: false, error: 'Please enter a credit card number.', fieldType: 'number'};
                 } else if (cardType === '') {
-                    return {isValid: true, error: ''};
+                    return {isValid: true, error: '', fieldType: 'number'};
                 } else if (str.length < min) {
                     // if onBlur and str not complete
                     return {isValid: false,
@@ -1237,7 +1237,7 @@
         },
         readAttributes: function() {
             var self = this;
-            var submit = self.script.getAttribute('data-submit-form') === 'true';
+            var submit = self.script.getAttribute('data-submitForm') === 'true';
             this._model.setSubmitForm(submit);
         },
         attachDomListeners: function() {
@@ -1258,7 +1258,7 @@
                     }, false);
                 }
 
-                self.form.addEventListener('beanstream_tokenize', function(e) {
+                self.form.addEventListener('beanstream_payfields_tokenize', function(e) {
                     self.submit.notify(e);
                 }.bind(self), false);
 
@@ -1353,7 +1353,7 @@
                 'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/beanstream_payfields_style.css');
             // self._view.render('injectStyles', '../assets/css/beanstream_payfields_style.css');
             self.injectFields();
-            beanstream.Helper.fireEvent('beanstream_loaded', {}, document);
+            beanstream.Helper.fireEvent('beanstream_payfields_loaded', {}, document);
         },
         onSubmit: function(e) {
             var self = this;
@@ -1381,7 +1381,7 @@
                     if (this._model.getSubmitForm()) {
                         self._view.form.submit();
                     } else {
-                        beanstream.Helper.fireEvent('beanstream_tokenUpdated', args, document);
+                        beanstream.Helper.fireEvent('beanstream_payfields_tokenUpdated', args, document);
                     }
                     self._view.render('enableSubmitButton', 'true');
                 }.bind(self));
@@ -1470,7 +1470,7 @@
             }
         },
         inputValidityChanged: function(args) {
-            beanstream.Helper.fireEvent('beanstream_inputValidityChanged', args, document);
+            beanstream.Helper.fireEvent('beanstream_payfields_inputValidityChanged', args, document);
         },
         /**
         * Gets card field values from model
@@ -1569,7 +1569,7 @@
     * Functionality:
     * 1. Injects card fields into DOM
     * 2. OnSubmit tokenises field content, clears them and appends hidden field to form
-    * 3. Fires 'beanstream_tokenUpdated' event to document if 'data-submit-form' attribute is set to false
+    * 3. Fires 'beanstream_tokenUpdated' event to document if 'data-submitForm' attribute is set to false
     */
 
     console.log('Starting Beanstream Payfields...');

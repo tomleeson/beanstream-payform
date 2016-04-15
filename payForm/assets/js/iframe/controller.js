@@ -17,7 +17,7 @@
         init: function() {
             var self = this;
             self._view.init();
-            self._view.render(self.createQueryString());
+            self._view.render(self.createQueryString(), self._view.readAttributes());
             self._view.attachListeners();
         },
         createQueryString: function() {
