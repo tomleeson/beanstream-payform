@@ -87,7 +87,7 @@
             this.button.addEventListener('click', function(e) {
                 e.preventDefault();
                 e = e || window.event;
-                this.iframe.style.display = 'block';
+                this.iframe.parentNode.style.display = 'block';
 
                 var innerDoc = this.iframe.contentDocument || this.iframe.contentWindow.document;
                 var form = innerDoc.getElementsByTagName('form')[0];
@@ -96,7 +96,7 @@
             }.bind(self), false);
 
             document.addEventListener('beanstream_closePayform', function() {
-                this.iframe.style.display = 'none';
+                this.iframe.parentNode.style.display = 'none';
                 this.iframe.contentWindow.location.reload();
             }.bind(self), false);
 
@@ -180,13 +180,13 @@
         },
         createQueryString: function() {
             var self = this;
-
+            /*
             return 'http://localhost:8000/tokenizationForm/test.html?' +
                 self.serialize(self._view.readAttributes());
-            /*
+            */
             return 'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/tokenizationForm/index.html?' +
                 self.serialize(self._view.readAttributes());
-            */
+
         },
 
         serialize: function(obj) {
@@ -219,16 +219,19 @@
         self.template = {};
         self.template.main =
             '<button>Pay with Card</button>' +
+            '<div ' +
+                'style="z-index: 2147483647; display: none;' +
+                'overflow-x: hidden; overflow-y: auto;' +
+                'position: fixed; ' +
+                'left: 0px; top: 0px; width: 100%; height: 100vh; -webkit-overflow-scrolling: touch;">' +
 			'<iframe frameborder="0"' +
 				'allowtransparency="true"' +
 				'src="{{path}}"' +
-				'name="stripe_checkout_app"' +
-				'class="stripe_checkout_app"' +
-				'style="z-index: 2147483647; display: none; border: 0px none transparent;' +
+				'style="border: 0px none transparent;' +
                         'overflow-x: hidden; overflow-y: auto; visibility: visible; margin: ' +
-                        '0px; padding: 0px; -webkit-tap-highlight-color: transparent; position: fixed; ' +
-                        'left: 0px; top: 0px; width: 100%; height: 100vh;">' +
-			'</iframe>';
+                        '0px; padding: 0px; -webkit-tap-highlight-color: transparent; width: 100%; height: 100%">' +
+			'</iframe>' +
+            '</div>';
 
         self.template.cardInfo =
             '<input type="hidden" name="cardInfo_code" value="">';

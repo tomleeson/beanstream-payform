@@ -67,7 +67,7 @@
             this.button.addEventListener('click', function(e) {
                 e.preventDefault();
                 e = e || window.event;
-                this.iframe.style.display = 'block';
+                this.iframe.parentNode.style.display = 'block';
 
                 var innerDoc = this.iframe.contentDocument || this.iframe.contentWindow.document;
                 var form = innerDoc.getElementsByTagName('form')[0];
@@ -76,7 +76,7 @@
             }.bind(self), false);
 
             document.addEventListener('beanstream_closePayform', function() {
-                this.iframe.style.display = 'none';
+                this.iframe.parentNode.style.display = 'none';
                 this.iframe.contentWindow.location.reload();
             }.bind(self), false);
 

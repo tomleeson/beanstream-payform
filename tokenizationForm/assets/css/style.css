@@ -5,24 +5,74 @@ body{
     margin: 0;
 }
 
-/* Centre form withing screen */
-.vertical-center {
-    min-height: 100vh;
-    max-width: 100%;
-    
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* Mobile */
+@media only screen  
+  and (max-device-width: 450px) {
+    /* Centre form withing screen */
+    .vertical-center {
+        width: 100%;
+    }
+
+    /* The popover element itself */
+    .wrapper {
+        position: relative;
+        width: 100%;
+        box-sizing: border-box;
+        background-color: white;
+    }
 }
 
-/* The popover element itself */
-.wrapper {
-    position: relative;
-    width: 100%;
-    max-width: 400px;
-    box-sizing: border-box;
-    background-color: white;
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+/* Tablet and Desktop */
+@media only screen
+  and (min-device-width: 450px)
+  and (min-device-height: 500px) 
+{
+    /* Centre form withing screen */
+    .vertical-center {
+            height: 100vh;
+            min-height: 100vh;
+            width: 100%;
+            
+            display: flex;
+            align-items: center;
+            justify-content: center;
+    }
+
+    /* The popover element itself */
+    .wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+            background-color: white;
+            box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+    }
+}
+
+/*
+* Nice description of problem with vertical centre here:;
+* http://stackoverflow.com/q/24538100
+*/
+@media only screen 
+  and (min-device-width: 450px) 
+  and (max-device-height: 500px) 
+{
+    /* Centre form withing screen */
+    .vertical-center {
+          display: flex;
+          overflow-y: scroll;
+    }
+
+    /* The popover element itself */
+    .wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+            background-color: white;
+            box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+            margin: auto;
+    }
 }
 
 .heading{

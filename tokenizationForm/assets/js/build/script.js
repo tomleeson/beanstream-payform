@@ -138,13 +138,13 @@
                 },
                 script: function() {
                     var script = document.createElement('script');
-                    /*
+
                     script.src =
                         'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/beanstream_payfields.js';
-                    */
+                    /*
                     script.src =
                         'http://localhost:8000/payFields/assets/js/build/beanstream_payfields.js';
-
+                    */
                     script.setAttribute('data-submitForm', 'false');
                     var form = document.getElementsByTagName('form')[0];
                     form.appendChild(script);
@@ -355,7 +355,8 @@
             var self = this;
             document.addEventListener('beanstream_payfields_loaded', this.addStylingToPayfields.bind(self));
             document.addEventListener('beanstream_payfields_tokenUpdated', this.onTokenUpdated.bind(self));
-            document.addEventListener('beanstream_payfields_inputValidityChanged', this.onCardValidityChanged.bind(self));
+            document.addEventListener('beanstream_payfields_inputValidityChanged',
+                this.onCardValidityChanged.bind(self));
         },
         isDescendant: function(parent, child) {
             var node = child.parentNode;

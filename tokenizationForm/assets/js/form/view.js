@@ -266,7 +266,8 @@
             var self = this;
             document.addEventListener('beanstream_payfields_loaded', this.addStylingToPayfields.bind(self));
             document.addEventListener('beanstream_payfields_tokenUpdated', this.onTokenUpdated.bind(self));
-            document.addEventListener('beanstream_payfields_inputValidityChanged', this.onCardValidityChanged.bind(self));
+            document.addEventListener('beanstream_payfields_inputValidityChanged',
+                this.onCardValidityChanged.bind(self));
         },
         isDescendant: function(parent, child) {
             var node = child.parentNode;
