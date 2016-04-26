@@ -360,36 +360,80 @@
             }
             return frag;
         },
-
-        /**
-         * Checks that no fields on current panel are empty
-         *
-         * @param {String} panel
-         * @return {Boole} isValid
-         */
         validateFields: function(panel) {
-            console.log('* validateFields');
             var self = this;
-            var isValid = true;
             var inputs = self._domPanels[panel].getElementsByTagName('input');
+            var errors = [];
 
             for (var i = 0; i < inputs.length; i++) {
-                // if input string length is not 0
-                if (!inputs[i].value.length) {
-                    isValid = false;
-                    inputs[i].classList.add('beanstream_invalid');
-                    inputs[i].parentNode.classList.add('invalid');
-                } else {
-                    if (!inputs[i].hasAttribute('data-beanstream-id')) {
-                        inputs[i].classList.remove('beanstream_invalid');
-                        inputs[i].parentNode.classList.remove('invalid');
-                    }
+                var name = '';
+                if (inputs[i].attributes.name) {
+                    name = inputs[i].attributes.name.value;
+                }
+                switch (name) {
+                    case 'city':
+                        var exp = '^[a-zA-Z()]+$';
+                        self.regExValidate(inputs[i], exp, 'Please enter a valid city.', errors);
+                        break;
+                    case 'province':
+                        var exp = '^[a-zA-Z()]+$';
+                        self.regExValidate(inputs[i], exp, 'Please enter a valid state.', errors);
+                        break;
+                    case 'country':
+                        var exp = '^[a-zA-Z()]+$';
+                        self.regExValidate(inputs[i], exp, 'Please enter a valid country.', errors);
+                        break;
+                    case 'email':
+                        var exp =   '^(([^<>()\\[\\]\\\.,;:\\s@"]+(\\.[^<>()\\[\\]\\\.,;:\\s@"]+)*)|' +
+                                    '(".+"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|' +
+                                    '(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$';
+
+                        self.regExValidate(inputs[i], exp, 'Please enter a valid email address.', errors);
+                        break;
+                    default:
+                        if (!inputs[i].value.length) {
+                            self.addErrorClass(inputs[i], true);
+                            var errMsg = 'Please fill all fields.';
+                            if (errors.indexOf(errMsg) === -1) {
+                                errors.push(errMsg);
+                            }
+                        } else {
+                            self.addErrorClass(inputs[i], false);
+                        }
                 }
             }
 
-            self._model.setIsCurrentPanelValid(isValid);
+            self._model.setNonCardErrors(errors);
             self.errorsUpdated.notify();
-            return isValid;
+        },
+        addErrorClass(element, isError) {
+            if (isError) {
+                element.classList.add('beanstream_invalid');
+                element.parentNode.classList.add('invalid');
+            } else {
+                // Do not remove class for Payfields fields
+                if (!element.hasAttribute('data-beanstream-id')) {
+                    element.classList.remove('beanstream_invalid');
+                    element.parentNode.classList.remove('invalid');
+                }
+            }
+        },
+        regExValidate(el, exp, errMsg, errors) {
+            var self = this;
+            var re = new RegExp(exp);
+
+            if (!el.value.length) {
+                self.addErrorClass(el, true);
+                var errMsg = 'Please fill all fields.';
+                if (errors.indexOf(errMsg) === -1) {
+                    errors.push(errMsg);
+                }
+            } else if (!re.test(el.value)) {
+                self.addErrorClass(el, true);
+                errors.push(errMsg);
+            } else {
+                self.addErrorClass(el, false);
+            }
         }
 
     };

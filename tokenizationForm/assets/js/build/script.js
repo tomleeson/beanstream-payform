@@ -13,6 +13,7 @@
         this._currentPanel = '';
         this._isValid = false;
         this._cardErrors = [];
+        this._nonCardErrors = [];
     }
 
     FormModel.prototype = {
@@ -64,6 +65,12 @@
                 this._isValid = value;
             }
         },
+        getNonCardErrors: function() {
+            return this._nonCardErrors;
+        },
+        setNonCardErrors: function(value) {
+            this._nonCardErrors = value;
+        },
         getCardErrors: function() {
             return this._cardErrors;
         },
@@ -74,7 +81,7 @@
             });
 
             // only add error message if field invalid
-            if (value.isValid != true) {
+            if (value.isValid != true && cardErrors.indexOf(value) === -1) {
                 cardErrors.push(value);
             }
             this._cardErrors = cardErrors;
@@ -86,7 +93,6 @@
     window.beanstream.payform = window.beanstream.payform || {};
     window.beanstream.payform.FormModel = FormModel;
 })(window);
-
 
 (function(window) {
     'use strict';
@@ -138,13 +144,13 @@
                 },
                 script: function() {
                     var script = document.createElement('script');
-
-                    script.src =
-                        'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/beanstream_payfields.js';
                     /*
                     script.src =
-                        'http://localhost:8000/payFields/assets/js/build/beanstream_payfields.js';
+                        'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/beanstream_payfields.js';
                     */
+                    script.src =
+                        'http://localhost:8000/payFields/assets/js/build/beanstream_payfields.js';
+
                     script.setAttribute('data-submitForm', 'false');
                     var form = document.getElementsByTagName('form')[0];
                     form.appendChild(script);
@@ -449,36 +455,80 @@
             }
             return frag;
         },
-
-        /**
-         * Checks that no fields on current panel are empty
-         *
-         * @param {String} panel
-         * @return {Boole} isValid
-         */
         validateFields: function(panel) {
-            console.log('* validateFields');
             var self = this;
-            var isValid = true;
             var inputs = self._domPanels[panel].getElementsByTagName('input');
+            var errors = [];
 
             for (var i = 0; i < inputs.length; i++) {
-                // if input string length is not 0
-                if (!inputs[i].value.length) {
-                    isValid = false;
-                    inputs[i].classList.add('beanstream_invalid');
-                    inputs[i].parentNode.classList.add('invalid');
-                } else {
-                    if (!inputs[i].hasAttribute('data-beanstream-id')) {
-                        inputs[i].classList.remove('beanstream_invalid');
-                        inputs[i].parentNode.classList.remove('invalid');
-                    }
+                var name = '';
+                if (inputs[i].attributes.name) {
+                    name = inputs[i].attributes.name.value;
+                }
+                switch (name) {
+                    case 'city':
+                        var exp = '^[a-zA-Z()]+$';
+                        self.regExValidate(inputs[i], exp, 'Please enter a valid city.', errors);
+                        break;
+                    case 'province':
+                        var exp = '^[a-zA-Z()]+$';
+                        self.regExValidate(inputs[i], exp, 'Please enter a valid state.', errors);
+                        break;
+                    case 'country':
+                        var exp = '^[a-zA-Z()]+$';
+                        self.regExValidate(inputs[i], exp, 'Please enter a valid country.', errors);
+                        break;
+                    case 'email':
+                        var exp =   '^(([^<>()\\[\\]\\\.,;:\\s@"]+(\\.[^<>()\\[\\]\\\.,;:\\s@"]+)*)|' +
+                                    '(".+"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|' +
+                                    '(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$';
+
+                        self.regExValidate(inputs[i], exp, 'Please enter a valid email address.', errors);
+                        break;
+                    default:
+                        if (!inputs[i].value.length) {
+                            self.addErrorClass(inputs[i], true);
+                            var errMsg = 'Please fill all fields.';
+                            if (errors.indexOf(errMsg) === -1) {
+                                errors.push(errMsg);
+                            }
+                        } else {
+                            self.addErrorClass(inputs[i], false);
+                        }
                 }
             }
 
-            self._model.setIsCurrentPanelValid(isValid);
+            self._model.setNonCardErrors(errors);
             self.errorsUpdated.notify();
-            return isValid;
+        },
+        addErrorClass(element, isError) {
+            if (isError) {
+                element.classList.add('beanstream_invalid');
+                element.parentNode.classList.add('invalid');
+            } else {
+                // Do not remove class for Payfields fields
+                if (!element.hasAttribute('data-beanstream-id')) {
+                    element.classList.remove('beanstream_invalid');
+                    element.parentNode.classList.remove('invalid');
+                }
+            }
+        },
+        regExValidate(el, exp, errMsg, errors) {
+            var self = this;
+            var re = new RegExp(exp);
+
+            if (!el.value.length) {
+                self.addErrorClass(el, true);
+                var errMsg = 'Please fill all fields.';
+                if (errors.indexOf(errMsg) === -1) {
+                    errors.push(errMsg);
+                }
+            } else if (!re.test(el.value)) {
+                self.addErrorClass(el, true);
+                errors.push(errMsg);
+            } else {
+                self.addErrorClass(el, false);
+            }
         }
 
     };
@@ -488,7 +538,6 @@
     window.beanstream.payform = window.beanstream.payform || {};
     window.beanstream.payform.FormView = FormView;
 })(window);
-
 
 (function(window) {
     'use strict';
@@ -515,7 +564,8 @@
             self._view.nextPanel.attach(function(sender, panel) {
 
                 // Do not move to next panel if fields not valid
-                if (!self._view.validateFields(panel)) {
+                self._view.validateFields(panel);
+                if (self._model.getNonCardErrors().length) {
                     return;
                 }
 
@@ -559,7 +609,9 @@
             }.bind(self));
 
             self._view.tokenize.attach(function(sender, e) {
-                if (!self._view.validateFields('card')) {
+                // Do not move tokenize if fields not valid
+                self._view.validateFields('card');
+                if (self._model.getNonCardErrors().length) {
                     return;
                 }
 
@@ -569,27 +621,21 @@
 
             self._view.errorsUpdated.attach(function(sender, e) {
 
-                var cardErrors = self._model.getCardErrors();
-                var isValid = self._model.getIsCurrentPanelValid();
-
                 var errorMessages = [];
-                if (!isValid) {
-                    errorMessages.push('Please fill all fields.');
-                }
+                errorMessages = errorMessages.concat(self._model.getNonCardErrors());
+                var cardErrors = self._model.getCardErrors();
 
-                if (cardErrors.length) {;
-                    for (var i = 0; i < cardErrors.length; i++) {
-                        // This is a required field.
-                        if ((cardErrors[i].error === 'Please enter a CVV number.' ||
+                for (var i = 0; i < cardErrors.length; i++) {
+                    // This is a required field.
+                    if ((cardErrors[i].error === 'Please enter a CVV number.' ||
                             cardErrors[i].error === 'Please enter an expiry date.' ||
                             cardErrors[i].error === 'Please enter a credit card number.')) {
 
-                            if (errorMessages.indexOf('Please fill all fields.') === -1) {
-                                errorMessages.push('Please fill all fields.');
-                            }
-                        } else {
-                            errorMessages.push(cardErrors[i].error);
+                        if (errorMessages.indexOf('Please fill all fields.') === -1) {
+                            errorMessages.push('Please fill all fields.');
                         }
+                    } else {
+                        errorMessages.push(cardErrors[i].error);
                     }
                 }
 
@@ -685,7 +731,6 @@
     window.beanstream.payform = window.beanstream.payform || {};
     window.beanstream.payform.FormController = FormController;
 })(window);
-
 
 (function(window) {
     'use strict';

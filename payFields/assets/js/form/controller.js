@@ -135,7 +135,7 @@
             field = field[0];
 
             if (field) {
-                field.controller._model.setCardType(cardType);
+                field.controller.setCardType(cardType);
             }
         },
         inputValidityChanged: function(args) {

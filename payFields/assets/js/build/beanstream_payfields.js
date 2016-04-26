@@ -379,7 +379,7 @@
                     // Validate onBlur as required field
                     return {isValid: false, error: 'Please enter a credit card number.', fieldType: 'number'};
                 } else if (cardType === '') {
-                    return {isValid: true, error: '', fieldType: 'number'};
+                    return {isValid: false, error: 'Please enter a valid credit card number.', fieldType: 'number'};
                 } else if (str.length < min) {
                     // if onBlur and str not complete
                     return {isValid: false,
@@ -1000,8 +1000,17 @@
             var currentType = self._model.setCardType(cardType);
 
             if (cardType !== currentType) {
-                self._model.setCardType(cardType); // update model for viey
+                self._model.setCardType(cardType); // update model for view
                 self.cardTypeChanged.notify(cardType); // emit event for form
+            }
+
+            // limit and validate csc input if present
+            if (self._model.getFieldType() === 'cc-csc') {
+                var onBlur = false;
+                var value = self._model.getValue();
+                value = beanstream.Validator.limitLength(value, 'cvcLength', self._model.getCardType());
+                self._model.setValue(value);
+                self.validate(onBlur, value);
             }
         },
         setInputValidity: function(args) {
@@ -1466,7 +1475,7 @@
             field = field[0];
 
             if (field) {
-                field.controller._model.setCardType(cardType);
+                field.controller.setCardType(cardType);
             }
         },
         inputValidityChanged: function(args) {

@@ -24,7 +24,8 @@
             self._view.nextPanel.attach(function(sender, panel) {
 
                 // Do not move to next panel if fields not valid
-                if (!self._view.validateFields(panel)) {
+                self._view.validateFields(panel);
+                if (self._model.getNonCardErrors().length) {
                     return;
                 }
 
@@ -68,7 +69,9 @@
             }.bind(self));
 
             self._view.tokenize.attach(function(sender, e) {
-                if (!self._view.validateFields('card')) {
+                // Do not move tokenize if fields not valid
+                self._view.validateFields('card');
+                if (self._model.getNonCardErrors().length) {
                     return;
                 }
 
@@ -78,27 +81,21 @@
 
             self._view.errorsUpdated.attach(function(sender, e) {
 
-                var cardErrors = self._model.getCardErrors();
-                var isValid = self._model.getIsCurrentPanelValid();
-
                 var errorMessages = [];
-                if (!isValid) {
-                    errorMessages.push('Please fill all fields.');
-                }
+                errorMessages = errorMessages.concat(self._model.getNonCardErrors());
+                var cardErrors = self._model.getCardErrors();
 
-                if (cardErrors.length) {;
-                    for (var i = 0; i < cardErrors.length; i++) {
-                        // This is a required field.
-                        if ((cardErrors[i].error === 'Please enter a CVV number.' ||
+                for (var i = 0; i < cardErrors.length; i++) {
+                    // This is a required field.
+                    if ((cardErrors[i].error === 'Please enter a CVV number.' ||
                             cardErrors[i].error === 'Please enter an expiry date.' ||
                             cardErrors[i].error === 'Please enter a credit card number.')) {
 
-                            if (errorMessages.indexOf('Please fill all fields.') === -1) {
-                                errorMessages.push('Please fill all fields.');
-                            }
-                        } else {
-                            errorMessages.push(cardErrors[i].error);
+                        if (errorMessages.indexOf('Please fill all fields.') === -1) {
+                            errorMessages.push('Please fill all fields.');
                         }
+                    } else {
+                        errorMessages.push(cardErrors[i].error);
                     }
                 }
 

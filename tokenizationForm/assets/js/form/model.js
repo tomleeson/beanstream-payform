@@ -13,6 +13,7 @@
         this._currentPanel = '';
         this._isValid = false;
         this._cardErrors = [];
+        this._nonCardErrors = [];
     }
 
     FormModel.prototype = {
@@ -64,6 +65,12 @@
                 this._isValid = value;
             }
         },
+        getNonCardErrors: function() {
+            return this._nonCardErrors;
+        },
+        setNonCardErrors: function(value) {
+            this._nonCardErrors = value;
+        },
         getCardErrors: function() {
             return this._cardErrors;
         },
@@ -74,7 +81,7 @@
             });
 
             // only add error message if field invalid
-            if (value.isValid != true) {
+            if (value.isValid != true && cardErrors.indexOf(value) === -1) {
                 cardErrors.push(value);
             }
             this._cardErrors = cardErrors;

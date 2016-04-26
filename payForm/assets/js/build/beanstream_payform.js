@@ -18,7 +18,6 @@
     window.beanstream.IframeModel = IframeModel;
 })(window);
 
-
 (function(window) {
     'use strict';
 
@@ -156,7 +155,6 @@
     window.beanstream.IframeView = IframeView;
 })(window);
 
-
 (function(window) {
     'use strict';
 
@@ -180,13 +178,13 @@
         },
         createQueryString: function() {
             var self = this;
-            /*
+
             return 'http://localhost:8000/tokenizationForm/test.html?' +
                 self.serialize(self._view.readAttributes());
-            */
+            /*
             return 'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/tokenizationForm/index.html?' +
                 self.serialize(self._view.readAttributes());
-
+            */
         },
 
         serialize: function(obj) {
@@ -207,7 +205,6 @@
     window.beanstream = window.beanstream || {};
     window.beanstream.IframeController = IframeController;
 })(window);
-
 
 (function(window) {
     'use strict';

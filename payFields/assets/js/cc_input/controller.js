@@ -171,8 +171,17 @@
             var currentType = self._model.setCardType(cardType);
 
             if (cardType !== currentType) {
-                self._model.setCardType(cardType); // update model for viey
+                self._model.setCardType(cardType); // update model for view
                 self.cardTypeChanged.notify(cardType); // emit event for form
+            }
+
+            // limit and validate csc input if present
+            if (self._model.getFieldType() === 'cc-csc') {
+                var onBlur = false;
+                var value = self._model.getValue();
+                value = beanstream.Validator.limitLength(value, 'cvcLength', self._model.getCardType());
+                self._model.setValue(value);
+                self.validate(onBlur, value);
             }
         },
         setInputValidity: function(args) {
