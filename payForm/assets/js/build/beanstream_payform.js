@@ -18,6 +18,7 @@
     window.beanstream.IframeModel = IframeModel;
 })(window);
 
+
 (function(window) {
     'use strict';
 
@@ -155,6 +156,7 @@
     window.beanstream.IframeView = IframeView;
 })(window);
 
+
 (function(window) {
     'use strict';
 
@@ -205,6 +207,7 @@
     window.beanstream = window.beanstream || {};
     window.beanstream.IframeController = IframeController;
 })(window);
+
 
 (function(window) {
     'use strict';

@@ -94,6 +94,7 @@
     window.beanstream.payform.FormModel = FormModel;
 })(window);
 
+
 (function(window) {
     'use strict';
 
@@ -381,8 +382,10 @@
 
             var token = document.getElementsByName('singleUseToken')[0].value;
             var name = self._domPanels.card.querySelector('input[name="name"]').value;
+            var email = self._domPanels.card.querySelector('input[name="email"]').value;
             blob.name = name;
             blob.code = token;
+            blob.email = email;
 
             self._model.setCardInfo(blob);
             self.tokenUpdated.notify();
@@ -466,16 +469,20 @@
                     name = inputs[i].attributes.name.value;
                 }
                 switch (name) {
+                    case 'name':
+                        var exp = '^[a-zA-Z]+(?:(?:\\\s+|-)[a-zA-Z]+)*$';
+                        self.regExValidate(inputs[i], exp, 'Please enter your full name.', errors);
+                        break;
                     case 'city':
-                        var exp = '^[a-zA-Z()]+$';
+                        var exp = '^[a-zA-Z]+(?:(?:\\\s+|-)[a-zA-Z]+)*$';
                         self.regExValidate(inputs[i], exp, 'Please enter a valid city.', errors);
                         break;
                     case 'province':
-                        var exp = '^[a-zA-Z()]+$';
+                        var exp = '^[a-zA-Z]+(?:(?:\\\s+|-)[a-zA-Z]+)*$';
                         self.regExValidate(inputs[i], exp, 'Please enter a valid state.', errors);
                         break;
                     case 'country':
-                        var exp = '^[a-zA-Z()]+$';
+                        var exp = '^[a-zA-Z]+(?:(?:\\\s+|-)[a-zA-Z]+)*$';
                         self.regExValidate(inputs[i], exp, 'Please enter a valid country.', errors);
                         break;
                     case 'email':
@@ -523,7 +530,7 @@
                 if (errors.indexOf(errMsg) === -1) {
                     errors.push(errMsg);
                 }
-            } else if (!re.test(el.value)) {
+            } else if (!re.test(el.value) || el.value.length < 2) {
                 self.addErrorClass(el, true);
                 errors.push(errMsg);
             } else {
@@ -538,6 +545,7 @@
     window.beanstream.payform = window.beanstream.payform || {};
     window.beanstream.payform.FormView = FormView;
 })(window);
+
 
 (function(window) {
     'use strict';
@@ -732,6 +740,7 @@
     window.beanstream.payform.FormController = FormController;
 })(window);
 
+
 (function(window) {
     'use strict';
 
@@ -766,7 +775,6 @@
                         '</form>' +
                         '<div class="footer">' +
                             '<a href="http://www.beanstream.com" target="_blank">' +
-                                '<span>secured by</span>' +
                                 '<img src="assets/css/images/beanstream_logo.png">' +
                             '</a>' +
                         '</div>' +
@@ -844,9 +852,9 @@
             '</div>' +
             '<div class="row">' +
                 '<div class="six columns no-right-border no-top-border">' +
-                    '<label for="{{panelId}}_province" class="hidden">Province</label>' +
+                    '<label for="{{panelId}}_province" class="hidden">{{province}}</label>' +
                     '<input class="u-full-width" type="text"' +
-                        'placeholder="state" name="province" id="{{panelId}}_province">' +
+                        'placeholder="{{province}}" name="province" id="{{panelId}}_province">' +
                 '</div>' +
                 '<div class="six columns no-top-border">' +
                     '<label for="{{panelId}}_country" class="hidden">Country</label>' +
@@ -906,19 +914,27 @@
                     template.billing = '';
 
                     var currencySign = '';
+                    var province = '';
                     switch (parameter.config.currency.toUpperCase()) {
                         case 'CAD':
+                            currencySign = '$';
+                            province = 'province';
+                            break;
                         case 'USD':
                             currencySign = '$';
+                            province = 'state';
                             break;
                         case 'GBP':
                             currencySign = '£';
+                            province = 'county';
                             break;
                         case 'EUR':
                             currencySign = '€';
+                            province = 'province';
                             break;
                         default:
                             currencySign = '$';
+                            province = 'province';
                     }
 
                     if (parameter.config.shipping) {
@@ -931,6 +947,7 @@
                             '<div class="label-outter"><div class="label-inner">{{nextButtonLabel}}</div></div>');
                         template.shipping = template.shipping.replace('{{nextButtonType}}', 'button');
                         template.shipping = template.shipping.replace('{{backButton}}', '');
+                        template.shipping = template.shipping.replace(/{{province}}/gi, province);
 
                         if (parameter.panels.shipping.next.toUpperCase() === 'BILLING') {
                             template.shipping = template.shipping.replace('{{nextButtonLabel}}', 'Billing Address');
@@ -956,6 +973,7 @@
                             '<div class="label-outter"><div class="label-inner">{{nextButtonLabel}}</div></div>');
                         template.billing = template.billing.replace('{{nextButtonLabel}}', 'Pay');
                         template.billing = template.billing.replace('{{nextButtonType}}', 'button');
+                        template.billing = template.billing.replace(/{{province}}/gi, province);
 
                         if (parameter.config.shipping) {
                             template.billing = template.billing.replace('{{backButton}}', self.template.backButton);

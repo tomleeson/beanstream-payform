@@ -286,8 +286,10 @@
 
             var token = document.getElementsByName('singleUseToken')[0].value;
             var name = self._domPanels.card.querySelector('input[name="name"]').value;
-            blob.name = name;
+            var email = self._domPanels.card.querySelector('input[name="email"]').value;
             blob.code = token;
+            blob.name = name;
+            blob.email = email;
 
             self._model.setCardInfo(blob);
             self.tokenUpdated.notify();
@@ -371,16 +373,20 @@
                     name = inputs[i].attributes.name.value;
                 }
                 switch (name) {
+                    case 'name':
+                        var exp = '^[a-zA-Z]+(?:(?:\\\s+|-)[a-zA-Z]+)*$';
+                        self.regExValidate(inputs[i], exp, 'Please enter your full name.', errors);
+                        break;
                     case 'city':
-                        var exp = '^[a-zA-Z()]+$';
+                        var exp = '^[a-zA-Z]+(?:(?:\\\s+|-)[a-zA-Z]+)*$';
                         self.regExValidate(inputs[i], exp, 'Please enter a valid city.', errors);
                         break;
                     case 'province':
-                        var exp = '^[a-zA-Z()]+$';
+                        var exp = '^[a-zA-Z]+(?:(?:\\\s+|-)[a-zA-Z]+)*$';
                         self.regExValidate(inputs[i], exp, 'Please enter a valid state.', errors);
                         break;
                     case 'country':
-                        var exp = '^[a-zA-Z()]+$';
+                        var exp = '^[a-zA-Z]+(?:(?:\\\s+|-)[a-zA-Z]+)*$';
                         self.regExValidate(inputs[i], exp, 'Please enter a valid country.', errors);
                         break;
                     case 'email':
@@ -428,7 +434,7 @@
                 if (errors.indexOf(errMsg) === -1) {
                     errors.push(errMsg);
                 }
-            } else if (!re.test(el.value)) {
+            } else if (!re.test(el.value) || el.value.length < 2) {
                 self.addErrorClass(el, true);
                 errors.push(errMsg);
             } else {
