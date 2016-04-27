@@ -11,48 +11,48 @@ var autoprefixer = require('gulp-autoprefixer');
  * Concat JS files
  */
 gulp.task('concat', function() {
-    return concatPayfields() && concatPayform() && concatTokenizationform();
+    return concatpayfields() && concatpayform() && concattokenizationform();
 });
 
-function concatPayfields() {
+function concatpayfields() {
     return gulp.src(['./assets/js/helper.js',
                     './assets/js/validator.js',
                     './assets/js/ajaxHelper.js',
-                    './payFields/assets/js/cc_input/model.js',
-                    './payFields/assets/js/cc_input/view.js',
-                    './payFields/assets/js/cc_input/controller.js',
-                    './payFields/assets/js/cc_input/template.js',
-                    './payFields/assets/js/form/model.js',
-                    './payFields/assets/js/form/view.js',
-                    './payFields/assets/js/form/controller.js',
+                    './payfields/assets/js/cc_input/model.js',
+                    './payfields/assets/js/cc_input/view.js',
+                    './payfields/assets/js/cc_input/controller.js',
+                    './payfields/assets/js/cc_input/template.js',
+                    './payfields/assets/js/form/model.js',
+                    './payfields/assets/js/form/view.js',
+                    './payfields/assets/js/form/controller.js',
                     './assets/js/event.js',
-                    './payFields/assets/js/app.js'])
+                    './payfields/assets/js/app.js'])
     .pipe(concat('beanstream_payfields.js'))
-    .pipe(gulp.dest('./payFields/assets/js/build/'));
+    .pipe(gulp.dest('./payfields/assets/js/build/'));
 }
 
-function concatPayform() {
-    return gulp.src(['./payForm/assets/js/iframe/model.js',
-                    './payForm/assets/js/iframe/view.js',
-                    './payForm/assets/js/iframe/controller.js',
-                    './payForm/assets/js/iframe/template.js',
+function concatpayform() {
+    return gulp.src(['./payform/assets/js/iframe/model.js',
+                    './payform/assets/js/iframe/view.js',
+                    './payform/assets/js/iframe/controller.js',
+                    './payform/assets/js/iframe/template.js',
                     './assets/js/event.js',
                     './assets/js/helper.js',
-                    './payForm/assets/js/app.js'])
+                    './payform/assets/js/app.js'])
     .pipe(concat('beanstream_payform.js'))
-    .pipe(gulp.dest('./payForm/assets/js/build/'));
+    .pipe(gulp.dest('./payform/assets/js/build/'));
 }
 
-function concatTokenizationform() {
-    return gulp.src(['./tokenizationForm/assets/js/form/model.js',
-                    './tokenizationForm/assets/js/form/view.js',
-                    './tokenizationForm/assets/js/form/controller.js',
-                    './tokenizationForm/assets/js/form/template.js',
+function concattokenizationform() {
+    return gulp.src(['./tokenizationform/assets/js/form/model.js',
+                    './tokenizationform/assets/js/form/view.js',
+                    './tokenizationform/assets/js/form/controller.js',
+                    './tokenizationform/assets/js/form/template.js',
                     './assets/js/event.js',
                     './assets/js/helper.js',
-                    './tokenizationForm/assets/js/app.js'])
+                    './tokenizationform/assets/js/app.js'])
     .pipe(concat('script.js'))
-    .pipe(gulp.dest('./tokenizationForm/assets/js/build/'));
+    .pipe(gulp.dest('./tokenizationform/assets/js/build/'));
 }
 
 
@@ -61,9 +61,9 @@ function concatTokenizationform() {
  * Fixes errors
  */
 gulp.task('lint', ['pre-lint'], function() {
-    return lint(src.payfields).pipe(gulp.dest('./payFields/assets/js/')) &&
-        lint(src.payform).pipe(gulp.dest('./payForm/assets/js/')) &&
-        lint(src.tokenizationform).pipe(gulp.dest('./tokenizationForm/assets/js/'));
+    return lint(src.payfields).pipe(gulp.dest('./payfields/assets/js/')) &&
+        lint(src.payform).pipe(gulp.dest('./payform/assets/js/')) &&
+        lint(src.tokenizationform).pipe(gulp.dest('./tokenizationform/assets/js/'));
 });
 
 /**
@@ -72,13 +72,13 @@ gulp.task('lint', ['pre-lint'], function() {
  */
 gulp.task('pre-lint', function() {
     return lint(src.payfields) && lint(src.payform) && lint(src.tokenizationform);
-    // return lintPayfields();
+    // return lintpayfields();
 });
 
 var src = {};
-src.payfields = ['./payFields/assets/js/**/*.js'];
-src.payform = ['./payForm/assets/js/**/*.js'];
-src.tokenizationform = ['./tokenizationForm/assets/js/**/*.js'];
+src.payfields = ['./payfields/assets/js/**/*.js'];
+src.payform = ['./payform/assets/js/**/*.js'];
+src.tokenizationform = ['./tokenizationform/assets/js/**/*.js'];
 
 function lint(src) {
     return gulp.src(src)
@@ -92,14 +92,14 @@ function lint(src) {
  */
 gulp.task('unit', function(done) {
     unit(done, unitConfigFile.payfields);
-    // unitPayform(done);
-    // unitTokenizationform(done);
+    // unitpayform(done);
+    // unittokenizationform(done);
 });
 
 var unitConfigFile = {};
-unitConfigFile.payfields = __dirname + '/payFields/tests/karma.conf.js';
-unitConfigFile.payform = __dirname + '/payForm/tests/karma.conf.js';
-unitConfigFile.tokenizationform = __dirname + '/tokenizationForm/tests/karma.conf.js';
+unitConfigFile.payfields = __dirname + '/payfields/tests/karma.conf.js';
+unitConfigFile.payform = __dirname + '/payform/tests/karma.conf.js';
+unitConfigFile.tokenizationform = __dirname + '/tokenizationform/tests/karma.conf.js';
 
 function unit(done, configFile) {
     new Server({
@@ -113,7 +113,7 @@ function unit(done, configFile) {
  */
 gulp.task('tdd', function(done) {
     new Server({
-        configFile: __dirname + '/payFields/tests/karma.conf.js'
+        configFile: __dirname + '/payfields/tests/karma.conf.js'
     }, done).start();
 });
 
@@ -122,9 +122,9 @@ gulp.task('tdd', function(done) {
  */
 gulp.task('e2e', function(callback) {
     gulp
-        .src(['./payFields/tests/e2e/spec.js'])
+        .src(['./payfields/tests/e2e/spec.js'])
         .pipe(gulpProtractorAngular({
-            'configFile': './payFields/tests/protractor.conf.js',
+            'configFile': './payfields/tests/protractor.conf.js',
             'debug': false,
             'autoStartStopServer': true
         }))
@@ -135,9 +135,9 @@ gulp.task('e2e', function(callback) {
 });
 
 var e2eConfigFile = {};
-e2eConfigFile.payfields = {src: ['./payFields/tests/e2e/spec.js'], configFile: './payFields/tests/protractor.conf.js'};
-e2eConfigFile.payform = __dirname + '/payForm/tests/karma.conf.js';
-e2eConfigFile.tokenizationform = __dirname + '/tokenizationForm/tests/karma.conf.js';
+e2eConfigFile.payfields = {src: ['./payfields/tests/e2e/spec.js'], configFile: './payfields/tests/protractor.conf.js'};
+e2eConfigFile.payform = __dirname + '/payform/tests/karma.conf.js';
+e2eConfigFile.tokenizationform = __dirname + '/tokenizationform/tests/karma.conf.js';
 
 function e2e(callback, configFile) {
     gulp
@@ -162,24 +162,24 @@ gulp.task('default', function(cb) {
  * autoprefixe CSS for cfoss browser support
  */
 gulp.task('css', function() {
-    return gulp.src('./tokenizationForm/assets/css/style.css')
+    return gulp.src('./tokenizationform/assets/css/style.css')
         .pipe(autoprefixer({
             browsers: ['last 2 versions'],
             cascade: false
         }))
-        .pipe(gulp.dest('./tokenizationForm/assets/css/build/'));
+        .pipe(gulp.dest('./tokenizationform/assets/css/build/'));
 });
 
 gulp.task('css', function() {
-    return prefixCssTokenizationform();
+    return prefixCsstokenizationform();
 });
 
-function prefixCssTokenizationform() {
-    return gulp.src('./tokenizationForm/assets/css/style.css')
+function prefixCsstokenizationform() {
+    return gulp.src('./tokenizationform/assets/css/style.css')
         .pipe(autoprefixer({
             browsers: ['last 2 versions'],
             cascade: false
         }))
-        .pipe(gulp.dest('./tokenizationForm/assets/css/build/'));
+        .pipe(gulp.dest('./tokenizationform/assets/css/build/'));
 }
 

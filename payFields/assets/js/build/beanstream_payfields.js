@@ -1359,7 +1359,7 @@
         init: function() {
             var self = this;
             self._view.render('injectStyles',
-                'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/beanstream_payfields_style.css');
+                'https://s3-us-west-2.amazonaws.com/payform-staging/payform/payfields/beanstream_payfields_style.css');
             // self._view.render('injectStyles', '../assets/css/beanstream_payfields_style.css');
             self.injectFields();
             beanstream.Helper.fireEvent('beanstream_payfields_loaded', {}, document);

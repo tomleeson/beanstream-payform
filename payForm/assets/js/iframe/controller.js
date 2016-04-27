@@ -23,10 +23,10 @@
         createQueryString: function() {
             var self = this;
 
-            return 'http://localhost:8000/tokenizationForm/test.html?' +
+            return 'http://localhost:8000/tokenizationform/test.html?' +
                 self.serialize(self._view.readAttributes());
             /*
-            return 'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/tokenizationForm/index.html?' +
+            return 'https://s3-us-west-2.amazonaws.com/payform-staging/payform/tokenizationform/index.html?' +
                 self.serialize(self._view.readAttributes());
             */
         },

@@ -51,10 +51,10 @@
                     var script = document.createElement('script');
                     /*
                     script.src =
-                        'https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/beanstream_payfields.js';
+                        'https://s3-us-west-2.amazonaws.com/payform-staging/payform/payfields/beanstream_payfields.js';
                     */
                     script.src =
-                        'http://localhost:8000/payFields/assets/js/build/beanstream_payfields.js';
+                        'http://localhost:8000/payfields/assets/js/build/beanstream_payfields.js';
 
                     script.setAttribute('data-submitForm', 'false');
                     var form = document.getElementsByTagName('form')[0];

@@ -77,7 +77,7 @@ Note: Similar to PayPal Express Checkout
 The minimal integration involves adding the script tag to a webpage within a form containing a submit button.
 ```javascript
 <form action='foo.php'>
-  <script src='https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/beanstream_payfields.js'></script>
+  <script src='https://s3-us-west-2.amazonaws.com/payform-staging/payform/payfields/beanstream_payfields.js'></script>
   <button type='submit'>Submit</button>
 </form>
 ```
@@ -105,7 +105,7 @@ The integration below shows placeholders and the data attribute inuse. It shows 
     <div data-beanstream-target='ccCvv_input'></div>
     <div data-beanstream-target='ccCvv_error' class='help-block'></div>
   </div>
-  <script src='https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/beanstream_payfields.js'     
+  <script src='https://s3-us-west-2.amazonaws.com/payform-staging/payform/payfields/beanstream_payfields.js'     
           data-submit-form='false'></script>
   <button type='submit' class='btn btn-default'>Submit</button>
 </form>
@@ -115,10 +115,10 @@ The integration below shows placeholders and the data attribute inuse. It shows 
 ---
 
 Demo:
-* [PayFields](https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/bootstrap.html)
+* [PayFields](https://s3-us-west-2.amazonaws.com/payform-staging/payform/payfields/bootstrap.html)
 
 Hosted Script:
-* [PayFields](https://s3-us-west-2.amazonaws.com/payform-staging/payForm/payFields/beanstream_payfields.js)
+* [PayFields](https://s3-us-west-2.amazonaws.com/payform-staging/payform/payfields/beanstream_payfields.js)
 
 References:
 * [REST API](http://developer.beanstream.com/documentation/rest-api-reference/)
