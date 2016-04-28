@@ -19,7 +19,13 @@
         },
         render: function(path, config) {
             var self = this;
-            var template = self._template.show(path, config);
+            var template = self._template.show('iframe', {'path': path, 'config': config});
+
+            console.log('foo: ' + document.querySelector('button[data-beanstream]'));
+            if (document.querySelector('button[data-beanstream]') === null) {
+                template = template + self._template.show('button', {});
+            }
+
             var frag = self.createDocFrag(template);
             self.form.appendChild(frag);
         },
@@ -53,14 +59,13 @@
             attributes.currency = this.script.getAttribute('data-currency');
             attributes.primaryColor = this.script.getAttribute('data-primaryColor');
 
-            console.log('attributes.primaryColor: ' + attributes.primaryColor);
-
             return attributes;
         },
         attachListeners: function() {
             var self = this;
             if (!this.button) {
-                this.button = this.form.getElementsByTagName('button')[0];
+                //data-beanstream
+                this.button = document.querySelector('button[data-beanstream]');
             }
 
             if (!this.iframe) {

@@ -38,7 +38,13 @@
         },
         render: function(path, config) {
             var self = this;
-            var template = self._template.show(path, config);
+            var template = self._template.show('iframe', {'path': path, 'config': config});
+
+            console.log('foo: ' + document.querySelector('button[data-beanstream]'));
+            if (document.querySelector('button[data-beanstream]') === null) {
+                template = template + self._template.show('button', {});
+            }
+
             var frag = self.createDocFrag(template);
             self.form.appendChild(frag);
         },
@@ -72,14 +78,13 @@
             attributes.currency = this.script.getAttribute('data-currency');
             attributes.primaryColor = this.script.getAttribute('data-primaryColor');
 
-            console.log('attributes.primaryColor: ' + attributes.primaryColor);
-
             return attributes;
         },
         attachListeners: function() {
             var self = this;
             if (!this.button) {
-                this.button = this.form.getElementsByTagName('button')[0];
+                //data-beanstream
+                this.button = document.querySelector('button[data-beanstream]');
             }
 
             if (!this.iframe) {
@@ -217,8 +222,8 @@
 
         // toDo: accept config as peramater and build template like tekenization form
         self.template = {};
+        self.template.button = '<button data-beanstream>Pay with Card</button>';
         self.template.main =
-            '<button>Pay with Card</button>' +
             '<div ' +
                 'style="z-index: 2147483647; display: none;' +
                 'overflow-x: hidden; overflow-y: auto;' +
@@ -255,22 +260,36 @@
 
     IframeTemplate.prototype = {
 
-        show: function(path, config) {
+        show: function(templateCmd, parameter) {
+            //show: function(path, config) {
+            //parameter.path, parameter.config
             var self = this;
 
-            console.log(config.billingAddress);
+            var templateCommands = {
+                iframe: function() {
+                    var path = parameter.path;
+                    var config = parameter.config;
 
-            var template = self.template.main;
-            template = template.replace('{{path}}', path);
+                    console.log(config.billingAddress);
 
-            template = template + self.template.cardInfo;
-            if (config.billingAddress) {
-                template = template + self.template.billingAddress;
-            }
-            if (config.shippingAddress) {
-                template = template + self.template.shippingAddress;
-            }
-            return template;
+                    var template = self.template.main;
+                    template = template.replace('{{path}}', path);
+
+                    template = template + self.template.cardInfo;
+                    if (config.billingAddress) {
+                        template = template + self.template.billingAddress;
+                    }
+                    if (config.shippingAddress) {
+                        template = template + self.template.shippingAddress;
+                    }
+                    return template;
+                },
+                button: function() {
+                    return self.template.button;
+                }
+            };
+
+            return templateCommands[templateCmd]();
         }
     };
 
