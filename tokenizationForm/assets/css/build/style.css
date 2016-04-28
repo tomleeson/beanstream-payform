@@ -472,6 +472,7 @@ button.button:active:after {
     height:auto;
 }
 
+/*
 .button .label-inner:after { 
     content: '';
     background: transparent url('../images/arrow_right_blue_24px.svg') no-repeat center;
@@ -488,6 +489,7 @@ button.button:active:after {
 .button:hover .label-inner:after { 
     background: transparent url('../images/arrow_right_white_24px.svg') no-repeat center;
 }
+*/
 
 .checkbox{
     display: -webkit-flex;

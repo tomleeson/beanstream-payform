@@ -94,7 +94,6 @@
     window.beanstream.payform.FormModel = FormModel;
 })(window);
 
-
 (function(window) {
     'use strict';
 
@@ -120,6 +119,7 @@
             self.panels = panels;
 
             self.render('elements', {config: config, panels: panels});
+            self.render('setCustomStyle', {primaryColor: config.primaryColor});
             self.attachPayfieldsListeners();
             self.render('script');
             self.cacheDom(panels);
@@ -175,10 +175,13 @@
                     if (parameter.sync) {
 
                         if (parameter.panels.billing.next.toUpperCase() === 'CARD') {
-                            shippingNextButton.childNodes[0].childNodes[0].innerHTML = 'Pay';
+                            // shippingNextButton.childNodes[0].childNodes[0].innerHTML = 'Pay';
+                            shippingNextButton.innerHTML = 'Pay &#62;';
                         } else {
-                            shippingNextButton.childNodes[0].childNodes[0].innerHTML =
-                                beanstream.Helper.toSentenceCase(parameter.panels.billing.next) + ' Address';
+                            // shippingNextButton.childNodes[0].childNodes[0].innerHTML =
+                            //    beanstream.Helper.toSentenceCase(parameter.panels.billing.next) + ' Address';
+                            shippingNextButton.innerHTML =
+                                beanstream.Helper.toSentenceCase(parameter.panels.billing.next) + ' Address &#62;';
                         }
 
                         cardBackButton.innerHTML = '<h6>' +
@@ -186,10 +189,13 @@
                     } else {
 
                         if (parameter.panels.shipping.next.toUpperCase() === 'CARD') {
-                            shippingNextButton.childNodes[0].childNodes[0].innerHTML = 'Pay';
+                            // shippingNextButton.childNodes[0].childNodes[0].innerHTML = 'Pay';
+                            shippingNextButton.innerHTML = 'Pay &#62;';
                         } else {
-                            shippingNextButton.childNodes[0].childNodes[0].innerHTML =
-                                beanstream.Helper.toSentenceCase(parameter.panels.shipping.next) + ' Address';
+                            // shippingNextButton.childNodes[0].childNodes[0].innerHTML =
+                            //    beanstream.Helper.toSentenceCase(parameter.panels.shipping.next) + ' Address';
+                            shippingNextButton.innerHTML =
+                                beanstream.Helper.toSentenceCase(parameter.panels.shipping.next) + ' Address &#62;';
                         }
 
                         cardBackButton.innerHTML = '<h6>' +
@@ -217,6 +223,28 @@
                         errorBlock.classList.add('hidden');
                     }
 
+                },
+                setCustomStyle: function() {
+                    // parameter.primaryColor
+
+                    var primaryColor =  parameter.primaryColor;
+
+                    if (primaryColor != undefined) {
+
+                        var template = self._template.show('customStyling', parameter);
+
+                        var head = document.head || document.getElementsByTagName('head')[0];
+                        var style = document.createElement('style');
+
+                        style.type = 'text/css';
+                        if (style.styleSheet) {
+                            style.styleSheet.cssText = template;
+                        } else {
+                            style.appendChild(document.createTextNode(template));
+                        }
+
+                        head.appendChild(style);
+                    }
                 }
             };
 
@@ -383,8 +411,8 @@
             var token = document.getElementsByName('singleUseToken')[0].value;
             var name = self._domPanels.card.querySelector('input[name="name"]').value;
             var email = self._domPanels.card.querySelector('input[name="email"]').value;
-            blob.name = name;
             blob.code = token;
+            blob.name = name;
             blob.email = email;
 
             self._model.setCardInfo(blob);
@@ -545,7 +573,6 @@
     window.beanstream.payform = window.beanstream.payform || {};
     window.beanstream.payform.FormView = FormView;
 })(window);
-
 
 (function(window) {
     'use strict';
@@ -710,6 +737,7 @@
             config.billing = self.getParameterByName('billingAddress');
             config.shipping = self.getParameterByName('shippingAddress');
             config.currency = self.getParameterByName('currency');
+            config.primaryColor = self.getParameterByName('primaryColor');
 
             return config;
         },
@@ -739,7 +767,6 @@
     window.beanstream.payform = window.beanstream.payform || {};
     window.beanstream.payform.FormController = FormController;
 })(window);
-
 
 (function(window) {
     'use strict';
@@ -898,6 +925,18 @@
                     '<h6>{{panelName}}</h6>' +
                 '</div>' +
             '</div>';
+
+        self.template.css = '.heading {background: {{primaryColor}};}' +
+                            '.section-heading h6{color: {{primaryColor}};}' +
+                            'button.button{ border-color: {{primaryColor}}; color: {{primaryColor}};' +
+                            'position: relative; overflow: hidden; transition-duration: 0.4s; padding-left: 0;' +
+                            'padding-right: 0; position: relative;}' +
+                            'button.button:hover{ border-color: {{primaryColor}}; color: #fff; background-color:' +
+                            '{{primaryColor}};}' +
+                            'button.button:focus {border-color: {{primaryColor}}; color: {{primaryColor}};' +
+                            'background-color: #fff; outline: 0;' +
+                            'box-shadow: inset 0 1px 1px rgba(33,150,243,.075),0 0 8px rgba(33,150,243,.6);}' +
+                            'button.button:active {background-color: {{primaryColor}}; color: #fff;}';
     }
 
     FormTemplate.prototype = {
@@ -943,16 +982,17 @@
                         template.shipping = template.shipping.replace(/{{panelId}}/gi, parameter.panels.shipping.name);
                         template.shipping = template.shipping.replace('{{panelHeader}}', self.template.panelHeader);
                         template.shipping = template.shipping.replace('{{panelName}}', 'Shipping Address');
-                        template.shipping = template.shipping.replace('{{nextButtonLabel}}',
-                            '<div class="label-outter"><div class="label-inner">{{nextButtonLabel}}</div></div>');
+                        // template.shipping = template.shipping.replace('{{nextButtonLabel}}',
+                        //    '<div class="label-outter"><div class="label-inner">{{nextButtonLabel}}</div></div>');
                         template.shipping = template.shipping.replace('{{nextButtonType}}', 'button');
                         template.shipping = template.shipping.replace('{{backButton}}', '');
                         template.shipping = template.shipping.replace(/{{province}}/gi, province);
 
                         if (parameter.panels.shipping.next.toUpperCase() === 'BILLING') {
-                            template.shipping = template.shipping.replace('{{nextButtonLabel}}', 'Billing Address');
+                            template.shipping = template.shipping.replace('{{nextButtonLabel}}',
+                                'Billing Address &#62;');
                         } else {
-                            template.shipping = template.shipping.replace('{{nextButtonLabel}}', 'Pay');
+                            template.shipping = template.shipping.replace('{{nextButtonLabel}}', 'Pay &#62;');
                         }
                         if (parameter.config.billing) {
                             template.shipping = template.shipping.replace('{{checkbox}}',
@@ -969,9 +1009,9 @@
                         template.billing = template.billing.replace(/{{panelId}}/gi, parameter.panels.billing.name);
                         template.billing = template.billing.replace('{{panelHeader}}', self.template.panelHeader);
                         template.billing = template.billing.replace('{{panelName}}', 'Billing Address');
-                        template.billing = template.billing.replace('{{nextButtonLabel}}',
-                            '<div class="label-outter"><div class="label-inner">{{nextButtonLabel}}</div></div>');
-                        template.billing = template.billing.replace('{{nextButtonLabel}}', 'Pay');
+                        // template.billing = template.billing.replace('{{nextButtonLabel}}',
+                        //    '<div class="label-outter"><div class="label-inner">{{nextButtonLabel}}</div></div>');
+                        template.billing = template.billing.replace('{{nextButtonLabel}}', 'Pay &#62;');
                         template.billing = template.billing.replace('{{nextButtonType}}', 'button');
                         template.billing = template.billing.replace(/{{province}}/gi, province);
 
@@ -1024,6 +1064,14 @@
                     }
 
                     template = template.replace('{{errorListContent}}', errorList);
+                    return template;
+                },
+                customStyling: function() {
+                    // parameter.primaryColor
+
+                    var template = self.template.css;
+                    template = template.replace(/{{primaryColor}}/gi, parameter.primaryColor);
+
                     return template;
                 }
             };

@@ -51,6 +51,9 @@
             attributes.billingAddress = this.script.getAttribute('data-billingAddress');
             attributes.shippingAddress = this.script.getAttribute('data-shippingAddress');
             attributes.currency = this.script.getAttribute('data-currency');
+            attributes.primaryColor = this.script.getAttribute('data-primaryColor');
+
+            console.log('attributes.primaryColor: ' + attributes.primaryColor);
 
             return attributes;
         },

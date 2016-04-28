@@ -24,6 +24,7 @@
             self.panels = panels;
 
             self.render('elements', {config: config, panels: panels});
+            self.render('setCustomStyle', {primaryColor: config.primaryColor});
             self.attachPayfieldsListeners();
             self.render('script');
             self.cacheDom(panels);
@@ -79,10 +80,13 @@
                     if (parameter.sync) {
 
                         if (parameter.panels.billing.next.toUpperCase() === 'CARD') {
-                            shippingNextButton.childNodes[0].childNodes[0].innerHTML = 'Pay';
+                            // shippingNextButton.childNodes[0].childNodes[0].innerHTML = 'Pay';
+                            shippingNextButton.innerHTML = 'Pay &#62;';
                         } else {
-                            shippingNextButton.childNodes[0].childNodes[0].innerHTML =
-                                beanstream.Helper.toSentenceCase(parameter.panels.billing.next) + ' Address';
+                            // shippingNextButton.childNodes[0].childNodes[0].innerHTML =
+                            //    beanstream.Helper.toSentenceCase(parameter.panels.billing.next) + ' Address';
+                            shippingNextButton.innerHTML =
+                                beanstream.Helper.toSentenceCase(parameter.panels.billing.next) + ' Address &#62;';
                         }
 
                         cardBackButton.innerHTML = '<h6>' +
@@ -90,10 +94,13 @@
                     } else {
 
                         if (parameter.panels.shipping.next.toUpperCase() === 'CARD') {
-                            shippingNextButton.childNodes[0].childNodes[0].innerHTML = 'Pay';
+                            // shippingNextButton.childNodes[0].childNodes[0].innerHTML = 'Pay';
+                            shippingNextButton.innerHTML = 'Pay &#62;';
                         } else {
-                            shippingNextButton.childNodes[0].childNodes[0].innerHTML =
-                                beanstream.Helper.toSentenceCase(parameter.panels.shipping.next) + ' Address';
+                            // shippingNextButton.childNodes[0].childNodes[0].innerHTML =
+                            //    beanstream.Helper.toSentenceCase(parameter.panels.shipping.next) + ' Address';
+                            shippingNextButton.innerHTML =
+                                beanstream.Helper.toSentenceCase(parameter.panels.shipping.next) + ' Address &#62;';
                         }
 
                         cardBackButton.innerHTML = '<h6>' +
@@ -121,6 +128,28 @@
                         errorBlock.classList.add('hidden');
                     }
 
+                },
+                setCustomStyle: function() {
+                    // parameter.primaryColor
+
+                    var primaryColor =  parameter.primaryColor;
+
+                    if (primaryColor != undefined) {
+
+                        var template = self._template.show('customStyling', parameter);
+
+                        var head = document.head || document.getElementsByTagName('head')[0];
+                        var style = document.createElement('style');
+
+                        style.type = 'text/css';
+                        if (style.styleSheet) {
+                            style.styleSheet.cssText = template;
+                        } else {
+                            style.appendChild(document.createTextNode(template));
+                        }
+
+                        head.appendChild(style);
+                    }
                 }
             };
 

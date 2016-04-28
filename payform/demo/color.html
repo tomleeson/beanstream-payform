@@ -4,6 +4,7 @@
   <title>Payform</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="images/favicon.ico" />
 </head>
 <body>
 
@@ -12,10 +13,9 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 </p>
 
 <form action="/charge" method="POST">
-
   <script 
-    src="http://localhost:8000/payForm/assets/js/build/beanstream_payform.js"
-    data-image="http://downloads.beanstream.com/images/payform/cc_placeholder.png"
+    src="https://s3-us-west-2.amazonaws.com/payform-staging/payform/payform/beanstream_payform.js"
+    data-image="https://s3-us-west-2.amazonaws.com/payform-staging/payform/payform/images/cc_placeholder.png"
     data-name="foo.com"
     data-description="2 widgets"
     data-amount="2000"
@@ -40,8 +40,6 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
         var responsePanel_token = document.getElementById('data');
         responsePanel_token.innerText = JSON.stringify(e);
         responsePanel.style.display = 'block';
-
-        console.log(e.eventDetail.cardInfo);
     }, false);
 
 </script>

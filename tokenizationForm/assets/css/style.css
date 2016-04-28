@@ -394,7 +394,7 @@ button.button:active {
 }
 
 
-
+/*
 button.button:after {
     content: "";
     background: #E3F2FD;
@@ -442,6 +442,7 @@ button.button:active:after {
 .button:hover .label-inner:after { 
     background: transparent url('../images/arrow_right_white_24px.svg') no-repeat center;
 }
+*/
 
 .checkbox{
     display: flex;
