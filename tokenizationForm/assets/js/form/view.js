@@ -113,19 +113,21 @@
 
                     var errorBlock = self._domPanels[parameter.panel].getElementsByClassName('error')[0];
 
-                    // errorBlock.innerHTML = '';
-                    while (errorBlock.firstChild) {
-                        errorBlock.removeChild(errorBlock.firstChild);
-                    }
+                    if (errorBlock) {
+                        // errorBlock.innerHTML = '';
+                        while (errorBlock.firstChild) {
+                            errorBlock.removeChild(errorBlock.firstChild);
+                        }
 
-                    if (parameter.errorMessages.length) {
-                        var template = self._template.show('errors', parameter);
-                        var frag = self.createDocFrag(template);
-                        errorBlock.appendChild(frag);
+                        if (parameter.errorMessages.length) {
+                            var template = self._template.show('errors', parameter);
+                            var frag = self.createDocFrag(template);
+                            errorBlock.appendChild(frag);
 
-                        errorBlock.classList.remove('hidden');
-                    } else {
-                        errorBlock.classList.add('hidden');
+                            errorBlock.classList.remove('hidden');
+                        } else {
+                            errorBlock.classList.add('hidden');
+                        }
                     }
 
                 },
@@ -210,6 +212,12 @@
                 button.addEventListener('click', function(e) {
                     e = e || window.event;
                     e.preventDefault();
+
+                    var main = document.getElementById('main');
+                    var processing = document.getElementById('processing');
+                    main.classList.add('hidden');
+                    processing.classList.remove('hidden');
+
                     self.tokenize.notify();
 
                 }.bind(self), false);

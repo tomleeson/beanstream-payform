@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 
     <!-- Custom styles for this template -->
-    <link href="demo-styles/style.css" rel="stylesheet">
+    <link href="../demo-styles/style.css" rel="stylesheet">
 </head>
 
 <body>
@@ -108,10 +108,10 @@
                         <form action="/charge" method="POST">
                             <button type="button" class="btn  btn-lg btn-success" data-beanstream>Pay by card</button>
                           <script 
-                            src="https://s3-us-west-2.amazonaws.com/payform-staging/payform/payform/beanstream_payform.js"
-                            data-image="https://s3-us-west-2.amazonaws.com/payform-staging/payform/payform/images/cc_placeholder.png"
+                            src="http://localhost:8000/payForm/assets/js/build/beanstream_payform.js"
+                            data-image="http://localhost:8000/payform/demo/color-demos/images/blue.svg"
                             data-name="foo.com"
-                            data-description="Item, Item, Item..."
+                            data-description="This Item, That Item, Another Item..."
                             data-amount="600"
                             data-currency="cad"
                             data-billingAddress="true"

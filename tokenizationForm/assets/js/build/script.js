@@ -94,6 +94,7 @@
     window.beanstream.payform.FormModel = FormModel;
 })(window);
 
+
 (function(window) {
     'use strict';
 
@@ -208,19 +209,21 @@
 
                     var errorBlock = self._domPanels[parameter.panel].getElementsByClassName('error')[0];
 
-                    // errorBlock.innerHTML = '';
-                    while (errorBlock.firstChild) {
-                        errorBlock.removeChild(errorBlock.firstChild);
-                    }
+                    if (errorBlock) {
+                        // errorBlock.innerHTML = '';
+                        while (errorBlock.firstChild) {
+                            errorBlock.removeChild(errorBlock.firstChild);
+                        }
 
-                    if (parameter.errorMessages.length) {
-                        var template = self._template.show('errors', parameter);
-                        var frag = self.createDocFrag(template);
-                        errorBlock.appendChild(frag);
+                        if (parameter.errorMessages.length) {
+                            var template = self._template.show('errors', parameter);
+                            var frag = self.createDocFrag(template);
+                            errorBlock.appendChild(frag);
 
-                        errorBlock.classList.remove('hidden');
-                    } else {
-                        errorBlock.classList.add('hidden');
+                            errorBlock.classList.remove('hidden');
+                        } else {
+                            errorBlock.classList.add('hidden');
+                        }
                     }
 
                 },
@@ -305,6 +308,12 @@
                 button.addEventListener('click', function(e) {
                     e = e || window.event;
                     e.preventDefault();
+
+                    var main = document.getElementById('main');
+                    var processing = document.getElementById('processing');
+                    main.classList.add('hidden');
+                    processing.classList.remove('hidden');
+
                     self.tokenize.notify();
 
                 }.bind(self), false);
@@ -574,6 +583,7 @@
     window.beanstream.payform.FormView = FormView;
 })(window);
 
+
 (function(window) {
     'use strict';
 
@@ -768,6 +778,7 @@
     window.beanstream.payform.FormController = FormController;
 })(window);
 
+
 (function(window) {
     'use strict';
 
@@ -778,26 +789,26 @@
         self.template.main =
             '<div class="vertical-center">' +
                 '<div class="wrapper">' +
-                    '<div>' +
-                        '<form>' +
-                            '<div class="row heading main-heading drop-shaddow">' +
-                                '<div class="icon">' +
-                                    '<a id="close-button" href="javascript:void(0)">' +
-                                        '<img src="assets/css/images/ic_clear_white_24px.svg">' +
-                                    '</a>' +
-                                '</div>' +
-                                '<div class="container main">' +
-                                    '<div class="circle" style="background-image: url({{image}})"></div>' +
-                                    '<div>' +
-                                        '<h5>{{name}}</h5>' +
-                                        '<p>{{currencySign}} {{amount}} ' +
-                                            '<span class="currency">{{currency}}</span></p>' +
-                                    '</div>' +
-                                '</div>' +
-                                '<div class="container sub">' +
-                                    '<span class="description">{{description}}</span>' +
+                    '<div id="main">' +
+                        '<div class="row heading main-heading drop-shaddow">' +
+                            '<div class="icon">' +
+                                '<a id="close-button" href="javascript:void(0)">' +
+                                    '<img src="assets/css/images/ic_clear_white_24px.svg">' +
+                                '</a>' +
+                            '</div>' +
+                            '<div class="container main">' +
+                                '<div class="circle" style="background-image: url({{image}})"></div>' +
+                                '<div>' +
+                                    '<h5>{{name}}</h5>' +
+                                    '<p>{{currencySign}} {{amount}} ' +
+                                        '<span class="currency">{{currency}}</span></p>' +
                                 '</div>' +
                             '</div>' +
+                            '<div class="container sub">' +
+                                '<span class="description">{{description}}</span>' +
+                            '</div>' +
+                        '</div>' +
+                        '<form>' +
                             '{{content}}' +
                         '</form>' +
                         '<div class="footer">' +
@@ -806,11 +817,12 @@
                             '</a>' +
                         '</div>' +
                     '</div>' +
+                    '{{processingPanel}}' +
                 '</div>' +
             '</div>';
 
         self.template.panel =
-            '<div class="container hidden" id="{{panelId}}_panel">' +
+            '<div class="container panel-content hidden" id="{{panelId}}_panel">' +
                 '{{backButton}}' +
                 '{{panelHeader}}' +
                 '{{content}}' +
@@ -937,6 +949,28 @@
                             'background-color: #fff; outline: 0;' +
                             'box-shadow: inset 0 1px 1px rgba(33,150,243,.075),0 0 8px rgba(33,150,243,.6);}' +
                             'button.button:active {background-color: {{primaryColor}}; color: #fff;}';
+
+        self.template.processing =
+            '<div class="hidden" id="processing">' +
+                '<div>' +
+                    '<div class="main">' +
+                        '<h3>processing</h3>' +
+                        '<h1>{{amount}}</h1>' +
+                        '<div class="spinner-wrapper">' +
+                        '<svg class="spinner" width="100%" height="100%" viewBox="0 0 66 66"' +
+                            'xmlns="http://www.w3.org/2000/svg">' +
+                            '<circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33"' +
+                            'cy="33" r="30"></circle>' +
+                        '</svg>' +
+                        '</div>' +
+                        '<h3>payment</h3>' +
+                    '</div>' +
+                    '<div class="content-footer">' +
+                        '<img src="assets/css/images/ic_verified_user_white_24px.svg"></img>' +
+                        '<p>secured by beanstream</p>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
     }
 
     FormTemplate.prototype = {
@@ -1036,16 +1070,22 @@
                             beanstream.Helper.toSentenceCase(parameter.panels.card.previous) + ' Address');
                     }
 
+                    template.processing = self.template.processing;
+                    template.processing = template.processing.replace('{{amount}}',
+                        currencySign + parameter.config.amount);
+
                     template.main = self.template.main;
                     template.main = template.main.replace('{{name}}', parameter.config.name);
                     template.main = template.main.replace('{{image}}', parameter.config.image);
                     template.main = template.main.replace('{{amount}}', parameter.config.amount);
                     template.main = template.main.replace('{{currency}}', parameter.config.currency.toUpperCase());
                     template.main = template.main.replace('{{description}}', parameter.config.description);
-                    template.main = template.main.replace('{{content}}',
-                                        template.shipping + template.billing + template.card);
-
                     template.main = template.main.replace('{{currencySign}}', currencySign);
+
+                    template.main = template.main.replace('{{processingPanel}}', template.processing);
+
+                    template.main = template.main.replace('{{content}}',
+                                        template.shipping + template.billing + template.card) + template.processing;
 
                     template = template.main;
 

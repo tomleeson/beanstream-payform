@@ -10,7 +10,7 @@
     <meta name="author" content="">
     <link rel="icon" href="images/favicon.ico">
 
-    <title>Payform Demo</title>
+    <title>Payform - Custom Color</title>
 
     <!-- Bootstrap core CSS -->
     <!-- Bootstrap -->
@@ -26,9 +26,9 @@
         <div class="header clearfix">
             <nav>
                 <ul class="nav nav-pills pull-right">
-                    <li role="presentation"><a href="#">Shop</a>
+                    <li role="presentation"><a href="#" style="color: #5cb85c;">Shop</a>
                     </li>
-                    <li role="presentation" class="active"><a href="#">Checkout</a>
+                    <li role="presentation" class="active"><a href="#" style="background-color: #5cb85c;">Checkout</a>
                     </li>
                 </ul>
             </nav>
@@ -43,7 +43,7 @@
                 <table class="table">
                     <tr>
                         <td style="border-top: none;">
-                            <h3 style="color: #337ab7;">Your shopping basket</h3>
+                            <h3 style="color: #5cb85c;">Your shopping basket</h3>
                         </td>
                         <td style="border-top: none;"></td>
                     </tr>
@@ -106,7 +106,7 @@
                     <li style="border-top: none;">
 
                         <form action="/charge" method="POST">
-                            <button type="button" class="btn  btn-lg btn-success" data-beanstream>Pay by card</button>
+                            <button type="button" class="btn  btn-lg btn-success" style="background-color: #337ab7;" data-beanstream>Pay by card</button>
                           <script 
                             src="https://s3-us-west-2.amazonaws.com/payform-staging/payform/payform/beanstream_payform.js"
                             data-image="https://s3-us-west-2.amazonaws.com/payform-staging/payform/payform/images/cc_placeholder.png"
@@ -116,7 +116,8 @@
                             data-currency="cad"
                             data-billingAddress="true"
                             data-shippingAddress="true"
-                            data-submitForm="false">
+                            data-submitForm="false"
+                            data-primaryColor="#5cb85c">
                           </script>
                         </form>
                     </li>
@@ -131,29 +132,6 @@
     </div>
     <!-- /container -->
 
-<script>
-
-    /**
-    * Registered as callback function for 'beanstream_payform_complete' event
-    *
-    * @param {Event} e
-    */
-    document.addEventListener('beanstream_payform_complete', function(e) {
-
-        var responsePanel = document.getElementById('response');
-        var responsePanel_token = document.getElementById('data');
-        console.log('******************************************');
-        console.log('Payform response printed from host page');
-        console.log('******************************************');
-        console.log(JSON.stringify(e));
-        console.log('******************************************');
-        // responsePanel_token.innerText = JSON.stringify(e);
-        // responsePanel.style.display = 'block';
-
-        // console.log(e.eventDetail.cardInfo);
-    }, false);
-
-</script>
 
 </body>
 
