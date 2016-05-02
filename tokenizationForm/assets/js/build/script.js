@@ -94,7 +94,6 @@
     window.beanstream.payform.FormModel = FormModel;
 })(window);
 
-
 (function(window) {
     'use strict';
 
@@ -583,7 +582,6 @@
     window.beanstream.payform.FormView = FormView;
 })(window);
 
-
 (function(window) {
     'use strict';
 
@@ -778,7 +776,6 @@
     window.beanstream.payform.FormController = FormController;
 })(window);
 
-
 (function(window) {
     'use strict';
 
@@ -948,7 +945,20 @@
                             'button.button:focus {border-color: {{primaryColor}}; color: {{primaryColor}};' +
                             'background-color: #fff; outline: 0;' +
                             'box-shadow: inset 0 1px 1px rgba(33,150,243,.075),0 0 8px rgba(33,150,243,.6);}' +
-                            'button.button:active {background-color: {{primaryColor}}; color: #fff;}';
+                            'button.button:active {background-color: {{primaryColor}}; color: #fff;}' +
+                            '@-webkit-keyframes colors {' +
+                            '0% {stroke: {{primaryColor}};}' +
+                            '25% {stroke: {{primaryColor}};}' +
+                            '50% {stroke: {{primaryColor}};}' +
+                            '75% {stroke: {{primaryColor}};}' +
+                            '100% {stroke: {{primaryColor}};}}' +
+                            '@keyframes colors {' +
+                            '0% {stroke: {{primaryColor}};}' +
+                            '25% {stroke: {{primaryColor}};}' +
+                            '50% {stroke: {{primaryColor}};}' +
+                            '75% {stroke: {{primaryColor}};}' +
+                            '100% {stroke: {{primaryColor}};}}' +
+                            '#processing h1, h3{color: {{primaryColor}};}';
 
         self.template.processing =
             '<div class="hidden" id="processing">' +
