@@ -55,8 +55,6 @@
                     var path = parameter.path;
                     var config = parameter.config;
 
-                    console.log(config.billingAddress);
-
                     var template = self.template.main;
                     template = template.replace('{{path}}', path);
 

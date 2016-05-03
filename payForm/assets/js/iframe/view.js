@@ -21,7 +21,6 @@
             var self = this;
             var template = self._template.show('iframe', {'path': path, 'config': config});
 
-            console.log('foo: ' + document.querySelector('button[data-beanstream]'));
             if (document.querySelector('button[data-beanstream]') === null) {
                 template = template + self._template.show('button', {});
             }

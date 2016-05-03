@@ -40,7 +40,6 @@
             var self = this;
             var template = self._template.show('iframe', {'path': path, 'config': config});
 
-            console.log('foo: ' + document.querySelector('button[data-beanstream]'));
             if (document.querySelector('button[data-beanstream]') === null) {
                 template = template + self._template.show('button', {});
             }
@@ -270,8 +269,6 @@
                     var path = parameter.path;
                     var config = parameter.config;
 
-                    console.log(config.billingAddress);
-
                     var template = self.template.main;
                     template = template.replace('{{path}}', path);
 
@@ -421,12 +418,18 @@
             return string.charAt(0).toUpperCase() + string.slice(1);
         }
 
+        function toTitleCase(str) {
+            return str.replace(/\w\S*/g, function(txt) {return txt.charAt(0).toUpperCase() +
+                txt.substr(1).toLowerCase();});
+        }
+
         return {
             isNonInputKey: isNonInputKey,
             createDocFrag: createDocFrag,
             isEmpty: isEmpty,
             fireEvent: fireEvent,
-            toSentenceCase: toSentenceCase
+            toSentenceCase: toSentenceCase,
+            toTitleCase: toTitleCase
         };
     })();
 

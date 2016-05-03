@@ -169,15 +169,15 @@
             return max;
         }
 
-        function getMinLength(fieldType, cardType) {
+        function getMaxLength(fieldType, cardType) {
             var card = cards.filter(function(c) {
                 return c.type === cardType;
             });
             card = card[0];
 
             var lengths = card[fieldType];
-            var min = Math.min.apply(Math, lengths);
-            return min;
+            var max = Math.max.apply(Math, lengths);
+            return max;
         }
 
         function isValidExpiryDate(str, currentDate, onBlur) {
@@ -258,13 +258,13 @@
         function isValidCardNumber(str, onBlur) {
             str = str.replace(/\s+/g, '');
             var cardType = '';
-            var min = 0;
+            var max = 0;
 
             if (str.length > 0) {
                 cardType = getCardType(str);
 
                 if (cardType) {
-                    min = getMinLength('length', cardType);
+                    max = getMaxLength('length', cardType);
                 }
             }
 
@@ -274,7 +274,7 @@
                     return {isValid: false, error: 'Please enter a credit card number.', fieldType: 'number'};
                 } else if (cardType === '') {
                     return {isValid: false, error: 'Please enter a valid credit card number.', fieldType: 'number'};
-                } else if (str.length < min) {
+                } else if (str.length < max) {
                     // if onBlur and str not complete
                     return {isValid: false,
                             error: 'Please enter a valid credit card number. The number entered is too short.',
@@ -290,7 +290,7 @@
                 }
 
             } else {
-                if (str.length >= min && min !== 0) {
+                if (str.length === max && max !== 0) {
                     var luhn = getLuhnChecksum(str);
 
                     if (luhn) {
@@ -314,9 +314,9 @@
                 return {isValid: true, error: '', fieldType: 'cvv'}; // Unknown card type. Default to true
             }
 
-            var min = getMinLength('cvcLength', cardType);
+            var max = getMaxLength('cvcLength', cardType);
 
-            if (str.length < min && onBlur === true) {
+            if (str.length < max && onBlur === true) {
                 return {isValid: false,
                         error: 'Please enter a valid CVV number. The number entered is too short.',
                         fieldType: 'cvv'};

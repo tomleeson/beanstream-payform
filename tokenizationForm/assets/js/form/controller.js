@@ -16,6 +16,14 @@
         init: function() {
             var self = this;
             self.config = self.getConfig();
+
+            if (!self.config.currency || !self.config.amount || !self.config.name) {
+                console.log('*************************************************');
+                console.log('Error: currency, amount and name are required peramaters. Payform will not be displayed');
+                console.log('*************************************************');
+                return;
+            }
+
             self.panels = self.setPanelFlow(self.config);
             self._view.init(self.config, self.panels);
 
@@ -156,7 +164,7 @@
             var self = this;
             var config = {};
             config.image = self.getParameterByName('image');
-            config.name = self.getParameterByName('name');
+            config.name = beanstream.Helper.toTitleCase(self.getParameterByName('name'));
             config.description = self.getParameterByName('description');
             config.amount = self.getParameterByName('amount');
             config.billing = self.getParameterByName('billingAddress');

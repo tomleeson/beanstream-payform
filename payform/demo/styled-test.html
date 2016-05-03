@@ -107,11 +107,11 @@
 
                         <form action="/charge" method="POST">
                             <button type="button" class="btn  btn-lg btn-success" data-beanstream>Pay by card</button>
-                          <script 
+                          <script
                             src="http://localhost:8000/payForm/assets/js/build/beanstream_payform.js"
                             data-image="http://downloads.beanstream.com/images/payform/cc_placeholder.png"
-                            data-name="foo.com"
-                            data-description="Item, Item, Item..."
+                            data-name="123456789012345123456789012345123456789012345"
+                            data-description="1234567890123456789012345678901234567890"
                             data-amount="600"
                             data-currency="cad"
                             data-billingAddress="true"
@@ -130,7 +130,16 @@
 
     </div>
     <!-- /container -->
-
+<script>
+    /**
+    * Registered as callback function for 'beanstream_payform_complete' event
+    *
+    * @param {Event} e
+    */
+    document.addEventListener('beanstream_payform_complete', function(e) {
+        console.log('Payform response: ' + JSON.stringify(e));
+    }, false);
+</script>
 
 </body>
 

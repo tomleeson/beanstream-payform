@@ -19,13 +19,13 @@
                             '<div class="container main">' +
                                 '<div class="circle" style="background-image: url({{image}})"></div>' +
                                 '<div>' +
-                                    '<h5>{{name}}</h5>' +
+                                    '<h5 class="truncate">{{name}}</h5>' +
                                     '<p>{{currencySign}} {{amount}} ' +
-                                        '<span class="currency">{{currency}}</span></p>' +
+                                        '<span class="currency truncate">{{currency}}</span></p>' +
                                 '</div>' +
                             '</div>' +
                             '<div class="container sub">' +
-                                '<span class="description">{{description}}</span>' +
+                                '<span class="description truncate">{{description}}</span>' +
                             '</div>' +
                         '</div>' +
                         '<form>' +
@@ -342,8 +342,12 @@
                 customStyling: function() {
                     // parameter.primaryColor
 
-                    var template = self.template.css;
-                    template = template.replace(/{{primaryColor}}/gi, parameter.primaryColor);
+                    var template = '';
+                    if (parameter.primaryColor != '' && parameter.primaryColor != 'null' &&
+                            parameter.primaryColor != null) {
+                        template = self.template.css;
+                        template = template.replace(/{{primaryColor}}/gi, parameter.primaryColor);
+                    }
 
                     return template;
                 }

@@ -140,10 +140,15 @@
             </footer>
         </div>
         <!-- /container -->
-        <script>
-
-
-            
-        </script>
+<script>
+    /**
+    * Registered as callback function for 'beanstream_payform_complete' event
+    *
+    * @param {Event} e
+    */
+    document.addEventListener('beanstream_payform_complete', function(e) {
+        console.log('Payform response: ' + JSON.stringify(e));
+    }, false);
+</script>
     </body>
 </html>

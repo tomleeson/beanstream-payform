@@ -599,6 +599,14 @@
         init: function() {
             var self = this;
             self.config = self.getConfig();
+
+            if (!self.config.currency || !self.config.amount || !self.config.name) {
+                console.log('*************************************************');
+                console.log('Error: currency, amount and name are required peramaters. Payform will not be displayed');
+                console.log('*************************************************');
+                return;
+            }
+
             self.panels = self.setPanelFlow(self.config);
             self._view.init(self.config, self.panels);
 
@@ -739,7 +747,7 @@
             var self = this;
             var config = {};
             config.image = self.getParameterByName('image');
-            config.name = self.getParameterByName('name');
+            config.name = beanstream.Helper.toTitleCase(self.getParameterByName('name'));
             config.description = self.getParameterByName('description');
             config.amount = self.getParameterByName('amount');
             config.billing = self.getParameterByName('billingAddress');
@@ -796,13 +804,13 @@
                             '<div class="container main">' +
                                 '<div class="circle" style="background-image: url({{image}})"></div>' +
                                 '<div>' +
-                                    '<h5>{{name}}</h5>' +
+                                    '<h5 class="truncate">{{name}}</h5>' +
                                     '<p>{{currencySign}} {{amount}} ' +
-                                        '<span class="currency">{{currency}}</span></p>' +
+                                        '<span class="currency truncate">{{currency}}</span></p>' +
                                 '</div>' +
                             '</div>' +
                             '<div class="container sub">' +
-                                '<span class="description">{{description}}</span>' +
+                                '<span class="description truncate">{{description}}</span>' +
                             '</div>' +
                         '</div>' +
                         '<form>' +
@@ -1119,8 +1127,12 @@
                 customStyling: function() {
                     // parameter.primaryColor
 
-                    var template = self.template.css;
-                    template = template.replace(/{{primaryColor}}/gi, parameter.primaryColor);
+                    var template = '';
+                    if (parameter.primaryColor != '' && parameter.primaryColor != 'null' &&
+                            parameter.primaryColor != null) {
+                        template = self.template.css;
+                        template = template.replace(/{{primaryColor}}/gi, parameter.primaryColor);
+                    }
 
                     return template;
                 }
@@ -1259,12 +1271,18 @@
             return string.charAt(0).toUpperCase() + string.slice(1);
         }
 
+        function toTitleCase(str) {
+            return str.replace(/\w\S*/g, function(txt) {return txt.charAt(0).toUpperCase() +
+                txt.substr(1).toLowerCase();});
+        }
+
         return {
             isNonInputKey: isNonInputKey,
             createDocFrag: createDocFrag,
             isEmpty: isEmpty,
             fireEvent: fireEvent,
-            toSentenceCase: toSentenceCase
+            toSentenceCase: toSentenceCase,
+            toTitleCase: toTitleCase
         };
     })();
 

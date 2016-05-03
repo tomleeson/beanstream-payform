@@ -170,10 +170,13 @@ body{
 .circle {
     border-radius: 50%;
     width: 60px;
+    min-width: 60px;
     height: 60px; 
+    min-height: 60px; 
     background-color: white;
-    background-size: contain;
+    background-size: 75%;
     background-repeat: no-repeat;
+    background-position: center; 
     margin-right:10px;
 }
 
@@ -203,6 +206,22 @@ a {
 p,h4,h5,h6{
     margin:0;
     color: white;
+
+}
+
+.main-heading p, .main-heading span{
+    min-height: 24px;
+}
+
+.main-heading .truncate {
+  width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.main-heading h5{
+    min-height: 36px;
 }
 
 input{
