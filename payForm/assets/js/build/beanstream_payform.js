@@ -18,6 +18,7 @@
     window.beanstream.IframeModel = IframeModel;
 })(window);
 
+
 (function(window) {
     'use strict';
 
@@ -95,9 +96,12 @@
                 e = e || window.event;
                 this.iframe.parentNode.style.display = 'block';
 
+                /*
                 var innerDoc = this.iframe.contentDocument || this.iframe.contentWindow.document;
                 var form = innerDoc.getElementsByTagName('form')[0];
                 beanstream.Helper.fireEvent('beanstream_payform_visible', {}, form);
+                */
+                beanstream.Helper.fireEvent('beanstream_payform_visible', {}, this.iframe.contentWindow);
 
             }.bind(self), false);
 
@@ -162,6 +166,7 @@
     window.beanstream.IframeView = IframeView;
 })(window);
 
+
 (function(window) {
     'use strict';
 
@@ -188,8 +193,12 @@
 
             return 'http://localhost:8000/tokenizationform/test.html?' +
                 self.serialize(self._view.readAttributes());
+
             /*
             return 'https://s3-us-west-2.amazonaws.com/payform-staging/payform/tokenizationform/index.html?' +
+                self.serialize(self._view.readAttributes());
+            /*
+            return 'https://payform.beanstream.com/tokenizationform/index.html?' +
                 self.serialize(self._view.readAttributes());
             */
         },
@@ -212,6 +221,7 @@
     window.beanstream = window.beanstream || {};
     window.beanstream.IframeController = IframeController;
 })(window);
+
 
 (function(window) {
     'use strict';

@@ -94,6 +94,7 @@
     window.beanstream.payform.FormModel = FormModel;
 })(window);
 
+
 (function(window) {
     'use strict';
 
@@ -145,13 +146,18 @@
                 },
                 script: function() {
                     var script = document.createElement('script');
+
+                    script.src =
+                        'http://localhost:8000/payfields/assets/js/build/beanstream_payfields.js';
+
                     /*
                     script.src =
                         'https://s3-us-west-2.amazonaws.com/payform-staging/payform/payfields/beanstream_payfields.js';
                     */
+                    /*
                     script.src =
-                        'http://localhost:8000/payfields/assets/js/build/beanstream_payfields.js';
-
+                        'https://payform.beanstream.com/payfields/beanstream_payfields.js';
+                    */
                     script.setAttribute('data-submitForm', 'false');
                     var form = document.getElementsByTagName('form')[0];
                     form.appendChild(script);
@@ -326,7 +332,8 @@
                 self.closeIframe();
             }.bind(self), false);
 
-            self.form.addEventListener('beanstream_payform_visible', function(e) {
+            document.addEventListener('beanstream_payform_visible', function(e) {
+                // self.form.addEventListener('beanstream_payform_visible', function(e) {
                 var self = this;
                 self.focusFirstElement(self._domPanels[self._model.getCurrentPanel()]);
                 console.log('beanstream_payform_visible');
@@ -582,6 +589,7 @@
     window.beanstream.payform.FormView = FormView;
 })(window);
 
+
 (function(window) {
     'use strict';
 
@@ -783,6 +791,7 @@
     window.beanstream.payform = window.beanstream.payform || {};
     window.beanstream.payform.FormController = FormController;
 })(window);
+
 
 (function(window) {
     'use strict';
