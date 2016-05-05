@@ -332,13 +332,6 @@
                 self.closeIframe();
             }.bind(self), false);
 
-            document.addEventListener('beanstream_payform_visible', function(e) {
-                // self.form.addEventListener('beanstream_payform_visible', function(e) {
-                var self = this;
-                self.focusFirstElement(self._domPanels[self._model.getCurrentPanel()]);
-                console.log('beanstream_payform_visible');
-            }.bind(self), false);
-
             // Add listeners to all inputs on shipping and billing panels
             var shippingInputs = [];
             var billingInputs = [];
@@ -661,7 +654,8 @@
                 data.billingAddress = self._model.getBillingAddress();
                 data.shippingAddress = self._model.getShippingAddress();
 
-                beanstream.Helper.fireEvent('beanstream_toknizationForm_complete', data, window.parent.document);
+                // Note: we cannot specify an exact target origin as Payform can be injected anywhere
+                window.parent.postMessage('beanstream_toknizationForm_complete', '*');
 
                 self._view.closeIframe();
 

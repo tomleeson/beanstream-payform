@@ -76,13 +76,6 @@
                 e = e || window.event;
                 this.iframe.parentNode.style.display = 'block';
 
-                /*
-                var innerDoc = this.iframe.contentDocument || this.iframe.contentWindow.document;
-                var form = innerDoc.getElementsByTagName('form')[0];
-                beanstream.Helper.fireEvent('beanstream_payform_visible', {}, form);
-                */
-                beanstream.Helper.fireEvent('beanstream_payform_visible', {}, this.iframe.contentWindow);
-
             }.bind(self), false);
 
             document.addEventListener('beanstream_closePayform', function() {

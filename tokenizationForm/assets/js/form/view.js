@@ -236,13 +236,6 @@
                 self.closeIframe();
             }.bind(self), false);
 
-            document.addEventListener('beanstream_payform_visible', function(e) {
-                // self.form.addEventListener('beanstream_payform_visible', function(e) {
-                var self = this;
-                self.focusFirstElement(self._domPanels[self._model.getCurrentPanel()]);
-                console.log('beanstream_payform_visible');
-            }.bind(self), false);
-
             // Add listeners to all inputs on shipping and billing panels
             var shippingInputs = [];
             var billingInputs = [];

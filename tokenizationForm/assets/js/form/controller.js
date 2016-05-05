@@ -70,7 +70,8 @@
                 data.billingAddress = self._model.getBillingAddress();
                 data.shippingAddress = self._model.getShippingAddress();
 
-                beanstream.Helper.fireEvent('beanstream_toknizationForm_complete', data, window.parent.document);
+                // Note: we cannot specify an exact target origin as Payform can be injected anywhere
+                window.parent.postMessage('beanstream_toknizationForm_complete', '*');
 
                 self._view.closeIframe();
 
