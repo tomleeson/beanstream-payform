@@ -80,8 +80,6 @@
             attributes.parentDomain =
                 location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
 
-            console.log('attributes.parentDomain: ' + attributes.parentDomain);
-
             return attributes;
         },
         attachListeners: function() {
@@ -103,13 +101,14 @@
             }.bind(self), false);
 
             window.addEventListener('message', function(event) {
-                console.log('window.addEventListener caught : message : ' + event.data);
 
                 // Do we trust the sender of this message?
                 if (event.origin !== 'https://payform.beanstream.com') {
-                    //aengus
+                    // must be enabled on production environment
                     //return;
                 }
+
+                console.log('event.origin: ' + event.origin);
 
                 var obj = JSON.parse(event.data);
                 var type = obj.type;
@@ -120,7 +119,6 @@
                     console.log('beanstream_closePayform');
 
                     this.iframe.parentNode.style.display = 'none';
-                    this.iframe.contentWindow.location.reload();
                 } else if (type === 'beanstream_toknizationForm_complete') {
 
                     console.log('beanstream_toknizationForm_complete');

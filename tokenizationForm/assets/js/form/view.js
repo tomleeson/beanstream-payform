@@ -297,8 +297,8 @@
         },
         closeIframe: function() {
             var self = this;
-            console.log('view.closeIframe : self.config.parentDomain: ' + self.config.parentDomain);
             window.parent.postMessage('{"type":"beanstream_closePayform", "detail":""}', self.config.parentDomain);
+            location.reload();
         },
         attachPayfieldsListeners: function() {
             var self = this;
