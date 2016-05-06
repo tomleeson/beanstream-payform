@@ -77,6 +77,10 @@
             attributes.shippingAddress = this.script.getAttribute('data-shippingAddress');
             attributes.currency = this.script.getAttribute('data-currency');
             attributes.primaryColor = this.script.getAttribute('data-primaryColor');
+            attributes.parentDomain =
+                location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+
+            console.log('attributes.parentDomain: ' + attributes.parentDomain);
 
             return attributes;
         },
@@ -98,52 +102,67 @@
 
             }.bind(self), false);
 
-            document.addEventListener('beanstream_closePayform', function() {
-                this.iframe.parentNode.style.display = 'none';
-                this.iframe.contentWindow.location.reload();
-            }.bind(self), false);
+            window.addEventListener('message', function(event) {
+                console.log('window.addEventListener caught : message : ' + event.data);
 
-            document.addEventListener('beanstream_toknizationForm_complete', function(e) {
+                // Do we trust the sender of this message?
+                if (event.origin !== 'https://payform.beanstream.com') {
+                    //aengus
+                    //return;
+                }
 
-                // toDo: append hiddenfields to form and submit if config...
-                // toDo: append fields to doc during original render
+                var obj = JSON.parse(event.data);
+                var type = obj.type;
+                var detail = obj.detail;
 
-                if (e.eventDetail.billingAddress) {
-                    var billing = e.eventDetail.billingAddress;
-                    for (var key in billing) {
-                        if (billing.hasOwnProperty(key)) {
-                            var name = 'billingAddress_' + key;
-                            this.appendValue(name, billing[key]);
+                if (type === 'beanstream_closePayform') {
+
+                    console.log('beanstream_closePayform');
+
+                    this.iframe.parentNode.style.display = 'none';
+                    this.iframe.contentWindow.location.reload();
+                } else if (type === 'beanstream_toknizationForm_complete') {
+
+                    console.log('beanstream_toknizationForm_complete');
+
+                    if (detail.billingAddress) {
+                        var billing = detail.billingAddress;
+                        for (var key in billing) {
+                            if (billing.hasOwnProperty(key)) {
+                                var name = 'billingAddress_' + key;
+                                this.appendValue(name, billing[key]);
+                            }
                         }
                     }
-                }
-                if (e.eventDetail.shippingAddress) {
-                    var shipping = e.eventDetail.shippingAddress;
-                    for (var key in shipping) {
-                        if (shipping.hasOwnProperty(key)) {
-                            var name = 'shippingAddress_' + key;
-                            this.appendValue(name, billing[key]);
+                    if (detail.shippingAddress) {
+                        var shipping = detail.shippingAddress;
+                        for (var key in shipping) {
+                            if (shipping.hasOwnProperty(key)) {
+                                var name = 'shippingAddress_' + key;
+                                this.appendValue(name, billing[key]);
+                            }
                         }
                     }
-                }
-                if (e.eventDetail.cardInfo) {
-                    var card = e.eventDetail.cardInfo;
-                    for (var key in card) {
-                        if (card.hasOwnProperty(key)) {
-                            var name = 'cardInfo_' + key;
-                            this.appendValue(name, card[key]);
+                    if (detail.cardInfo) {
+                        var card = detail.cardInfo;
+                        for (var key in card) {
+                            if (card.hasOwnProperty(key)) {
+                                var name = 'cardInfo_' + key;
+                                this.appendValue(name, card[key]);
+                            }
                         }
                     }
-                }
 
-                // call submit form if configured
-                if (this.script.getAttribute('data-submitForm').toLowerCase() === 'true') {
-                    this.iframe.parentNode.submit();
-                }
+                    // call submit form if configured
+                    if (this.script.getAttribute('data-submitForm').toLowerCase() === 'true') {
+                        this.iframe.parentNode.submit();
+                    }
 
-                beanstream.Helper.fireEvent('beanstream_payform_complete', e.eventDetail, window.parent.document);
+                    beanstream.Helper.fireEvent('beanstream_payform_complete', detail, window.parent.document);
+                }
             }.bind(self), false);
         },
+
         appendValue: function(name, value) {
             var input = this.iframe.parentNode.querySelector('input[name=' + name + ']');
 
@@ -190,6 +209,7 @@
             /*
             return 'https://s3-us-west-2.amazonaws.com/payform-staging/payform/tokenizationform/index.html?' +
                 self.serialize(self._view.readAttributes());
+            */
             /*
             return 'https://payform.beanstream.com/tokenizationform/index.html?' +
                 self.serialize(self._view.readAttributes());

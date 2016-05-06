@@ -22,6 +22,7 @@
         init: function(config, panels) {
             var self = this;
             self.panels = panels;
+            self.config = config;
 
             self.render('elements', {config: config, panels: panels});
             self.render('setCustomStyle', {primaryColor: config.primaryColor});
@@ -296,7 +297,8 @@
         },
         closeIframe: function() {
             var self = this;
-            beanstream.Helper.fireEvent('beanstream_closePayform', {}, window.parent.document);
+            console.log('view.closeIframe : self.config.parentDomain: ' + self.config.parentDomain);
+            window.parent.postMessage('{"type":"beanstream_closePayform", "detail":""}', self.config.parentDomain);
         },
         attachPayfieldsListeners: function() {
             var self = this;

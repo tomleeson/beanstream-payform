@@ -70,8 +70,9 @@
                 data.billingAddress = self._model.getBillingAddress();
                 data.shippingAddress = self._model.getShippingAddress();
 
-                // Note: we cannot specify an exact target origin as Payform can be injected anywhere
-                window.parent.postMessage('beanstream_toknizationForm_complete', '*');
+                console.log('controller... self.config.parentDomain: ' + self.config.parentDomain);
+                window.parent.postMessage('{"type":"beanstream_toknizationForm_complete", "detail":' +
+                    JSON.stringify(data) + '}', self.config.parentDomain);
 
                 self._view.closeIframe();
 
@@ -172,6 +173,7 @@
             config.shipping = self.getParameterByName('shippingAddress');
             config.currency = self.getParameterByName('currency');
             config.primaryColor = self.getParameterByName('primaryColor');
+            config.parentDomain = self.getParameterByName('parentDomain');
 
             return config;
         },

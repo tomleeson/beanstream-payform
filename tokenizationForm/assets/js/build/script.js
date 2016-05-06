@@ -118,6 +118,7 @@
         init: function(config, panels) {
             var self = this;
             self.panels = panels;
+            self.config = config;
 
             self.render('elements', {config: config, panels: panels});
             self.render('setCustomStyle', {primaryColor: config.primaryColor});
@@ -392,7 +393,8 @@
         },
         closeIframe: function() {
             var self = this;
-            beanstream.Helper.fireEvent('beanstream_closePayform', {}, window.parent.document);
+            console.log('view.closeIframe : self.config.parentDomain: ' + self.config.parentDomain);
+            window.parent.postMessage('{"type":"beanstream_closePayform", "detail":""}', self.config.parentDomain);
         },
         attachPayfieldsListeners: function() {
             var self = this;
@@ -654,8 +656,9 @@
                 data.billingAddress = self._model.getBillingAddress();
                 data.shippingAddress = self._model.getShippingAddress();
 
-                // Note: we cannot specify an exact target origin as Payform can be injected anywhere
-                window.parent.postMessage('beanstream_toknizationForm_complete', '*');
+                console.log('controller... self.config.parentDomain: ' + self.config.parentDomain);
+                window.parent.postMessage('{"type":"beanstream_toknizationForm_complete", "detail":' +
+                    JSON.stringify(data) + '}', self.config.parentDomain);
 
                 self._view.closeIframe();
 
@@ -756,6 +759,7 @@
             config.shipping = self.getParameterByName('shippingAddress');
             config.currency = self.getParameterByName('currency');
             config.primaryColor = self.getParameterByName('primaryColor');
+            config.parentDomain = self.getParameterByName('parentDomain');
 
             return config;
         },

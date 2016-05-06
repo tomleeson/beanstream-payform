@@ -29,6 +29,7 @@
             /*
             return 'https://s3-us-west-2.amazonaws.com/payform-staging/payform/tokenizationform/index.html?' +
                 self.serialize(self._view.readAttributes());
+            */
             /*
             return 'https://payform.beanstream.com/tokenizationform/index.html?' +
                 self.serialize(self._view.readAttributes());
