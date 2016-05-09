@@ -3,8 +3,8 @@ beanstream-payform
 ##### Table of Contents  
 
 * [Overview](#overview)
- * [Payform](#payform-overview)
- * [Payfields](#payfields-overview)
+ * [PayForm](#payform-overview)
+ * [PayFields](#payfields-overview)
 * [Browser Support](#browser-support)
 * [PayForm](#payform) 
  * [Functionality](#payform-functionality)
@@ -48,12 +48,12 @@ Payfields allows the merchant full control of their web site's UX while limiting
 
 PayForm is a small Javascript library that injects a payment button and an iframe into your web page. When the user clicks the button a payment form is rendered into the iframe with an appearance similar to that of a popover dialog.
 
-### How It Works <a name="payform-functionality"/>
+## How It Works <a name="payform-functionality"/>
 The PayForm script is read and executed as your page loads. It injects a payment button and an iframe into your web page. When the user clicks the button a payment form is rendered into the iframe. The payment form may contain input fields for a shipping address, for a billing address and for credit card details.
 
 Once the user has completed all fields with valid input the iframe is removed from the UI and a 'beanstream_Payform_complete' event is fired containing the address information and a token for the credit card details.
 
-### Integration <a name="payform-integration-guide"/>
+## Integration <a name="payform-integration-guide"/>
 Adding PayForm to your web page could not be easier. You simply add a script element pointing at the PayForm script. PayForm is configured by setting data attributes on the script element. It can be configured to collect shipping and billing addresses in addition to the card details.
 
 The required parameters are:
@@ -67,6 +67,36 @@ The optional parameters are:
 * data-shippingAddress: if the shipping address is required - true/false
 * data-billingAddress: if the billing address is required - true/false
 * data-submitForm: if the form's default action should be executed - true/false
+
+### Step 1: Add PayForm To Your Form
+The first step is to create an HTML form that will submit the payment data to your server. In that form you add a `<script>` element that points to [https://payform.beanstream.com/payform/beanstream_payform.js](https://payform.beanstream.com/payform/beanstream_payform.js). You can also supply several parameters to configure the form, such as your company name, logo, product description, price, currency, and whether billing/shipping addresses should be displayed. Here is an example:
+```html
+<form action="/charge" method="POST">
+    <script 
+        src="https://payform.beanstream.com/payform/beanstream_payform.js"
+        data-image="http://downloads.beanstream.com/images/payform/cc_placeholder.png"
+        data-name="foo.com"
+        data-description="2 widgets"
+        data-amount="2000"
+        data-currency="cad"
+        data-billingAddress="true"
+        data-shippingAddress="true"
+        data-submitForm="false">
+    </script>
+</form>
+
+<script>
+    document.addEventListener('beanstream_Payform_complete', function(e) {
+        // e.eventDetail.cardInfo
+        // e.eventDetail.billingAddress
+        // e.eventDetail.shippingAddress
+    }, false);
+</script>
+```
+This will inject a button in the location of the `<form>` and when the customer clicks on it, the PayForm will pop up. As soon as the customer fills out the information and hits the **Pay** button at the end, PayForm will tokenize the card data and submit the form with that token and address info. Just before the form is submitted it will fire an event called `beanstream_Payform_complete` that you can listed to and perform any last second operations before the form submits.
+
+### Step 2: Response Fields
+The data collected is injected into hidden fields in the `<form>` element wrapping the PayForm script element. It is also returned as a JSON blob with the event 'beanstream_Payform_complete'. The form is automatically submitted to your server. On your server you will look for the following fields to retrieve the payment data:
 
  
 # Payfields <a name="payfields"/>   
