@@ -111,8 +111,10 @@ The data collected is injected into hidden fields in the `<form>` element wrappi
     }
 }}
  ```
- 
-# Payfields <a name="payfields"/>   
+## Step 3: Process The Payment
+Now that you have tokenized card data on your server, use it to either [process or pre-authorize a payment](http://developer.beanstream.com/documentation/take-payments/purchases/take-payment-legato-token/), or create a [payment profile](http://developer.beanstream.com/tokenize-payments/create-new-profile/).
+
+# PayFields <a name="payfields"/>   
 PayFields is very similar to PayForm, but it allows you to design your own form. It simply:
  * Injects input fields into page. (credit card number, CVD, or expiry)    
  * Recognizes card type (Mastercard, Visa, etc.) and restricts, formats and validates input accordingly.   
