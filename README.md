@@ -3,11 +3,9 @@ beanstream-payform
 ##### Table of Contents  
 
 * [Overview](#overview)
- * [PayForm](#payform-overview)
- * [PayFields](#payfields-overview)
 * [Browser Support](#browser-support)
 * [PayForm](#payform) 
- * [Functionality](#payform-functionality)
+ * [How It Works](#payform-functionality)
  * [Integration Guide](#payform-integration-guide)
 * [PayFields](#payfields) 
  * [Integration Guide](#payfields-integration-guide)
@@ -20,22 +18,6 @@ These products are Beanstream client-side JavaScript libraries that handle a cus
 
 Both products provide an easy way to accept payments in a web page. They provide some client-side validation, smart field data formatting, and responsive design.
 
-##### PayForm <a name="payform-overview"/>
-
-PayForm injects a "Pay with Card" button into the merchant's web page. Clicking the button displays payment form in a popover within the merchant's page. The form can be configured to collect just credit card information, or a combination of credit card information, and shipping and/or billing information. 
-
-The credit card information is formatted, validated and tokeniZed. PayForm then returns the token and any address information collected to the merchant's web page.
-
-PayForm: Tokeniztoation allows the merchant to easily collect payment information on their web site, without to add any payment forms to their page. It limits the scope of their PCI compliance, but allows them to retain control of how the payment itself is processed.
-
-
-##### Payfields <a name="payfields-overview"/>
-
-Payfields injects credit card related input fields into the merchant's web page, formats and validates the user input, and makes an AJAX request to Beanstream's tokenization REST API. It then appends the token to the payment form in the web page and either submits the form or notifies the page that the token has been updated.
-
-Payfields allows the merchant full control of their web site's UX while limiting the scope of their PCI compliance.
-
-**Note: This is similar to Beanstream's Legato**
 
 ## Browser Support <a name="browser-support"/>
  * Internet Explorer 8+ (via XDomainRequest and XMLHttpRequest)         
@@ -90,14 +72,45 @@ The first step is to create an HTML form that will submit the payment data to yo
         // e.eventDetail.cardInfo
         // e.eventDetail.billingAddress
         // e.eventDetail.shippingAddress
+        
+        // send payment data to the server here
     }, false);
 </script>
 ```
-This will inject a button in the location of the `<form>` and when the customer clicks on it, the PayForm will pop up. As soon as the customer fills out the information and hits the **Pay** button at the end, PayForm will tokenize the card data and submit the form with that token and address info. Just before the form is submitted it will fire an event called `beanstream_Payform_complete` that you can listed to and perform any last second operations before the form submits.
+This will inject a button in the location of the `<form>` and when the customer clicks on it, the PayForm will pop up. As soon as the customer fills out the information and hits the **Pay** button at the end, PayForm will tokenize the card data and submit the form. Just before the form is submitted it will fire an event called `beanstream_Payform_complete` that you can listen to so you can retrieve a JSON format of the form data to send to your server. This event also allows you to perform an asynchronous AJAX call to your server to process the payment.
+
+**Note: The form will not submit the card data to your server for this release. You must listen to this event and submit the data yourself. We are adding the form submit functionality within the week.**
 
 ### Step 2: Response Fields
-The data collected is injected into hidden fields in the `<form>` element wrapping the PayForm script element. It is also returned as a JSON blob with the event 'beanstream_Payform_complete'. The form is automatically submitted to your server. On your server you will look for the following fields to retrieve the payment data:
+The data collected is injected into hidden fields in the `<form>` element wrapping the PayForm script element. It is also returned as a JSON blob with the event 'beanstream_Payform_complete'. The form is automatically submitted to your server. The JSON blob will be in the `eventDetail` section of the event data. The whole message looks like this:
 
+```json
+ {
+  "isTrusted":false,
+  "eventDetail":{
+    "cardInfo":{
+      "code":"a01-ae366cb9-3efa-4c82-b955-0bf59e2df359",
+      "name":"aa",
+      "email":"aa@aa.aa"
+    },
+    "billingAddress":{
+      "name":"aa",
+      "address_line1":"aa",
+      "postal_code":"aa",
+      "city":"aa",
+      "province":"aa",
+      "country":"aa"
+    },
+    "shippingAddress":{
+      "name":"aa",
+      "address_line1":"aa",
+      "postal_code":"aa",
+      "city":"aa",
+      "province":"aa",
+      "country":"aa"
+    }
+}}
+ ```
  
 # Payfields <a name="payfields"/>   
 PayFields is very similar to PayForm, but it allows you to design your own form. It simply:
