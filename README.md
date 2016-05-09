@@ -179,7 +179,7 @@ The integration below shows placeholders and the data attribute in use. It shows
 ---
 
 Demo:
-* [PayFields](https://s3-us-west-2.amazonaws.com/payform-staging/payform/payfields/bootstrap.html)
+* [PayForm](https://s3-us-west-2.amazonaws.com/demos.beanstream.com/payform/production/index.html)
 
 Hosted Script:
 * [PayFields](https://s3-us-west-2.amazonaws.com/payform-staging/payform/payfields/beanstream_payfields.js)
