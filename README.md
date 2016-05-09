@@ -3,16 +3,14 @@ beanstream-payform
 ##### Table of Contents  
 
 * [Overview](#overview)
-  * [Payform](#payform-overview)
-  * [Payfields](#payfields-overview)
+ * [Payform](#payform-overview)
+ * [Payfields](#payfields-overview)
 * [Browser Support](#browser-support)
-* [PayForm](#payform)
-  * [Functionality](#payform-functionality)
-  * [Integration Guide](#payform-integration-guide)
-* [PayFields](#payfields)
-  * [Functionality](#payfields-functionality)
-  * [Integration Guide](#payfields-integration-guide)
-
+* [PayForm](#payform) 
+ * [Functionality](#payform-functionality)
+ * [Integration Guide](#payform-integration-guide)
+* [PayFields](#payfields) 
+ * [Integration Guide](#payfields-integration-guide)
 * [Building Locally and Contributing](#contributing)
 
 ## Overview <a name="overview"/>
@@ -22,14 +20,6 @@ These products are Beanstream client-side JavaScript libraries that handle a cus
 
 Both products provide an easy way to accept payments in a web page. They provide some client-side validation, smart field data formatting, and responsive design.
 
-##### Payfields <a name="payfields-overview"/>
-
-Payfields injects credit card related input fields into the merchant's web page, formats and validates the user input, and makes an AJAX request to Beanstream's tokenization REST API. It then appends the token to the payment form in the web page and either submits the form or notifies the page that the token has been updated.
-
-Payfields allows the merchant full control of their web site's UX while limiting the scope of their PCI compliance.
-
-Note: This is similar to Beanstream's Legato
-
 ##### PayForm <a name="payform-overview"/>
 
 PayForm injects a "Pay with Card" button into the merchant's web page. Clicking the button displays payment form in a popover within the merchant's page. The form can be configured to collect just credit card information, or a combination of credit card information, and shipping and/or billing information. 
@@ -38,6 +28,14 @@ The credit card information is formatted, validated and tokeniZed. PayForm then 
 
 PayForm: Tokeniztoation allows the merchant to easily collect payment information on their web site, without to add any payment forms to their page. It limits the scope of their PCI compliance, but allows them to retain control of how the payment itself is processed.
 
+
+##### Payfields <a name="payfields-overview"/>
+
+Payfields injects credit card related input fields into the merchant's web page, formats and validates the user input, and makes an AJAX request to Beanstream's tokenization REST API. It then appends the token to the payment form in the web page and either submits the form or notifies the page that the token has been updated.
+
+Payfields allows the merchant full control of their web site's UX while limiting the scope of their PCI compliance.
+
+**Note: This is similar to Beanstream's Legato**
 
 ## Browser Support <a name="browser-support"/>
  * Internet Explorer 8+ (via XDomainRequest and XMLHttpRequest)         
@@ -50,12 +48,12 @@ PayForm: Tokeniztoation allows the merchant to easily collect payment informatio
 
 PayForm is a small Javascript library that injects a payment button and an iframe into your web page. When the user clicks the button a payment form is rendered into the iframe with an appearance similar to that of a popover dialog.
 
-### How It Works
+### How It Works <a name="payform-functionality"/>
 The PayForm script is read and executed as your page loads. It injects a payment button and an iframe into your web page. When the user clicks the button a payment form is rendered into the iframe. The payment form may contain input fields for a shipping address, for a billing address and for credit card details.
 
 Once the user has completed all fields with valid input the iframe is removed from the UI and a 'beanstream_Payform_complete' event is fired containing the address information and a token for the credit card details.
 
-### Integration
+### Integration <a name="payform-integration-guide"/>
 Adding PayForm to your web page could not be easier. You simply add a script element pointing at the PayForm script. PayForm is configured by setting data attributes on the script element. It can be configured to collect shipping and billing addresses in addition to the card details.
 
 The required parameters are:
@@ -63,7 +61,7 @@ The required parameters are:
 * data-currency: the currency
 
 The optional parameters are:
-* data-name: your company name<
+* data-name: your company name
 * data-image: your company logo
 * data-description: a description of the purchase
 * data-shippingAddress: if the shipping address is required - true/false
@@ -71,13 +69,14 @@ The optional parameters are:
 * data-submitForm: if the form's default action should be executed - true/false
 
  
-# Payfields <a name="payfields"/>     
+# Payfields <a name="payfields"/>   
+PayFields is very similar to PayForm, but it allows you to design your own form. It simply:
  * Injects input fields into page. (credit card number, CVD, or expiry)    
- * Assesses card type (Mastercard, Visa, etc.) and restricts, formats and validates input accordingly.   
- * TokniZes card data, clears fields, and appends hidden field containing token to form.
- * Fires event onLoad to allow custom styling. Fires event onValidationChange to allow custom error messaging. Fires event onTokenUpdated to allow merchant to control form submission flow. (By default the form is submitted when the token is appended)
+ * Recognizes card type (Mastercard, Visa, etc.) and restricts, formats and validates input accordingly.   
+ * Toknizes card data, clears fields, and appends hidden field containing token to form.
+ * Fires event `onLoad` to allow custom styling. Fires event `onValidationChange` to allow custom error messaging. Fires event `onTokenUpdated` to allow merchant to control form submission flow. (By default the form is submitted when the token is appended)
  
-#### Integration Guide <a name="payfields-integration-guide"/>   
+#### Integration <a name="payfields-integration-guide"/>   
 The minimal integration involves adding the script tag to a webpage within a form containing a submit button.
 ```javascript
 <form action='foo.php'>
