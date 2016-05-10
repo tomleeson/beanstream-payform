@@ -1,4 +1,4 @@
-beanstream-payform 
+PayForm & PayFields
 =================
 ##### Table of Contents  
 
@@ -13,7 +13,7 @@ beanstream-payform
 * [Demo](#demo)
 
 ## Overview <a name="overview"/>
-The PayForms project umbrella covers two related products: PayForm and PayFields.
+The PayForm project umbrella covers two related products: PayForm and PayFields.
 
 These products are Beanstream client-side JavaScript libraries that handle a customer's credit card input within the merchant's web page. They limit the scope of the merchant's PCI compliance by removing the need for them to pass the sensitive information (credit card number, CVD, or expiry) through their servers and from having to write and store code that comes in contact with that sensitive information.
 
