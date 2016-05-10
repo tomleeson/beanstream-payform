@@ -181,6 +181,9 @@ The integration below shows placeholders and the data attribute in use. It shows
 
 # Demo <a name="demo"/>
 * [PayForm](https://s3-us-west-2.amazonaws.com/demos.beanstream.com/payform/production/index.html)
+* [PayFields](https://s3-us-west-2.amazonaws.com/demos.beanstream.com/payfields/production/index.html)
+
+You can view the page source of either of the above demos to see how PayForm and PayFields were integrated. Feel free to copy-paste the code into your site.
 
 ## Hosted Script
 * [PayFields](https://s3-us-west-2.amazonaws.com/payform-staging/payform/payfields/beanstream_payfields.js)
