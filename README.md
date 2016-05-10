@@ -10,6 +10,7 @@ beanstream-payform
 * [PayFields](#payfields) 
  * [Integration Guide](#payfields-integration-guide)
 * [Building Locally and Contributing](#contributing)
+* [Demo](#demo)
 
 ## Overview <a name="overview"/>
 The PayForms project umbrella covers two related products: PayForm and PayFields.
@@ -178,13 +179,13 @@ The integration below shows placeholders and the data attribute in use. It shows
  
 ---
 
-Demo:
+# Demo <a name="demo"/>
 * [PayForm](https://s3-us-west-2.amazonaws.com/demos.beanstream.com/payform/production/index.html)
 
-Hosted Script:
+## Hosted Script
 * [PayFields](https://s3-us-west-2.amazonaws.com/payform-staging/payform/payfields/beanstream_payfields.js)
 
-References:
+# API References
 * [REST API](http://developer.beanstream.com/documentation/rest-api-reference/)
 * [Tokenization](http://developer.beanstream.com/documentation/take-payments/purchases/take-payment-legato-token/)
 * [Payment](http://developer.beanstream.com/documentation/take-payments/purchases/card/)
