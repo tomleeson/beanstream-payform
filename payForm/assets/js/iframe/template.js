@@ -24,7 +24,9 @@
             '</div>';
 
         self.template.cardInfo =
-            '<input type="hidden" name="cardInfo_code" value="">';
+            '<input type="hidden" name="cardInfo_code" value="">' +
+            '<input type="hidden" name="cardInfo_name" value="">' +
+            '<input type="hidden" name="cardInfo_email" value="">';
 
         self.template.shippingAddress =
             '<input type="hidden" name="shippingAddress_name" value="">' +

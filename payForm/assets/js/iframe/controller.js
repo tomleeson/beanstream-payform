@@ -23,17 +23,9 @@
         createQueryString: function() {
             var self = this;
 
+            // This path is updated for production and staging by gulp script
             return 'http://localhost:8000/tokenizationform/test.html?' +
                 self.serialize(self._view.readAttributes());
-
-            /*
-            return 'https://s3-us-west-2.amazonaws.com/payform-staging/payform/tokenizationform/index.html?' +
-                self.serialize(self._view.readAttributes());
-            */
-            /*
-            return 'https://payform.beanstream.com/tokenizationform/index.html?' +
-                self.serialize(self._view.readAttributes());
-            */
         },
 
         serialize: function(obj) {

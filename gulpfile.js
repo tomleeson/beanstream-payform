@@ -5,7 +5,8 @@ var gulpProtractorAngular = require('gulp-angular-protractor');
 const jscs = require('gulp-jscs');
 var runSequence = require('gulp-run-sequence');
 var autoprefixer = require('gulp-autoprefixer');
-
+var replace = require('gulp-replace-path');
+var path = require('path');
 
 /**
  * Concat JS files
@@ -182,4 +183,57 @@ function prefixCsstokenizationform() {
         }))
         .pipe(gulp.dest('./tokenizationform/assets/css/build/'));
 }
+
+
+/**
+ * update paths for production and staging
+ */
+gulp.task('production', ['default'], function() {
+    changePath('./payfields/assets/js/build/beanstream_payfields.js',
+                './payfields/assets/js/build/',
+                'http://localhost:8000/payfields/assets/css/beanstream_payfields_style.css',
+                'https://payform.beanstream.com/payfields/beanstream_payfields_style.css');
+    changePath('./payform/assets/js/build/beanstream_payform.js',
+                './payform/assets/js/build/',
+                'http://localhost:8000/tokenizationform/test.html',
+                'https://payform.beanstream.com/tokenizationform/index.html');
+    changePath('./tokenizationform/assets/js/build/script.js',
+                './tokenizationform/assets/js/build/',
+                'http://localhost:8000/payfields/assets/js/build/beanstream_payfields.js',
+                'https://payform.beanstream.com/payfields/beanstream_payfields.js');
+
+    setProduction('./payform/assets/js/build/beanstream_payform.js',
+                './payform/assets/js/build/');
+});
+
+//var production = false;
+
+gulp.task('staging', function() {
+    changePath('./payfields/assets/js/build/beanstream_payfields.js',
+                './payfields/assets/js/build/',
+                'http://localhost:8000/payfields/assets/css/beanstream_payfields_style.css',
+                'https://s3-us-west-2.amazonaws.com/payform-staging/payform/payfields/beanstream_payfields_style.css');
+    changePath('./payform/assets/js/build/beanstream_payform.js',
+                './payform/assets/js/build/',
+                'http://localhost:8000/tokenizationform/test.html',
+                'https://s3-us-west-2.amazonaws.com/payform-staging/payform/tokenizationform/index.html');
+    changePath('./tokenizationform/assets/js/build/script.js',
+                './tokenizationform/assets/js/build/',
+                'http://localhost:8000/payfields/assets/js/build/beanstream_payfields.js',
+                'https://s3-us-west-2.amazonaws.com/payform-staging/payform/payfields/beanstream_payfields.js');
+});
+
+function changePath(src, dest, oldPath, newPath) {
+    return gulp.src([src])
+        .pipe(replace(oldPath, newPath))
+    .pipe(gulp.dest(dest));
+}
+
+function setProduction(src, dest) {
+
+    return gulp.src([src])
+        .pipe(replace(/var production/g, 'var production = true'))
+    .pipe(gulp.dest(dest));
+}
+
 

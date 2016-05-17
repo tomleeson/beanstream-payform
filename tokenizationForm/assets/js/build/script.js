@@ -94,7 +94,6 @@
     window.beanstream.payform.FormModel = FormModel;
 })(window);
 
-
 (function(window) {
     'use strict';
 
@@ -148,17 +147,10 @@
                 script: function() {
                     var script = document.createElement('script');
 
+                    // This path is update for production and staging by gulp script
                     script.src =
                         'http://localhost:8000/payfields/assets/js/build/beanstream_payfields.js';
 
-                    /*
-                    script.src =
-                        'https://s3-us-west-2.amazonaws.com/payform-staging/payform/payfields/beanstream_payfields.js';
-                    */
-                    /*
-                    script.src =
-                        'https://payform.beanstream.com/payfields/beanstream_payfields.js';
-                    */
                     script.setAttribute('data-submitForm', 'false');
                     var form = document.getElementsByTagName('form')[0];
                     form.appendChild(script);
@@ -167,6 +159,9 @@
                     // parameter.panels, parameter.old, arameter.new
 
                     self._domPanels[parameter.new].classList.remove('hidden');
+                    if ('payform.beanstream.com' === document.domain) {
+                        window.mixpanel.track('Show panel', {'panel': parameter.new});
+                    }
 
                     if (parameter.old) {
                         self._domPanels[parameter.old].classList.add('hidden');
@@ -352,6 +347,31 @@
                 inputs[i].addEventListener('keyup', self.updateAddresses.bind(self), false);
             }
 
+            // listen for dialog open event for analytics
+            window.addEventListener('message', function(event) {
+                // Do we trust the sender of this message?
+                if (event.origin !== self.config.parentDomain) {
+                    return;
+                }
+
+                var obj = JSON.parse(event.data);
+                var type = obj.type;
+                var detail = obj.detail;
+
+                if (type === 'beanstream_openPayform' && 'payform.beanstream.com' === document.domain) {
+
+                    window.mixpanel.track('Form opened', {
+                            'guid': self.config.guid,
+                            'domain': self.config.parentDomain,
+                            'currency': self.config.currency,
+                            'amount': self.config.amount,
+                            'billing': self.config.billing,
+                            'shipping': self.config.shipping,
+                            'primaryColor': self.config.primaryColor
+                        });
+                }
+            });
+
         },
         onPreviousPanelClick: function(e) {
             e = e || window.event;
@@ -424,8 +444,12 @@
             blob.code = token;
             blob.name = name;
             blob.email = email;
-
             self._model.setCardInfo(blob);
+
+            if ('payform.beanstream.com' === document.domain) {
+                window.mixpanel.track('Form completed');
+            }
+
             self.tokenUpdated.notify();
         },
         onCardValidityChanged: function(e) {
@@ -583,7 +607,6 @@
     window.beanstream.payform = window.beanstream.payform || {};
     window.beanstream.payform.FormView = FormView;
 })(window);
-
 
 (function(window) {
     'use strict';
@@ -789,7 +812,6 @@
     window.beanstream.payform = window.beanstream.payform || {};
     window.beanstream.payform.FormController = FormController;
 })(window);
-
 
 (function(window) {
     'use strict';

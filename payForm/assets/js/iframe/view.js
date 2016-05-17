@@ -62,6 +62,7 @@
 
             return attributes;
         },
+
         attachListeners: function() {
             var self = this;
             if (!this.button) {
@@ -74,21 +75,35 @@
             }
 
             this.button.addEventListener('click', function(e) {
+                console.log('click');
                 e.preventDefault();
                 e = e || window.event;
                 this.iframe.parentNode.style.display = 'block';
 
+                var production;
+                if (production) {
+                    // Ensure postmessage goes to production
+                    this.iframe.contentWindow.postMessage(
+                        '{"type":"beanstream_openPayform", "detail":""}', 'https://payform.beanstream.com');
+                } else if ('localhost' === document.domain) {
+                    this.iframe.contentWindow.postMessage(
+                    '{"type":"beanstream_openPayform", "detail":""}', 'http://localhost:8000');
+                } else {
+                    // staging
+                    this.iframe.contentWindow.postMessage(
+                        '{"type":"beanstream_openPayform", "detail":""}', 's3-us-west-2.amazonaws.com');
+                }
             }.bind(self), false);
 
             window.addEventListener('message', function(event) {
 
-                // Do we trust the sender of this message?
-                if (event.origin !== 'https://payform.beanstream.com') {
-                    // must be enabled on production environment
-                    //return;
+                var production;
+                if (production) {
+                    // Ensure postmessage came from production
+                    if (event.origin !== 'https://payform.beanstream.com') {
+                        return;
+                    }
                 }
-
-                console.log('event.origin: ' + event.origin);
 
                 var obj = JSON.parse(event.data);
                 var type = obj.type;
@@ -96,16 +111,13 @@
 
                 if (type === 'beanstream_closePayform') {
 
-                    console.log('beanstream_closePayform');
-
                     this.iframe.parentNode.style.display = 'none';
                 } else if (type === 'beanstream_toknizationForm_complete') {
-
-                    console.log('beanstream_toknizationForm_complete');
 
                     if (detail.billingAddress) {
                         var billing = detail.billingAddress;
                         for (var key in billing) {
+
                             if (billing.hasOwnProperty(key)) {
                                 var name = 'billingAddress_' + key;
                                 this.appendValue(name, billing[key]);
@@ -142,10 +154,12 @@
         },
 
         appendValue: function(name, value) {
-            var input = this.iframe.parentNode.querySelector('input[name=' + name + ']');
+            var input = this.form.querySelector('input[name=' + name + ']');
 
             if (input) {
                 input.value = value;
+            } else {
+                console.log('not found');
             }
         }
 
