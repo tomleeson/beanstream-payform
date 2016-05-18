@@ -18,7 +18,6 @@
     window.beanstream.IframeModel = IframeModel;
 })(window);
 
-
 (function(window) {
     'use strict';
 
@@ -186,7 +185,6 @@
     window.beanstream.IframeView = IframeView;
 })(window);
 
-
 (function(window) {
     'use strict';
 
@@ -212,7 +210,7 @@
             var self = this;
 
             // This path is updated for production and staging by gulp script
-            return 'http://localhost:8000/tokenizationform/test.html?' +
+            return 'http://localhost:8000/tokenizationform/local.html?' +
                 self.serialize(self._view.readAttributes());
         },
 
@@ -234,7 +232,6 @@
     window.beanstream = window.beanstream || {};
     window.beanstream.IframeController = IframeController;
 })(window);
-
 
 (function(window) {
     'use strict';

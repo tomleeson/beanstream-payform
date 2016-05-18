@@ -103,7 +103,6 @@
     window.beanstream.payform.FormModel = FormModel;
 })(window);
 
-
 (function(window) {
     'use strict';
 
@@ -674,7 +673,6 @@
     window.beanstream.payform.FormView = FormView;
 })(window);
 
-
 (function(window) {
     'use strict';
 
@@ -893,7 +891,6 @@
     window.beanstream.payform = window.beanstream.payform || {};
     window.beanstream.payform.FormController = FormController;
 })(window);
-
 
 (function(window) {
     'use strict';
