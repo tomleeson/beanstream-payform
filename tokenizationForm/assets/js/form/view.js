@@ -175,6 +175,16 @@
         attachListeners: function(panels) {
             var self = this;
 
+            if (panels.shipping && panels.billing) {
+
+            } else if (panels.shipping) {
+
+            } else if (panels.billing) {
+
+            } else {
+
+            }
+
             if (panels.shipping) {
                 // Next button
                 var button = self._domPanels.shipping.getElementsByTagName('button')[0];
@@ -185,21 +195,29 @@
                 }.bind(self), false);
 
                 // Previous button
-                var billingBackButtons = Array.prototype.slice.call(self._domPanels.billing.getElementsByTagName('a'));
-                var cardBackButtons = Array.prototype.slice.call(self._domPanels.card.getElementsByTagName('a'));
-                var backButtons = billingBackButtons.concat(cardBackButtons);
-
-                for (var i = 0; i < backButtons.length; i++) {
-                    backButtons[i].addEventListener('click', self.onPreviousPanelClick.bind(self), false);
+                var backButtons = self._domPanels.shipping.getElementsByTagName('a');
+                if (backButtons.length) {
+                    for (var i = 0; i < backButtons.length; i++) {
+                        backButtons[i].addEventListener('click', self.onPreviousPanelClick.bind(self), false);
+                    }
                 }
             }
             if (panels.billing) {
+                // Next button
                 var button = self._domPanels.billing.getElementsByTagName('button')[0];
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
                     e = e || window.event;
                     self.nextPanel.notify(panels.billing.name);
                 }.bind(self), false);
+
+                // Previous button
+                var backButtons = self._domPanels.billing.getElementsByTagName('a');
+                if (backButtons.length) {
+                    for (var i = 0; i < backButtons.length; i++) {
+                        backButtons[i].addEventListener('click', self.onPreviousPanelClick.bind(self), false);
+                    }
+                }
             }
 
             if (panels.shipping && panels.billing) {
@@ -214,15 +232,17 @@
                 button.addEventListener('click', function(e) {
                     e = e || window.event;
                     e.preventDefault();
-
-                    var main = document.getElementById('main');
-                    var processing = document.getElementById('processing');
-                    main.classList.add('hidden');
-                    processing.classList.remove('hidden');
-
                     self.tokenize.notify();
 
                 }.bind(self), false);
+
+                // Previous button
+                var backButtons = self._domPanels.card.getElementsByTagName('a');
+                if (backButtons.length) {
+                    for (var i = 0; i < backButtons.length; i++) {
+                        backButtons[i].addEventListener('click', self.onPreviousPanelClick.bind(self), false);
+                    }
+                }
             }
 
             var closeButton = document.getElementById('close-button');
@@ -327,6 +347,7 @@
             document.addEventListener('beanstream_payfields_tokenUpdated', this.onTokenUpdated.bind(self));
             document.addEventListener('beanstream_payfields_inputValidityChanged',
                 this.onCardValidityChanged.bind(self));
+            document.addEventListener('beanstream_payfields_cardTypeChanged', this.onCardTypeUpdated.bind(self));
         },
         isDescendant: function(parent, child) {
             var node = child.parentNode;
@@ -355,7 +376,20 @@
                 window.mixpanel.track('Form completed');
             }
 
-            self.tokenUpdated.notify();
+            // ensure processign screen is displayed for min 3 seconds
+            if (!(self._model.getDelayProcessing() === 'true')) {
+                self.tokenUpdated.notify();
+            } else {
+                window.setInterval(function() {
+                    if (!(self._model.getDelayProcessing() === 'true')) {
+                        self.tokenUpdated.notify();
+                    }
+                }, 500);
+            }
+        },
+        onCardTypeUpdated: function(e) {
+            var self = this;
+            self.cardType  = e.eventDetail.cardType;
         },
         onCardValidityChanged: function(e) {
             var self = this;
@@ -399,6 +433,28 @@
                     self.cardInputs.cvv = inputs[i];
                     inputs[i].id = 'card_cvv';
                     inputs[i].placeholder = 'cvv';
+
+                    inputs[i].addEventListener('focus', function() {
+                        var self = this;
+                        var cvvPrompt = self._domPanels.card.querySelector('#cvcPrompt');
+
+                        if (self.cardType === 'amex') {
+                            cvvPrompt.innerHTML =
+                                '<div class="text">4 digits above card #<br> on front of your card</div>' +
+                                '<img src="http://downloads.beanstream.com/images/payform/cvc_hint_color_amex.png"/>';
+                        } else {
+                            cvvPrompt.innerHTML =
+                                '<div class="text">The last 3 digits on<br> the back of your card</div>' +
+                                '<img src="http://downloads.beanstream.com/images/payform/cvc_hint_color.png"/>';
+                        }
+
+                        cvvPrompt.classList.remove('hidden');
+                    }.bind(self));
+                    inputs[i].addEventListener('blur', function() {
+                        var self = this;
+                        var cvvPrompt = self._domPanels.card.querySelector('#cvcPrompt');
+                        cvvPrompt.classList.add('hidden');
+                    }.bind(self));
                 }
             }
             self.addFocusListeners();

@@ -102,21 +102,9 @@
                         var onBlur = parameter;
 
                         if (cardType && cardType === 'amex') {
-                            if (!onBlur) {
-                                _this._domInputElement.style.backgroundImage =
-                                    'url(http://downloads.beanstream.com/images/payform/cvc_hint_color_amex.png)';
-                            } else {
-                                _this._domInputElement.style.backgroundImage =
-                                    'url(http://downloads.beanstream.com/images/payform/cvc_hint_mono_amex.png)';
-                            }
-                        } else if (cardType) {
-                            if (!onBlur) {
-                                _this._domInputElement.style.backgroundImage =
-                                    'url(http://downloads.beanstream.com/images/payform/cvc_hint_color.png)';
-                            } else {
-                                _this._domInputElement.style.backgroundImage =
-                                    'url(http://downloads.beanstream.com/images/payform/cvc_hint_mono.png)';
-                            }
+                            _this._domInputElement.classList.add('amex');
+                        } else {
+                            _this._domInputElement.classList.remove('amex');
                         }
                     }
                 },

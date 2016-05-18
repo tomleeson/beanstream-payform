@@ -32,9 +32,7 @@
                             '{{content}}' +
                         '</form>' +
                         '<div class="footer">' +
-                            '<a href="http://www.beanstream.com" target="_blank">' +
-                                '<img src="assets/css/images/beanstream_logo.png">' +
-                            '</a>' +
+                            '<img src="assets/css/images/beanstream_logo.png">' +
                         '</div>' +
                     '</div>' +
                     '{{processingPanel}}' +
@@ -46,7 +44,10 @@
                 '{{backButton}}' +
                 '{{panelHeader}}' +
                 '{{content}}' +
-                '<div class="row error hidden"></div>' +
+                '<div class="row promptWrapper">' +
+                    '<div class="hidden" id="cvcPrompt"></div>' +
+                    '<div class="error hidden"></div>' +
+                '</div>' +
                 '<button type="{{nextButtonType}}" class="button">' +
                     '{{nextButtonLabel}}' +
                 '</button>' +
@@ -286,6 +287,8 @@
                             template.billing = template.billing.replace('{{backButton}}', self.template.backButton);
                             template.billing = template.billing.replace('{{backButtonLabel}}',
                                 beanstream.Helper.toSentenceCase(parameter.panels.billing.previous) + ' Address');
+                        } else {
+                            template.billing = template.billing.replace('{{backButton}}', '');
                         }
                     }
 
@@ -301,6 +304,8 @@
                         template.card = template.card.replace('{{backButton}}', self.template.backButton);
                         template.card = template.card.replace('{{backButtonLabel}}',
                             beanstream.Helper.toSentenceCase(parameter.panels.card.previous) + ' Address');
+                    } else {
+                        template.card = template.card.replace('{{backButton}}', '');
                     }
 
                     template.processing = self.template.processing;

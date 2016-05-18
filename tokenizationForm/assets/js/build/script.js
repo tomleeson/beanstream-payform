@@ -14,6 +14,7 @@
         this._isValid = false;
         this._cardErrors = [];
         this._nonCardErrors = [];
+        this._delayProcessing = false;
     }
 
     FormModel.prototype = {
@@ -85,6 +86,14 @@
                 cardErrors.push(value);
             }
             this._cardErrors = cardErrors;
+        },
+        getDelayProcessing: function() {
+            return this._delayProcessing;
+        },
+        setDelayProcessing: function(value) {
+            if (value != this._delayProcessing) {
+                this._delayProcessing = value;
+            }
         }
     };
 
@@ -93,6 +102,7 @@
     window.beanstream.payform = window.beanstream.payform || {};
     window.beanstream.payform.FormModel = FormModel;
 })(window);
+
 
 (function(window) {
     'use strict';
@@ -270,6 +280,16 @@
         attachListeners: function(panels) {
             var self = this;
 
+            if (panels.shipping && panels.billing) {
+
+            } else if (panels.shipping) {
+
+            } else if (panels.billing) {
+
+            } else {
+
+            }
+
             if (panels.shipping) {
                 // Next button
                 var button = self._domPanels.shipping.getElementsByTagName('button')[0];
@@ -280,21 +300,29 @@
                 }.bind(self), false);
 
                 // Previous button
-                var billingBackButtons = Array.prototype.slice.call(self._domPanels.billing.getElementsByTagName('a'));
-                var cardBackButtons = Array.prototype.slice.call(self._domPanels.card.getElementsByTagName('a'));
-                var backButtons = billingBackButtons.concat(cardBackButtons);
-
-                for (var i = 0; i < backButtons.length; i++) {
-                    backButtons[i].addEventListener('click', self.onPreviousPanelClick.bind(self), false);
+                var backButtons = self._domPanels.shipping.getElementsByTagName('a');
+                if (backButtons.length) {
+                    for (var i = 0; i < backButtons.length; i++) {
+                        backButtons[i].addEventListener('click', self.onPreviousPanelClick.bind(self), false);
+                    }
                 }
             }
             if (panels.billing) {
+                // Next button
                 var button = self._domPanels.billing.getElementsByTagName('button')[0];
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
                     e = e || window.event;
                     self.nextPanel.notify(panels.billing.name);
                 }.bind(self), false);
+
+                // Previous button
+                var backButtons = self._domPanels.billing.getElementsByTagName('a');
+                if (backButtons.length) {
+                    for (var i = 0; i < backButtons.length; i++) {
+                        backButtons[i].addEventListener('click', self.onPreviousPanelClick.bind(self), false);
+                    }
+                }
             }
 
             if (panels.shipping && panels.billing) {
@@ -309,15 +337,17 @@
                 button.addEventListener('click', function(e) {
                     e = e || window.event;
                     e.preventDefault();
-
-                    var main = document.getElementById('main');
-                    var processing = document.getElementById('processing');
-                    main.classList.add('hidden');
-                    processing.classList.remove('hidden');
-
                     self.tokenize.notify();
 
                 }.bind(self), false);
+
+                // Previous button
+                var backButtons = self._domPanels.card.getElementsByTagName('a');
+                if (backButtons.length) {
+                    for (var i = 0; i < backButtons.length; i++) {
+                        backButtons[i].addEventListener('click', self.onPreviousPanelClick.bind(self), false);
+                    }
+                }
             }
 
             var closeButton = document.getElementById('close-button');
@@ -422,6 +452,7 @@
             document.addEventListener('beanstream_payfields_tokenUpdated', this.onTokenUpdated.bind(self));
             document.addEventListener('beanstream_payfields_inputValidityChanged',
                 this.onCardValidityChanged.bind(self));
+            document.addEventListener('beanstream_payfields_cardTypeChanged', this.onCardTypeUpdated.bind(self));
         },
         isDescendant: function(parent, child) {
             var node = child.parentNode;
@@ -450,7 +481,20 @@
                 window.mixpanel.track('Form completed');
             }
 
-            self.tokenUpdated.notify();
+            // ensure processign screen is displayed for min 3 seconds
+            if (!(self._model.getDelayProcessing() === 'true')) {
+                self.tokenUpdated.notify();
+            } else {
+                window.setInterval(function() {
+                    if (!(self._model.getDelayProcessing() === 'true')) {
+                        self.tokenUpdated.notify();
+                    }
+                }, 500);
+            }
+        },
+        onCardTypeUpdated: function(e) {
+            var self = this;
+            self.cardType  = e.eventDetail.cardType;
         },
         onCardValidityChanged: function(e) {
             var self = this;
@@ -494,6 +538,28 @@
                     self.cardInputs.cvv = inputs[i];
                     inputs[i].id = 'card_cvv';
                     inputs[i].placeholder = 'cvv';
+
+                    inputs[i].addEventListener('focus', function() {
+                        var self = this;
+                        var cvvPrompt = self._domPanels.card.querySelector('#cvcPrompt');
+
+                        if (self.cardType === 'amex') {
+                            cvvPrompt.innerHTML =
+                                '<div class="text">4 digits above card #<br> on front of your card</div>' +
+                                '<img src="http://downloads.beanstream.com/images/payform/cvc_hint_color_amex.png"/>';
+                        } else {
+                            cvvPrompt.innerHTML =
+                                '<div class="text">The last 3 digits on<br> the back of your card</div>' +
+                                '<img src="http://downloads.beanstream.com/images/payform/cvc_hint_color.png"/>';
+                        }
+
+                        cvvPrompt.classList.remove('hidden');
+                    }.bind(self));
+                    inputs[i].addEventListener('blur', function() {
+                        var self = this;
+                        var cvvPrompt = self._domPanels.card.querySelector('#cvcPrompt');
+                        cvvPrompt.classList.add('hidden');
+                    }.bind(self));
                 }
             }
             self.addFocusListeners();
@@ -608,6 +674,7 @@
     window.beanstream.payform.FormView = FormView;
 })(window);
 
+
 (function(window) {
     'use strict';
 
@@ -647,7 +714,8 @@
                 }
 
                 // If addresses are synced a click on 'shipping next' will mimic a click on 'billing next'
-                if (panel  === self.panels.shipping.name && self._model.getAddressSync()) {
+                if (self.panels.billing && self.panels.shipping &&
+                    panel  === self.panels.shipping.name && self._model.getAddressSync()) {
                     panel = self.panels.billing.name;
                 }
 
@@ -656,8 +724,10 @@
 
             self._view.previousPanel.attach(function(sender, panel) {
 
+                console.log('previousPanel');
+
                 // If addresses are synced a click on 'card previous' will mimic a click on 'billing previous'
-                if (panel  === self.panels.card.name && self._model.getAddressSync()) {
+                if (panel  === self.panels.card.name && self.panels.billing && self._model.getAddressSync()) {
                     panel = self.panels.billing.name;
                 }
 
@@ -679,7 +749,6 @@
                 data.billingAddress = self._model.getBillingAddress();
                 data.shippingAddress = self._model.getShippingAddress();
 
-                console.log('controller... self.config.parentDomain: ' + self.config.parentDomain);
                 window.parent.postMessage('{"type":"beanstream_toknizationForm_complete", "detail":' +
                     JSON.stringify(data) + '}', self.config.parentDomain);
 
@@ -693,6 +762,18 @@
                 if (self._model.getNonCardErrors().length) {
                     return;
                 }
+
+                var main = document.getElementById('main');
+                var processing = document.getElementById('processing');
+                main.classList.add('hidden');
+                processing.classList.remove('hidden');
+
+                // Show processing screen for min 3 seconds
+                self._model.setDelayProcessing('true');
+                window.setTimeout(function() {
+                    var self = this;
+                    self._model.setDelayProcessing('false');
+                }.bind(self), 3000);
 
                 beanstream.Helper.fireEvent('beanstream_payfields_tokenize', {}, self._view.form);
 
@@ -778,8 +859,8 @@
             config.name = beanstream.Helper.toTitleCase(self.getParameterByName('name'));
             config.description = self.getParameterByName('description');
             config.amount = self.getParameterByName('amount');
-            config.billing = self.getParameterByName('billingAddress');
-            config.shipping = self.getParameterByName('shippingAddress');
+            config.billing = (self.getParameterByName('billingAddress') === 'true');
+            config.shipping = (self.getParameterByName('shippingAddress') === 'true');
             config.currency = self.getParameterByName('currency');
             config.primaryColor = self.getParameterByName('primaryColor');
             config.parentDomain = self.getParameterByName('parentDomain');
@@ -812,6 +893,7 @@
     window.beanstream.payform = window.beanstream.payform || {};
     window.beanstream.payform.FormController = FormController;
 })(window);
+
 
 (function(window) {
     'use strict';
@@ -846,9 +928,7 @@
                             '{{content}}' +
                         '</form>' +
                         '<div class="footer">' +
-                            '<a href="http://www.beanstream.com" target="_blank">' +
-                                '<img src="assets/css/images/beanstream_logo.png">' +
-                            '</a>' +
+                            '<img src="assets/css/images/beanstream_logo.png">' +
                         '</div>' +
                     '</div>' +
                     '{{processingPanel}}' +
@@ -860,7 +940,10 @@
                 '{{backButton}}' +
                 '{{panelHeader}}' +
                 '{{content}}' +
-                '<div class="row error hidden"></div>' +
+                '<div class="row promptWrapper">' +
+                    '<div class="hidden" id="cvcPrompt"></div>' +
+                    '<div class="error hidden"></div>' +
+                '</div>' +
                 '<button type="{{nextButtonType}}" class="button">' +
                     '{{nextButtonLabel}}' +
                 '</button>' +
@@ -1100,6 +1183,8 @@
                             template.billing = template.billing.replace('{{backButton}}', self.template.backButton);
                             template.billing = template.billing.replace('{{backButtonLabel}}',
                                 beanstream.Helper.toSentenceCase(parameter.panels.billing.previous) + ' Address');
+                        } else {
+                            template.billing = template.billing.replace('{{backButton}}', '');
                         }
                     }
 
@@ -1115,6 +1200,8 @@
                         template.card = template.card.replace('{{backButton}}', self.template.backButton);
                         template.card = template.card.replace('{{backButtonLabel}}',
                             beanstream.Helper.toSentenceCase(parameter.panels.card.previous) + ' Address');
+                    } else {
+                        template.card = template.card.replace('{{backButton}}', '');
                     }
 
                     template.processing = self.template.processing;

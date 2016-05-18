@@ -75,7 +75,6 @@
             }
 
             this.button.addEventListener('click', function(e) {
-                console.log('click');
                 e.preventDefault();
                 e = e || window.event;
                 this.iframe.parentNode.style.display = 'block';
@@ -91,7 +90,7 @@
                 } else {
                     // staging
                     this.iframe.contentWindow.postMessage(
-                        '{"type":"beanstream_openPayform", "detail":""}', 's3-us-west-2.amazonaws.com');
+                        '{"type":"beanstream_openPayform", "detail":""}', 'https://s3-us-west-2.amazonaws.com');
                 }
             }.bind(self), false);
 
@@ -158,11 +157,8 @@
 
             if (input) {
                 input.value = value;
-            } else {
-                console.log('not found');
             }
         }
-
     };
 
     // Export to window

@@ -33,15 +33,11 @@ body{
             min-height: 100vh;
             width: 100%;
             
-            display: -webkit-flex;
-            
             display: -ms-flexbox;
             
             display: flex;
-            -webkit-align-items: center;
             -ms-flex-align: center;
             align-items: center;
-            -webkit-justify-content: center;
             -ms-flex-pack: center;
             justify-content: center;
     }
@@ -67,7 +63,6 @@ body{
 {
     /* Centre form withing screen */
     .vertical-center {
-          display: -webkit-flex;
           display: -ms-flexbox;
           display: flex;
           overflow-y: scroll;
@@ -98,10 +93,8 @@ body{
 }
 
 .heading .container{
-    display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
-    -webkit-align-items: center;
     -ms-flex-align: center;
     align-items: center;
 
@@ -110,10 +103,8 @@ body{
 }
 
 .heading .inner{
-    display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
-    -webkit-align-items: center;
     -ms-flex-align: center;
     align-items: center;
 
@@ -138,13 +129,10 @@ body{
 
 .heading .icon{
     position: absolute;
-    display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
-    -webkit-align-items: flex-start;
     -ms-flex-align: start;
     align-items: flex-start;
-    -webkit-justify-content: center;
     -ms-flex-pack: center;
     justify-content: center;
     margin-top: 10px;
@@ -182,10 +170,8 @@ body{
 
 .back-button h6{
     color: #D1D1D1;
-    display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
-    -webkit-align-items: center;
     -ms-flex-align: center;
     align-items: center;
 
@@ -230,13 +216,10 @@ input{
 
 .back-button .icon{
     position: absolute;
-    display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
-    -webkit-align-items: center;
     -ms-flex-align: center;
     align-items: center;
-    -webkit-justify-content: center;
     -ms-flex-pack: center;
     justify-content: center;
     height:24px;
@@ -263,7 +246,7 @@ input{
 }
 
 .hidden{
-    display: none;
+    display: none !important;
 }
 
 .no-top-border {
@@ -351,7 +334,7 @@ input[type=text]::after:focus {
 
 button{
     border-radius: 0 !important;
-    margin-top: 20px;
+    margin-top: 10px;
     width:100%;
 }
 
@@ -408,13 +391,10 @@ label{
 .footer{
     background: #212121; 
     padding: 10px;
-    display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
-    -webkit-align-items: center;
     -ms-flex-align: center;
     align-items: center;
-    -webkit-justify-content: center;
     -ms-flex-pack: center;
     justify-content: center;
 }
@@ -504,7 +484,6 @@ button.button:active:after {
 */
 
 .checkbox{
-    display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
     margin-top: 10px;
@@ -548,10 +527,8 @@ input[type=checkbox]{
 }
 
 #processing>div{
-    display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
-    -webkit-flex-direction: column;
     -ms-flex-direction: column;
     flex-direction: column;
     height: 100%;
@@ -564,7 +541,6 @@ input[type=checkbox]{
 }
 
 #processing .main{
-    -webkit-flex-grow: 1;
     -ms-flex-positive: 1;
     flex-grow: 1;
     padding-top: 75px;
@@ -574,16 +550,13 @@ input[type=checkbox]{
     background-color: #1FCA23;
     height: 25%;
     width: 100%;
-    display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
-    -webkit-flex-direction: column;
     -ms-flex-direction: column;
     flex-direction: column;
 }
 
 #processing .content-footer > img{
-    -webkit-flex-grow: 1;
     -ms-flex-positive: 1;
     flex-grow: 1;
     padding-top: 10px;
@@ -592,6 +565,26 @@ input[type=checkbox]{
     margin-bottom: 20px;
     color: white;
     text-align: center;
+}
+
+.promptWrapper{
+    min-height: 68px;
+    margin-top: 10px;
+}
+
+#cvcPrompt{
+    display: -ms-flexbox;
+    display: flex;
+    background-color: #F5F5F5;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+#cvcPrompt .text {
+    -ms-flex: 1;
+    flex: 1;
+    text-align: right;
+    margin-right: 10px;
 }
 
 /* Larger than mobile */

@@ -14,6 +14,7 @@
         this._isValid = false;
         this._cardErrors = [];
         this._nonCardErrors = [];
+        this._delayProcessing = false;
     }
 
     FormModel.prototype = {
@@ -85,6 +86,14 @@
                 cardErrors.push(value);
             }
             this._cardErrors = cardErrors;
+        },
+        getDelayProcessing: function() {
+            return this._delayProcessing;
+        },
+        setDelayProcessing: function(value) {
+            if (value != this._delayProcessing) {
+                this._delayProcessing = value;
+            }
         }
     };
 

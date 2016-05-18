@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 
     <!-- Custom styles for this template -->
-    <link href="../demo-styles/style.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
 </head>
 
 <body>
@@ -32,7 +32,7 @@
                     </li>
                 </ul>
             </nav>
-            <h3 class="text-muted">Shop Front Demo</h3>
+            <h3 class="text-muted">Lollipop Shop</h3>
         </div>
 
         <div class="row marketing" style="margin-bottom: 0;">
@@ -108,9 +108,9 @@
                         <form action="/charge" method="POST">
                             <button type="button" class="btn  btn-lg btn-success" data-beanstream>Pay by card</button>
                           <script 
-                            src="http://localhost:8000/payForm/assets/js/build/beanstream_payform.js"
-                            data-image="http://localhost:8000/payform/demo/color-demos/images/default.svg"
-                            data-name="Licorice"
+                            src="https://s3-us-west-2.amazonaws.com/payform-staging/payform/payform/beanstream_payform.js"
+                            data-image="https://s3-us-west-2.amazonaws.com/demos.beanstream.com/payform/staging/images/default.svg"
+                            data-name="Lollipop Shop"
                             data-description="Item, Item, Item..."
                             data-amount="600"
                             data-currency="cad"
@@ -132,27 +132,14 @@
     <!-- /container -->
 
 <script>
-
     /**
     * Registered as callback function for 'beanstream_payform_complete' event
     *
     * @param {Event} e
     */
     document.addEventListener('beanstream_payform_complete', function(e) {
-
-        var responsePanel = document.getElementById('response');
-        var responsePanel_token = document.getElementById('data');
-        console.log('******************************************');
-        console.log('Payform response printed from host page');
-        console.log('******************************************');
-        console.log(JSON.stringify(e));
-        console.log('******************************************');
-        // responsePanel_token.innerText = JSON.stringify(e);
-        // responsePanel.style.display = 'block';
-
-        // console.log(e.eventDetail.cardInfo);
+        console.log('Payform response: ' + JSON.stringify(e));
     }, false);
-
 </script>
 
 </body>

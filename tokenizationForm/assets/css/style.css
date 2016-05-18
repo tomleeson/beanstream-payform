@@ -229,7 +229,7 @@ input{
 }
 
 .hidden{
-    display: none;
+    display: none !important;
 }
 
 .no-top-border {
@@ -317,7 +317,7 @@ input[type=text]::after:focus {
 
 button{
     border-radius: 0 !important;
-    margin-top: 20px;
+    margin-top: 10px;
     width:100%;
 }
 
@@ -538,6 +538,24 @@ input[type=checkbox]{
     margin-bottom: 20px;
     color: white;
     text-align: center;
+}
+
+.promptWrapper{
+    min-height: 68px;
+    margin-top: 10px;
+}
+
+#cvcPrompt{
+    display: flex;
+    background-color: #F5F5F5;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+#cvcPrompt .text {
+    flex: 1;
+    text-align: right;
+    margin-right: 10px;
 }
 
 /* Larger than mobile */

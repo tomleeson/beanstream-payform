@@ -118,6 +118,8 @@
             if (field) {
                 field.controller.cardTypeChanged.attach(function(sender, cardType) {
                     self.setCardType(cardType);
+                    beanstream.Helper.fireEvent('beanstream_payfields_cardTypeChanged',
+                        {'cardType': cardType}, document);
                 }.bind(self));
             }
 

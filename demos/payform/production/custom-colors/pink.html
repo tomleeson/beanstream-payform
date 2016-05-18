@@ -8,7 +8,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="images/favicon.ico">
+    <link rel="icon" href="../images/favicon.ico">
 
     <title>Payform Demo</title>
 
@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 
     <!-- Custom styles for this template -->
-    <link href="styles/style.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
 </head>
 
 <body>
@@ -26,13 +26,13 @@
         <div class="header clearfix">
             <nav>
                 <ul class="nav nav-pills pull-right">
-                    <li role="presentation"><a href="#">Shop</a>
+                    <li role="presentation"><a href="#" style="color: #E91E63;">Shop</a>
                     </li>
-                    <li role="presentation" class="active"><a href="#">Checkout</a>
+                    <li role="presentation" class="active"><a href="#" style="background-color: #E91E63;">Checkout</a>
                     </li>
                 </ul>
             </nav>
-            <h3 class="text-muted">Lollipop Shop</h3>
+            <h3 class="text-muted">Jelly Bean</h3>
         </div>
 
         <div class="row marketing" style="margin-bottom: 0;">
@@ -43,7 +43,7 @@
                 <table class="table">
                     <tr>
                         <td style="border-top: none;">
-                            <h3 style="color: #337ab7;">Your shopping basket</h3>
+                            <h3 style="color: #E91E63;">Your shopping basket</h3>
                         </td>
                         <td style="border-top: none;"></td>
                     </tr>
@@ -109,14 +109,15 @@
                             <button type="button" class="btn  btn-lg btn-success" data-beanstream>Pay by card</button>
                           <script 
                             src="https://payform.beanstream.com/payform/beanstream_payform.js"
-                            data-image="downloads.beanstream.com/demos/payform/images/default.svg"
-                            data-name="Lollipop Shop"
+                            data-image="https://s3-us-west-2.amazonaws.com/demos.beanstream.com/payform/production/images/pink.svg"
+                            data-name="Jelly Bean"
                             data-description="Item, Item, Item..."
                             data-amount="600"
                             data-currency="cad"
                             data-billingAddress="true"
                             data-shippingAddress="true"
-                            data-submitForm="false">
+                            data-submitForm="false"
+                            data-primaryColor="#E91E63">
                           </script>
                         </form>
                     </li>
@@ -132,14 +133,27 @@
     <!-- /container -->
 
 <script>
+
     /**
     * Registered as callback function for 'beanstream_payform_complete' event
     *
     * @param {Event} e
     */
     document.addEventListener('beanstream_payform_complete', function(e) {
-        console.log('Payform response: ' + JSON.stringify(e));
+
+        var responsePanel = document.getElementById('response');
+        var responsePanel_token = document.getElementById('data');
+        console.log('******************************************');
+        console.log('Payform response printed from host page');
+        console.log('******************************************');
+        console.log(JSON.stringify(e));
+        console.log('******************************************');
+        // responsePanel_token.innerText = JSON.stringify(e);
+        // responsePanel.style.display = 'block';
+
+        // console.log(e.eventDetail.cardInfo);
     }, false);
+
 </script>
 
 </body>

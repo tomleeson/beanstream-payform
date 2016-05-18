@@ -8,7 +8,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="images/favicon.ico">
+    <link rel="icon" href="../images/favicon.ico">
 
     <title>Payform Demo</title>
 
@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 
     <!-- Custom styles for this template -->
-    <link href="../demo-styles/style.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
 </head>
 
 <body>
@@ -26,13 +26,13 @@
         <div class="header clearfix">
             <nav>
                 <ul class="nav nav-pills pull-right">
-                    <li role="presentation"><a href="#" style="color: #2196F3;">Shop</a>
+                    <li role="presentation"><a href="#" style="color: #4CAF50;">Shop</a>
                     </li>
-                    <li role="presentation" class="active"><a href="#" style="background-color: #2196F3;">Checkout</a>
+                    <li role="presentation" class="active"><a href="#" style="background-color: #4CAF50;">Checkout</a>
                     </li>
                 </ul>
             </nav>
-            <h3 class="text-muted">Acme Corporation</h3>
+            <h3 class="text-muted">Marshmallow</h3>
         </div>
 
         <div class="row marketing" style="margin-bottom: 0;">
@@ -43,7 +43,7 @@
                 <table class="table">
                     <tr>
                         <td style="border-top: none;">
-                            <h3 style="color: #2196F3;">Your shopping basket</h3>
+                            <h3 style="color: #4CAF50;">Your shopping basket</h3>
                         </td>
                         <td style="border-top: none;"></td>
                     </tr>
@@ -108,16 +108,16 @@
                         <form action="/charge" method="POST">
                             <button type="button" class="btn  btn-lg btn-success" data-beanstream>Pay by card</button>
                           <script 
-                            src="http://localhost:8000/payForm/assets/js/build/beanstream_payform.js"
-                            data-image="http://localhost:8000/payform/demo/color-demos/images/blue.svg"
-                            data-name="Acme Corporation"
+                            src="https://payform.beanstream.com/payform/beanstream_payform.js"
+                            data-image="https://s3-us-west-2.amazonaws.com/demos.beanstream.com/payform/production/images/green.svg"
+                            data-name="Marshmallow"
                             data-description="Item, Item, Item..."
                             data-amount="600"
                             data-currency="cad"
                             data-billingAddress="true"
                             data-shippingAddress="true"
                             data-submitForm="false"
-                            data-primaryColor="#2196F3">
+                            data-primaryColor="#4CAF50">
                           </script>
                         </form>
                     </li>

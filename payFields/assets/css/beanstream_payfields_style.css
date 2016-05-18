@@ -20,7 +20,15 @@ input[data-beanstream-id]{
     background-repeat: no-repeat;
     background-size: contain;
     background-origin: content-box;
-    background-image: url("http://downloads.beanstream.com/images/payform/cvc_hint_mono.png");
+    background-image: url("http://downloads.beanstream.com/images/payform/cvc_lock_outline.png");
+}
+
+[data-beanstream-id="ccCvv"]:focus {
+    background-image: url("http://downloads.beanstream.com/images/payform/cvc_hint_color.png");
+}
+
+[data-beanstream-id="ccCvv"].amex:focus {
+    background-image: url("http://downloads.beanstream.com/images/payform/cvc_hint_color_amex.png");
 }
 
 [data-beanstream-id="ccExp"] {

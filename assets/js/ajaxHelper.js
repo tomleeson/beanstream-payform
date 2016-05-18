@@ -23,7 +23,6 @@
     */
     AjaxHelper.prototype = {
         getToken: function(data, listener) {
-            console.log('getToken');
             var self = this;
             self._listener = listener;
 

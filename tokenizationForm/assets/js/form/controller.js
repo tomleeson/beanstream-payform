@@ -38,7 +38,8 @@
                 }
 
                 // If addresses are synced a click on 'shipping next' will mimic a click on 'billing next'
-                if (panel  === self.panels.shipping.name && self._model.getAddressSync()) {
+                if (self.panels.billing && self.panels.shipping &&
+                    panel  === self.panels.shipping.name && self._model.getAddressSync()) {
                     panel = self.panels.billing.name;
                 }
 
@@ -47,8 +48,10 @@
 
             self._view.previousPanel.attach(function(sender, panel) {
 
+                console.log('previousPanel');
+
                 // If addresses are synced a click on 'card previous' will mimic a click on 'billing previous'
-                if (panel  === self.panels.card.name && self._model.getAddressSync()) {
+                if (panel  === self.panels.card.name && self.panels.billing && self._model.getAddressSync()) {
                     panel = self.panels.billing.name;
                 }
 
@@ -70,7 +73,6 @@
                 data.billingAddress = self._model.getBillingAddress();
                 data.shippingAddress = self._model.getShippingAddress();
 
-                console.log('controller... self.config.parentDomain: ' + self.config.parentDomain);
                 window.parent.postMessage('{"type":"beanstream_toknizationForm_complete", "detail":' +
                     JSON.stringify(data) + '}', self.config.parentDomain);
 
@@ -84,6 +86,18 @@
                 if (self._model.getNonCardErrors().length) {
                     return;
                 }
+
+                var main = document.getElementById('main');
+                var processing = document.getElementById('processing');
+                main.classList.add('hidden');
+                processing.classList.remove('hidden');
+
+                // Show processing screen for min 3 seconds
+                self._model.setDelayProcessing('true');
+                window.setTimeout(function() {
+                    var self = this;
+                    self._model.setDelayProcessing('false');
+                }.bind(self), 3000);
 
                 beanstream.Helper.fireEvent('beanstream_payfields_tokenize', {}, self._view.form);
 
@@ -169,8 +183,8 @@
             config.name = beanstream.Helper.toTitleCase(self.getParameterByName('name'));
             config.description = self.getParameterByName('description');
             config.amount = self.getParameterByName('amount');
-            config.billing = self.getParameterByName('billingAddress');
-            config.shipping = self.getParameterByName('shippingAddress');
+            config.billing = (self.getParameterByName('billingAddress') === 'true');
+            config.shipping = (self.getParameterByName('shippingAddress') === 'true');
             config.currency = self.getParameterByName('currency');
             config.primaryColor = self.getParameterByName('primaryColor');
             config.parentDomain = self.getParameterByName('parentDomain');
