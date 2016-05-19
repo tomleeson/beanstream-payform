@@ -143,9 +143,12 @@
                     }
 
                     // call submit form if configured
-                    if (this.script.getAttribute('data-submitForm').toLowerCase() === 'true') {
-                        this.iframe.parentNode.submit();
+                    var submitForm = this.script.getAttribute('data-submitForm');
+                    if (!(submitForm && submitForm.toLowerCase() === 'false')) {
+                        this.iframe.parentNode.parentNode.submit();
                     }
+
+                    console.log('sending beanstream_payform_complete');
 
                     beanstream.Helper.fireEvent('beanstream_payform_complete', detail, window.parent.document);
                 }

@@ -635,7 +635,7 @@
             self._model.setNonCardErrors(errors);
             self.errorsUpdated.notify();
         },
-        addErrorClass(element, isError) {
+        addErrorClass: function(element, isError) {
             if (isError) {
                 element.classList.add('beanstream_invalid');
                 element.parentNode.classList.add('invalid');
@@ -647,7 +647,7 @@
                 }
             }
         },
-        regExValidate(el, exp, errMsg, errors) {
+        regExValidate: function(el, exp, errMsg, errors) {
             var self = this;
             var re = new RegExp(exp);
 

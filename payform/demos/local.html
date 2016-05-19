@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 
     <!-- Custom styles for this template -->
-    <link href="demo-styles/style.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
 </head>
 
 <body>
@@ -105,18 +105,17 @@
                     </li>
                     <li style="border-top: none;">
 
-                        <form action="/charge" method="POST">
+                        <form id="form" action="/charge" method="POST">
                             <button type="button" class="btn  btn-lg btn-success" data-beanstream>Pay by card</button>
-                          <script
-                            src="http://localhost:8000/payForm/assets/js/build/beanstream_payform.js"
-                            data-image="http://downloads.beanstream.com/images/payform/cc_placeholder.png"
-                            data-name="123456789012345123456789012345123456789012345"
-                            data-description="1234567890123456789012345678901234567890"
-                            data-amount="600"
-                            data-currency="cad"
-                            data-billingAddress="true"
-                            data-submitForm="false">
-                          </script>
+                            <script
+                                src="http://localhost:8000/payForm/assets/js/build/beanstream_payform.js"
+                                data-image="http://downloads.beanstream.com/images/payform/cc_placeholder.png"
+                                data-name="123456789012345123456789012345123456789012345"
+                                data-description="1234567890123456789012345678901234567890"
+                                data-amount="600"
+                                data-currency="cad"
+                                data-submitForm="false">
+                            </script>
                         </form>
                     </li>
             </ul>
@@ -128,22 +127,22 @@
         </footer>
 
     </div>
-    <!-- /container -->
+
 <script>
     /**
     * Registered as callback function for 'beanstream_payform_complete' event
     *
     * @param {Event} e
     */
-  if (document.addEventListener){
-    document.addEventListener('beanstream_payform_complete', function(e) {
-      console.log('Payform response: ' + JSON.stringify(e));
-    }, false);
-  } else if (document.attachEvent){
-    document.attachEvent('beanstream_payform_complete', function(e) {
-      console.log('Payform response: ' + JSON.stringify(e));
-    }, false);
-  }
+    if (document.addEventListener) {
+        document.addEventListener('beanstream_payform_complete', function(e) {
+            console.log('Payform response: ' + JSON.stringify(e));
+        }, false);
+    } else if (document.attachEvent) {
+        document.attachEvent('beanstream_payform_complete', function(e) {
+            console.log('Payform response: ' + JSON.stringify(e));
+        }, false);
+    }
 </script>
 
 </body>
