@@ -21,7 +21,7 @@ Both products provide an easy way to accept payments in a web page. They provide
 
 
 ## Browser Support <a name="browser-support"/>
- * Internet Explorer 8+ (via XDomainRequest and XMLHttpRequest)         
+ * Internet Explorer 8+ (via XDomainRequest and XMLHttpRequest) - **still in testing**
  * Chrome 6.0+          
  * Firefox 3.6+         
  * Opera 12.1+          
