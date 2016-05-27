@@ -169,17 +169,6 @@
             return max;
         }
 
-        function getMaxLength(fieldType, cardType) {
-            var card = cards.filter(function(c) {
-                return c.type === cardType;
-            });
-            card = card[0];
-
-            var lengths = card[fieldType];
-            var max = Math.max.apply(Math, lengths);
-            return max;
-        }
-
         function isValidExpiryDate(str, currentDate, onBlur) {
             if (onBlur && str === '') {
                 // Validate onBlur as required field

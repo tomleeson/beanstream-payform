@@ -37,6 +37,10 @@
             if (!beanstream.Helper.isEmpty(fields)) {
                 self._view.render('enableSubmitButton', 'false');
 
+                var expiry_year = fields.expiryYear;
+                if (expiry_year.length === 4)
+                    expiry_year = expiry_year.substring(2,4);
+                
                 var data = {'number': fields.number,
                         'expiry_month': fields.expiryMonth,
                         'expiry_year': fields.expiryYear,
