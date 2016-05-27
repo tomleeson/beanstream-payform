@@ -74,13 +74,14 @@ The first step is to create an HTML form that will submit the payment data to yo
         // e.eventDetail.billingAddress
         // e.eventDetail.shippingAddress
         
-        // send payment data to the server here
+        // send payment data to the server here 
+        // or read it when it is submitted to your server through the form post
     }, false);
 </script>
 ```
-This will inject a button in the location of the `<form>` and when the customer clicks on it, the PayForm will pop up. As soon as the customer fills out the information and hits the **Pay** button at the end, PayForm will tokenize the card data and submit the form. Just before the form is submitted it will fire an event called `beanstream_payform_complete` that you can listen to so you can retrieve a JSON format of the form data to send to your server. This event also allows you to perform an asynchronous AJAX call to your server to process the payment.
+This will inject a button in the location of the `<form>` and when the customer clicks on it, the PayForm will pop up. As soon as the customer fills out the information and hits the **Pay** button at the end, PayForm will tokenize the card data and submit the form. Just before the form is submitted it will fire an event called `beanstream_payform_complete` that you can listen to so you can retrieve a JSON format of the form data to send to your server. This event also allows you to perform an asynchronous AJAX call to your server to process the payment if you want. This is described in the next section: Response Fields.
 
-**Note: The form will not submit the card data to your server for this release. You must listen to this event and submit the data yourself. We are adding the form submit functionality within the week.**
+Note that the `<form action="/charge">` element, where `/charge` is your service processing the payment, will have the payment data posted to it.
 
 ### Step 2: Response Fields
 The data collected is injected into hidden fields in the `<form>` element wrapping the PayForm script element. It is also returned as a JSON blob with the event 'beanstream_payform_complete'. The form is automatically submitted to your server. The JSON blob will be in the `eventDetail` section of the event data. The whole message looks like this:
@@ -91,20 +92,20 @@ The data collected is injected into hidden fields in the `<form>` element wrappi
   "eventDetail":{
     "cardInfo":{
       "code":"a01-ae366cb9-3efa-4c82-b955-0bf59e2df359",
-      "name":"aa",
-      "email":"aa@aa.aa"
+      "name":"Joe",
+      "email":"aa@test.com"
     },
     "billingAddress":{
-      "name":"aa",
-      "address_line1":"aa",
+      "name":"Joe",
+      "address_line1":"123 Fake St",
       "postal_code":"aa",
       "city":"aa",
       "province":"aa",
       "country":"aa"
     },
     "shippingAddress":{
-      "name":"aa",
-      "address_line1":"aa",
+      "name":"Joe",
+      "address_line1":"123 Fake St",
       "postal_code":"aa",
       "city":"aa",
       "province":"aa",
@@ -112,7 +113,13 @@ The data collected is injected into hidden fields in the `<form>` element wrappi
     }
 }}
  ```
+
+Logging out the data in the 'beanstream_payform_complete' event will produce the same JSON as above. 
+ 
 ## Step 3: Process The Payment
+
+Whether you collect the card data from the event and send it asynchronously to your server, or receive it directly on your server via form POST, you will need to collect the `eventDetail.cardInfo.code` string vale, that is your token that you will process the payment with. In the above output example the token is *a01-ae366cb9-3efa-4c82-b955-0bf59e2df359**.
+
 Now that you have tokenized card data on your server, use it to either [process or pre-authorize a payment](http://developer.beanstream.com/documentation/take-payments/purchases/take-payment-legato-token/), or create a [payment profile](http://developer.beanstream.com/tokenize-payments/create-new-profile/).
 
 # PayFields <a name="payfields"/>   
