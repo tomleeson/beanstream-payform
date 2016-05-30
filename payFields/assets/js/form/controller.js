@@ -37,10 +37,6 @@
             if (!beanstream.Helper.isEmpty(fields)) {
                 self._view.render('enableSubmitButton', 'false');
 
-                var expiry_year = fields.expiryYear;
-                if (expiry_year.length === 4)
-                    expiry_year = expiry_year.substring(2,4);
-                
                 var data = {'number': fields.number,
                         'expiry_month': fields.expiryMonth,
                         'expiry_year': fields.expiryYear,
@@ -169,7 +165,7 @@
                 for (var i = 0; i < this.fieldObjs.length; i++) {
                     switch (this.fieldObjs[i].controller._config.id) {
                         case 'ccNumber': {
-                            data.number = this.fieldObjs[i].controller._model.getValue();
+                            data.number = this.fieldObjs[i].controller._model.getValue().replace(/\s/g, '');
                             break;
                         }
                         case 'ccCvv': {
@@ -180,7 +176,7 @@
                             var str = this.fieldObjs[i].controller._model.getValue();
                             var arr = str.split('/');
                             data.expiryMonth = arr[0].trim();
-                            data.expiryYear = '20' + arr[1].trim();
+                            data.expiryYear = arr[1].trim();
                             break;
                         }
                         default: {
