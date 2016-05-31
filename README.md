@@ -124,10 +124,10 @@ Now that you have tokenized card data on your server, use it to either [process 
 
 # PayFields <a name="payfields"/>   
 PayFields is very similar to PayForm, but it allows you to design your own form. It simply:
- * Injects input fields into page. (credit card number, CVD, or expiry)    
+ * Injects input fields into page. (credit card number, CVD, or expiry).
  * Recognizes card type (Mastercard, Visa, etc.) and restricts, formats and validates input accordingly.   
- * Toknizes card data, clears fields, and appends hidden field containing token to form.
- * Fires event `onLoad` to allow custom styling. Fires event `onValidationChange` to allow custom error messaging. Fires event `onTokenUpdated` to allow merchant to control form submission flow. (By default the form is submitted when the token is appended)
+ * Tokenizes card data, clears fields, and appends hidden field containing token to form.
+ * Fires event `onLoad` to allow custom styling. Fires event `onValidationChange` to allow custom error messaging. Fires event `onTokenUpdated` to allow merchant to control form submission flow. (By default the form is submitted when the token is appended).
  
 #### Integration <a name="payfields-integration-guide"/>   
 The minimal integration involves adding the script tag to a webpage within a form containing a submit button.
@@ -141,7 +141,7 @@ The minimal integration involves adding the script tag to a webpage within a for
 
 The above example uses PayField's default display and behaviour, but it is also possible to configure it: 
  * Placeholders can be added to the HTML markup to specify where the fields are injected.  
- * The web page can listen for callbacks from Payfields to handle styling and error states
+ * The web page can listen for callbacks from Payfields to handle styling and error states.
  * The 'data-submit-form' attribute on the script tag can be used to specify if the Payflelds should submit the form after tokenization, or just fire an event.
 
 The integration below shows placeholders and the data attribute in use. It shows PayFields placeholders within the markup of a Bootstrap styled form.
