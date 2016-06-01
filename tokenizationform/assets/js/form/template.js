@@ -323,7 +323,7 @@
                     template.main = template.main.replace('{{processingPanel}}', template.processing);
 
                     template.main = template.main.replace('{{content}}',
-                                        template.shipping + template.billing + template.card) + template.processing;
+                                        template.shipping + template.billing + template.card);
 
                     template = template.main;
 
