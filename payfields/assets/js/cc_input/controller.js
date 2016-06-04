@@ -67,6 +67,22 @@
             }
         });
 
+        self._view.input.attach(function(sender, args) {
+
+            // Android only
+
+            var pos = self._view.getCaretOffset();
+            self._model.setCaretPos(pos);
+
+            //self._model.setValue(args.inputValue);
+            var selectedText = {start: 0, end: args.inputValue.length};
+            self.limitInput(args.inputValue, selectedText);
+
+            var onBlur = false;
+            var value = self._model.getValue();
+            self.validate(onBlur, value);
+        });
+
         self._view.paste.attach(function(sender, e) {
             e.preventDefault();
 

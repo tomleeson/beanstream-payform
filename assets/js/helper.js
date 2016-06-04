@@ -27,7 +27,9 @@
                 event.keyCode === 37 || // left arrow
                 event.keyCode === 39 || // right arrow
                 event.keyCode === 45 || // insert
-                event.keyCode === 46 // delete
+                event.keyCode === 46 || // delete
+                event.keyCode === 0 ||  // no key code was found
+                event.keyCode === 229   // input Method Editor is processing key
             ) {
                 return true;
             }
