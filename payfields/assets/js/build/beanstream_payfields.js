@@ -27,7 +27,9 @@
                 event.keyCode === 37 || // left arrow
                 event.keyCode === 39 || // right arrow
                 event.keyCode === 45 || // insert
-                event.keyCode === 46 // delete
+                event.keyCode === 46 || // delete
+                event.keyCode === 0 ||  // no key code was found
+                event.keyCode === 229   // input Method Editor is processing key
             ) {
                 return true;
             }
@@ -268,17 +270,6 @@
             str = str.substring(0, max + whiteSpacing).trim();
 
             return str;
-        }
-
-        function getMaxLength(fieldType, cardType) {
-            var card = cards.filter(function(c) {
-                return c.type === cardType;
-            });
-            card = card[0];
-
-            var lengths = card[fieldType];
-            var max = Math.max.apply(Math, lengths);
-            return max;
         }
 
         function getMaxLength(fieldType, cardType) {
@@ -650,6 +641,7 @@
         this.paste = new beanstream.Event(this);
         this.blur = new beanstream.Event(this);
         this.focus = new beanstream.Event(this);
+        this.input = new beanstream.Event(this);
 
         var _this = this;
 
@@ -783,6 +775,17 @@
                 e = e || window.event;
                 _this.focus.notify(e);
             }, false);
+
+            // workaround for Android's lack of conventional keydown/up events
+            var ua = navigator.userAgent.toLowerCase();
+            var isAndroid = ua.indexOf('android') > -1;
+            if (isAndroid) {
+                this._domInputElement.addEventListener('input', function(e) {
+                    e = e || window.event;
+                    var args = {event: e, inputValue: _this._domInputElement.value};
+                    _this.input.notify(args);
+                }, false);
+            }
         },
         createDocFrag: function(htmlStr) {
             // http://stackoverflow.com/questions/814564/inserting-html-elements-with-javascript
@@ -843,6 +846,7 @@
 
         // listen to view events
         self._view.keydown.attach(function(sender, e) {
+            console.log('e.keyCode: ' + e.keyCode);
             // delete whole date str on delete any char
             if ((self._model.getFieldType() === 'cc-exp') &&
                     (e.keyCode === 8 || e.keyCode === 46)) {
@@ -887,6 +891,26 @@
                 var value = self._model.getValue();
                 self.validate(onBlur, value);
             }
+        });
+
+        self._view.input.attach(function(sender, args) {
+
+            console.log('input');
+            console.log('args.inputValue: ' + args.inputValue);
+            console.log('value1: ' + self._model.getValue());
+            // Android only
+
+            var pos = self._view.getCaretOffset();
+            self._model.setCaretPos(pos);
+
+            //self._model.setValue(args.inputValue);
+            var selectedText = {start: 0, end: args.inputValue.length};
+            self.limitInput(args.inputValue, selectedText);
+
+            var onBlur = false;
+            var value = self._model.getValue();
+            console.log('value2: ' + value);
+            self.validate(onBlur, value);
         });
 
         self._view.paste.attach(function(sender, e) {
@@ -1083,7 +1107,7 @@
     'use strict';
 
     function InputTemplate() {
-        this.inputTemplate =    '<input data-beanstream-id="{{id}}" ' +
+        this.inputTemplate =    '<input type="tel" pattern="[0-9]*" novalidate data-beanstream-id="{{id}}" ' +
                                 'placeholder="{{placeholder}}" autocomplete="{{autocomplete}}">';
         this.labelTemplate =    '<label data-beanstream-id="" for="{{id}}">{{labelText}}</label>';
         this.errorTemplate =    '<div data-beanstream-id="{{id}}_error"></div>';
@@ -1354,7 +1378,7 @@
 
             // This path is update for production and staging by gulp script
             self._view.render('injectStyles',
-                'http://localhost:8000/payfields/assets/css/beanstream_payfields_style.css');
+                'https://s3-us-west-2.amazonaws.com/payform-staging/payform/payfields/beanstream_payfields_style.css');
 
             self.injectFields();
 
@@ -1498,7 +1522,7 @@
                 for (var i = 0; i < this.fieldObjs.length; i++) {
                     switch (this.fieldObjs[i].controller._config.id) {
                         case 'ccNumber': {
-                            data.number = this.fieldObjs[i].controller._model.getValue();
+                            data.number = this.fieldObjs[i].controller._model.getValue().replace(/\s/g, '');
                             break;
                         }
                         case 'ccCvv': {
@@ -1509,7 +1533,7 @@
                             var str = this.fieldObjs[i].controller._model.getValue();
                             var arr = str.split('/');
                             data.expiryMonth = arr[0].trim();
-                            data.expiryYear = '20' + arr[1].trim();
+                            data.expiryYear = arr[1].trim();
                             break;
                         }
                         default: {

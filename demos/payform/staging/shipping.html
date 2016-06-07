@@ -136,9 +136,15 @@
     *
     * @param {Event} e
     */
-    document.addEventListener('beanstream_payform_complete', function(e) {
-        console.log('Payform response: ' + JSON.stringify(e));
-    }, false);
+    if (document.addEventListener) {
+        document.addEventListener('beanstream_payform_complete', function(e) {
+            console.log('Payform response: ' + JSON.stringify(e));
+        }, false);
+    } else if (document.attachEvent) {
+        document.attachEvent('beanstream_payform_complete', function(e) {
+            console.log('Payform response: ' + JSON.stringify(e));
+        }, false);
+    }
 </script>
 
 </body>

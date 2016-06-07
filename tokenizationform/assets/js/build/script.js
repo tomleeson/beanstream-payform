@@ -158,7 +158,7 @@
 
                     // This path is update for production and staging by gulp script
                     script.src =
-                        'http://localhost:8000/payfields/assets/js/build/beanstream_payfields.js';
+                        'https://s3-us-west-2.amazonaws.com/payform-staging/payform/payfields/beanstream_payfields.js';
 
                     script.setAttribute('data-submitForm', 'false');
                     var form = document.getElementsByTagName('form')[0];
@@ -1216,7 +1216,7 @@
                     template.main = template.main.replace('{{processingPanel}}', template.processing);
 
                     template.main = template.main.replace('{{content}}',
-                                        template.shipping + template.billing + template.card) + template.processing;
+                                        template.shipping + template.billing + template.card);
 
                     template = template.main;
 
@@ -1321,7 +1321,9 @@
                 event.keyCode === 37 || // left arrow
                 event.keyCode === 39 || // right arrow
                 event.keyCode === 45 || // insert
-                event.keyCode === 46 // delete
+                event.keyCode === 46 || // delete
+                event.keyCode === 0 ||  // no key code was found
+                event.keyCode === 229   // input Method Editor is processing key
             ) {
                 return true;
             }

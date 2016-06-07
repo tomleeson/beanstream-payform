@@ -50,9 +50,16 @@
                 }
             }
 
-            document.addEventListener('beanstream_payfields_loaded', styeInjectedInputs);
-            document.addEventListener('beanstream_payfields_tokenUpdated', onSubmit);
-            document.addEventListener('beanstream_payfields_inputValidityChanged', onValidityChanged);
+
+            if (document.addEventListener) {
+                document.addEventListener('beanstream_payfields_loaded', styeInjectedInputs);
+                document.addEventListener('beanstream_payfields_tokenUpdated', onSubmit);
+                document.addEventListener('beanstream_payfields_inputValidityChanged', onValidityChanged);
+            } else if (document.attachEvent) {
+                document.attachEvent('beanstream_payfields_loaded', styeInjectedInputs);
+                document.attachEvent('beanstream_payfields_tokenUpdated', onSubmit);
+                document.attachEvent('beanstream_payfields_inputValidityChanged', onValidityChanged);
+            }
 
         </script>
         <div class='container'>

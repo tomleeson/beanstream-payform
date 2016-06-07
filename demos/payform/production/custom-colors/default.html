@@ -138,20 +138,15 @@
     *
     * @param {Event} e
     */
-    document.addEventListener('beanstream_payform_complete', function(e) {
-
-        var responsePanel = document.getElementById('response');
-        var responsePanel_token = document.getElementById('data');
-        console.log('******************************************');
-        console.log('Payform response printed from host page');
-        console.log('******************************************');
-        console.log(JSON.stringify(e));
-        console.log('******************************************');
-        // responsePanel_token.innerText = JSON.stringify(e);
-        // responsePanel.style.display = 'block';
-
-        // console.log(e.eventDetail.cardInfo);
-    }, false);
+    if (document.addEventListener) {
+        document.addEventListener('beanstream_payform_complete', function(e) {
+            console.log('Payform response: ' + JSON.stringify(e));
+        }, false);
+    } else if (document.attachEvent) {
+        document.attachEvent('beanstream_payform_complete', function(e) {
+            console.log('Payform response: ' + JSON.stringify(e));
+        }, false);
+    }
 
 </script>
 
