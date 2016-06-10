@@ -75,7 +75,7 @@
             '</div>' +
             '<div class="row">' +
                 '<div class="six columns">' +
-                    '<label for="{{panelId}}_expiry" class="hidden">Expiry MM/YY</label>' +
+                    '<label for="{{panelId}}_expiry" class="hidden">Expiry MM/YYYY</label>' +
                     '<div data-beanstream-target="ccExp_input" id="{{panelId}}_expiry"' +
                         'class="no-right-border no-top-border"></div>' +
                 '</div>' +

@@ -222,7 +222,7 @@
                     break;
                 }
                 case 'cc-exp': {
-                    max = 5; // Format: "MM / YY", minus white spacing
+                    max = 7; // Format: "MM / YYYY", minus white spacing
                     break;
                 }
                 default: {

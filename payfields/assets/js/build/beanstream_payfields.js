@@ -229,7 +229,7 @@
         }
 
         function formatExpiry(str) {
-            var parts = str.match(/^\D*(\d{1,2})(\D+)?(\d{1,2})?/);
+            var parts = str.match(/^\D*(\d{1,2})(\D+)?(\d{1,4})?/);
 
             if (!parts) {
                 return '';
@@ -303,8 +303,7 @@
             if (year) {
                 year = year.trim();
 
-                if (year.length === 2) {
-                    year = '20' + year;
+                if (year.length === 4) {
 
                     var expiryDate = new Date(year, month);
 
@@ -318,10 +317,7 @@
                 }
             }
             if (onBlur) {
-                if (year) {
-                    year = year.trim();
-                    year = '20' + year;
-                } else {
+                if (!year) {
                     year = 0;
                 }
 
@@ -777,15 +773,12 @@
             }, false);
 
             // workaround for Android's lack of conventional keydown/up events
-            var ua = navigator.userAgent.toLowerCase();
-            var isAndroid = ua.indexOf('android') > -1;
-            if (isAndroid) {
-                this._domInputElement.addEventListener('input', function(e) {
-                    e = e || window.event;
-                    var args = {event: e, inputValue: _this._domInputElement.value};
-                    _this.input.notify(args);
-                }, false);
-            }
+            // and auto-fill on most browsers
+            this._domInputElement.addEventListener('input', function(e) {
+                e = e || window.event;
+                var args = {event: e, inputValue: _this._domInputElement.value};
+                _this.input.notify(args);
+            }, false);
         },
         createDocFrag: function(htmlStr) {
             // http://stackoverflow.com/questions/814564/inserting-html-elements-with-javascript
@@ -846,7 +839,6 @@
 
         // listen to view events
         self._view.keydown.attach(function(sender, e) {
-            console.log('e.keyCode: ' + e.keyCode);
             // delete whole date str on delete any char
             if ((self._model.getFieldType() === 'cc-exp') &&
                     (e.keyCode === 8 || e.keyCode === 46)) {
@@ -895,9 +887,6 @@
 
         self._view.input.attach(function(sender, args) {
 
-            console.log('input');
-            console.log('args.inputValue: ' + args.inputValue);
-            console.log('value1: ' + self._model.getValue());
             // Android only
 
             var pos = self._view.getCaretOffset();
@@ -909,7 +898,6 @@
 
             var onBlur = false;
             var value = self._model.getValue();
-            console.log('value2: ' + value);
             self.validate(onBlur, value);
         });
 
@@ -1052,7 +1040,7 @@
                     break;
                 }
                 case 'cc-exp': {
-                    max = 5; // Format: "MM / YY", minus white spacing
+                    max = 7; // Format: "MM / YYYY", minus white spacing
                     break;
                 }
                 default: {
@@ -1158,7 +1146,7 @@
             },
             ccExp: {
                 name: 'cc-exp',
-                labelText: 'Expires MM/YY',
+                labelText: 'Expires MM/YYYY',
                 placeholder: '',
                 autocomplete: 'cc-exp'
             }
@@ -1378,7 +1366,7 @@
 
             // This path is update for production and staging by gulp script
             self._view.render('injectStyles',
-                'https://s3-us-west-2.amazonaws.com/payform-staging/payform/payfields/beanstream_payfields_style.css');
+                'https://payform.beanstream.com/payfields/beanstream_payfields_style.css');
 
             self.injectFields();
 
@@ -1533,7 +1521,7 @@
                             var str = this.fieldObjs[i].controller._model.getValue();
                             var arr = str.split('/');
                             data.expiryMonth = arr[0].trim();
-                            data.expiryYear = arr[1].trim();
+                            data.expiryYear = arr[1].trim().substring(2,4);
                             break;
                         }
                         default: {

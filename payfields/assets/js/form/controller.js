@@ -176,7 +176,7 @@
                             var str = this.fieldObjs[i].controller._model.getValue();
                             var arr = str.split('/');
                             data.expiryMonth = arr[0].trim();
-                            data.expiryYear = arr[1].trim();
+                            data.expiryYear = arr[1].trim().substring(2,4);
                             break;
                         }
                         default: {

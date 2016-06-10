@@ -155,15 +155,12 @@
             }, false);
 
             // workaround for Android's lack of conventional keydown/up events
-            var ua = navigator.userAgent.toLowerCase();
-            var isAndroid = ua.indexOf('android') > -1;
-            if (isAndroid) {
-                this._domInputElement.addEventListener('input', function(e) {
-                    e = e || window.event;
-                    var args = {event: e, inputValue: _this._domInputElement.value};
-                    _this.input.notify(args);
-                }, false);
-            }
+            // and auto-fill on most browsers
+            this._domInputElement.addEventListener('input', function(e) {
+                e = e || window.event;
+                var args = {event: e, inputValue: _this._domInputElement.value};
+                _this.input.notify(args);
+            }, false);
         },
         createDocFrag: function(htmlStr) {
             // http://stackoverflow.com/questions/814564/inserting-html-elements-with-javascript

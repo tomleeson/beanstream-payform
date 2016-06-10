@@ -22,7 +22,7 @@
             },
             ccExp: {
                 name: 'cc-exp',
-                labelText: 'Expires MM/YY',
+                labelText: 'Expires MM/YYYY',
                 placeholder: '',
                 autocomplete: 'cc-exp'
             }

@@ -73,6 +73,8 @@
                 data.billingAddress = self._model.getBillingAddress();
                 data.shippingAddress = self._model.getShippingAddress();
 
+                console.log('*** FormController sending message ' +
+                    'beanstream_toknizationForm_complete : ' + JSON.stringify(data));
                 window.parent.postMessage('{"type":"beanstream_toknizationForm_complete", "detail":' +
                     JSON.stringify(data) + '}', self.config.parentDomain);
 
@@ -125,6 +127,9 @@
 
                 self._view.render('errorBlock', {errorMessages: errorMessages, panel: self._model.getCurrentPanel()});
             }.bind(self));
+
+            //aengus
+            window.parent.postMessage('{"type":"beanstream_testMessage", "detail":""}', self.config.parentDomain);
         },
 
         /**

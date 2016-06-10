@@ -98,7 +98,7 @@
                 e = e || window.event;
                 this.iframe.parentNode.style.display = 'block';
 
-                var production;
+                var production = true;
                 if (production) {
                     // Ensure postmessage goes to production
                     this.iframe.contentWindow.postMessage(
@@ -115,7 +115,7 @@
 
             window.addEventListener('message', function(event) {
 
-                var production;
+                var production = true;
                 if (production) {
                     // Ensure postmessage came from production
                     if (event.origin !== 'https://payform.beanstream.com') {
@@ -129,9 +129,11 @@
 
                 if (type === 'beanstream_closePayform') {
 
+                    console.log('IframeView. message recieved: beanstream_closePayform');
                     this.iframe.parentNode.style.display = 'none';
                 } else if (type === 'beanstream_toknizationForm_complete') {
 
+                    console.log('IframeView. message recieved: beanstream_toknizationForm_complete');
                     if (detail.billingAddress) {
                         var billing = detail.billingAddress;
                         for (var key in billing) {
@@ -213,7 +215,7 @@
             var self = this;
 
             // This path is updated for production and staging by gulp script
-            return 'https://s3-us-west-2.amazonaws.com/payform-staging/payform/tokenizationform/index.html?' +
+            return 'https://payform.beanstream.com/tokenizationform/index.html?' +
                 self.serialize(self._view.readAttributes());
         },
 
@@ -476,5 +478,23 @@
     iframe.controller = new beanstream.IframeController(iframe.model, iframe.view);
 
     iframe.controller.init();
+
+    var remoteCommunictionRecieved = false;
+
+    // Logging to help users identify event errors in their environments
+    setTimeout(function() {
+        if (!remoteCommunictionRecieved) {
+            console.log('*************************************************');
+            console.log('Error: Unable to communicate with remote page. Please check your server settings.');
+            console.log('*************************************************');
+        }
+    }.bind(this),7000);
+
+    window.addEventListener('message', function(event) {
+        if (JSON.parse(event.data).type === 'beanstream_testMessage') {
+            remoteCommunictionRecieved = true;
+            console.log('Communication verified.');
+        }
+    }.bind(this), false);
 
 })();

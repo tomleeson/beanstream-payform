@@ -175,16 +175,6 @@
         attachListeners: function(panels) {
             var self = this;
 
-            if (panels.shipping && panels.billing) {
-
-            } else if (panels.shipping) {
-
-            } else if (panels.billing) {
-
-            } else {
-
-            }
-
             if (panels.shipping) {
                 // Next button
                 var button = self._domPanels.shipping.getElementsByTagName('button')[0];
@@ -428,7 +418,7 @@
                     self.cardInputs.expiry = inputs[i];
                     inputs[i].classList.add('no-border-right');
                     inputs[i].id = 'card_expiry';
-                    inputs[i].placeholder = 'expiry mm/yy';
+                    inputs[i].placeholder = 'expiry mm/yyyy';
                 } else if (self.isDescendant(cvvPlaceholder, inputs[i])) {
                     self.cardInputs.cvv = inputs[i];
                     inputs[i].id = 'card_cvv';

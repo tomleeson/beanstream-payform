@@ -115,7 +115,7 @@
         }
 
         function formatExpiry(str) {
-            var parts = str.match(/^\D*(\d{1,2})(\D+)?(\d{1,2})?/);
+            var parts = str.match(/^\D*(\d{1,2})(\D+)?(\d{1,4})?/);
 
             if (!parts) {
                 return '';
@@ -189,8 +189,7 @@
             if (year) {
                 year = year.trim();
 
-                if (year.length === 2) {
-                    year = '20' + year;
+                if (year.length === 4) {
 
                     var expiryDate = new Date(year, month);
 
@@ -204,10 +203,7 @@
                 }
             }
             if (onBlur) {
-                if (year) {
-                    year = year.trim();
-                    year = '20' + year;
-                } else {
+                if (!year) {
                     year = 0;
                 }
 

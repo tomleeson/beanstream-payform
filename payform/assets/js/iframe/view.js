@@ -110,9 +110,11 @@
 
                 if (type === 'beanstream_closePayform') {
 
+                    console.log('IframeView. message recieved: beanstream_closePayform');
                     this.iframe.parentNode.style.display = 'none';
                 } else if (type === 'beanstream_toknizationForm_complete') {
 
+                    console.log('IframeView. message recieved: beanstream_toknizationForm_complete');
                     if (detail.billingAddress) {
                         var billing = detail.billingAddress;
                         for (var key in billing) {

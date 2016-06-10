@@ -158,7 +158,7 @@
 
                     // This path is update for production and staging by gulp script
                     script.src =
-                        'https://s3-us-west-2.amazonaws.com/payform-staging/payform/payfields/beanstream_payfields.js';
+                        'https://payform.beanstream.com/payfields/beanstream_payfields.js';
 
                     script.setAttribute('data-submitForm', 'false');
                     var form = document.getElementsByTagName('form')[0];
@@ -278,16 +278,6 @@
         },
         attachListeners: function(panels) {
             var self = this;
-
-            if (panels.shipping && panels.billing) {
-
-            } else if (panels.shipping) {
-
-            } else if (panels.billing) {
-
-            } else {
-
-            }
 
             if (panels.shipping) {
                 // Next button
@@ -532,7 +522,7 @@
                     self.cardInputs.expiry = inputs[i];
                     inputs[i].classList.add('no-border-right');
                     inputs[i].id = 'card_expiry';
-                    inputs[i].placeholder = 'expiry mm/yy';
+                    inputs[i].placeholder = 'expiry mm/yyyy';
                 } else if (self.isDescendant(cvvPlaceholder, inputs[i])) {
                     self.cardInputs.cvv = inputs[i];
                     inputs[i].id = 'card_cvv';
@@ -747,6 +737,8 @@
                 data.billingAddress = self._model.getBillingAddress();
                 data.shippingAddress = self._model.getShippingAddress();
 
+                console.log('*** FormController sending message ' +
+                    'beanstream_toknizationForm_complete : ' + JSON.stringify(data));
                 window.parent.postMessage('{"type":"beanstream_toknizationForm_complete", "detail":' +
                     JSON.stringify(data) + '}', self.config.parentDomain);
 
@@ -799,6 +791,9 @@
 
                 self._view.render('errorBlock', {errorMessages: errorMessages, panel: self._model.getCurrentPanel()});
             }.bind(self));
+
+            //aengus
+            window.parent.postMessage('{"type":"beanstream_testMessage", "detail":""}', self.config.parentDomain);
         },
 
         /**
@@ -968,7 +963,7 @@
             '</div>' +
             '<div class="row">' +
                 '<div class="six columns">' +
-                    '<label for="{{panelId}}_expiry" class="hidden">Expiry MM/YY</label>' +
+                    '<label for="{{panelId}}_expiry" class="hidden">Expiry MM/YYYY</label>' +
                     '<div data-beanstream-target="ccExp_input" id="{{panelId}}_expiry"' +
                         'class="no-right-border no-top-border"></div>' +
                 '</div>' +
