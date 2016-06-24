@@ -19,9 +19,8 @@
         init: function() {
             var self = this;
 
-            // This path is update for production and staging by gulp script
-            self._view.render('injectStyles',
-                'http://localhost:8000/payfields/assets/css/beanstream_payfields_style.css');
+            self._view.host;
+            self._view.render('injectStyles', self._view.host + '/payfields/beanstream_payfields_style.css');
 
             self.injectFields();
 
