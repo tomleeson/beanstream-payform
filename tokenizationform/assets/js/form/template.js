@@ -13,7 +13,7 @@
                         '<div class="row heading main-heading drop-shaddow">' +
                             '<div class="icon">' +
                                 '<a id="close-button" href="javascript:void(0)">' +
-                                    '<img src="css/images/ic_clear_white_24px.svg">' +
+                                    '<img src="assets/css/images/ic_clear_white_24px.svg">' +
                                 '</a>' +
                             '</div>' +
                             '<div class="container main">' +
@@ -32,7 +32,7 @@
                             '{{content}}' +
                         '</form>' +
                         '<div class="footer">' +
-                            '<img src="css/images/beanstream_logo.png">' +
+                            '<img src="assets/css/images/beanstream_logo.png">' +
                         '</div>' +
                     '</div>' +
                     '{{processingPanel}}' +
@@ -136,7 +136,7 @@
             '<div class="row back-button">' +
                 '<div class="icon">' +
                     '<a>' +
-                        '<img src="css/images/ic_keyboard_arrow_left_white_24px.svg">' +
+                        '<img src="assets/css/images/ic_keyboard_arrow_left_white_24px.svg">' +
                     '</a>' +
                 '</div>' +
                 '<a href="javascript:void(0)"><h6>{{backButtonLabel}}</h6></a>' +
@@ -200,7 +200,7 @@
                         '<h3>payment</h3>' +
                     '</div>' +
                     '<div class="content-footer">' +
-                        '<img src="css/images/ic_verified_user_white_24px.svg"></img>' +
+                        '<img src="assets/css/images/ic_verified_user_white_24px.svg"></img>' +
                         '<p>secured by beanstream</p>' +
                     '</div>' +
                 '</div>' +

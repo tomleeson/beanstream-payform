@@ -193,7 +193,6 @@
             config.currency = self.getParameterByName('currency');
             config.primaryColor = self.getParameterByName('primaryColor');
             config.parentDomain = self.getParameterByName('parentDomain');
-            config.host = self.getParameterByName('host');
 
             return config;
         },

@@ -36,9 +36,6 @@
             this.form = this.script.parentNode;
             this.head = document.getElementsByTagName('head')[0];
             this.body = document.getElementsByTagName('body')[0];
-
-            var urlArray = this.script.src.split('/');
-            this.host = urlArray[0] + '//' + urlArray[2];
         },
         createDocFrag: function(htmlStr) {
             // http://stackoverflow.com/questions/814564/inserting-html-elements-with-javascript
@@ -62,7 +59,6 @@
             attributes.primaryColor = this.script.getAttribute('data-primaryColor');
             attributes.parentDomain =
                 location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
-            attributes.host = this.host;
 
             return attributes;
         },
@@ -83,9 +79,6 @@
                 e = e || window.event;
                 this.iframe.parentNode.style.display = 'block';
 
-                this.iframe.contentWindow.postMessage(
-                    '{"type":"beanstream_openPayform", "detail":""}', this.host);
-                /*
                 var production;
                 if (production) {
                     // Ensure postmessage goes to production
@@ -99,7 +92,6 @@
                     this.iframe.contentWindow.postMessage(
                         '{"type":"beanstream_openPayform", "detail":""}', 'https://s3-us-west-2.amazonaws.com');
                 }
-                */
             }.bind(self), false);
 
             window.addEventListener('message', function(event) {

@@ -25,9 +25,6 @@
             this.head = document.getElementsByTagName('head')[0];
             this.submitBtn = this.form.querySelector('input[type=submit]');
 
-            var urlArray = this.script.src.split('/');
-            this.host = urlArray[0] + '//' + urlArray[2];
-
             if (!this.submitBtn) {
                 this.submitBtn = this.form.querySelector('button[type=submit]');
             }
