@@ -5,9 +5,6 @@ var gulpProtractorAngular = require('gulp-angular-protractor');
 const jscs = require('gulp-jscs');
 var runSequence = require('gulp-run-sequence');
 var autoprefixer = require('gulp-autoprefixer');
-var replace = require('gulp-replace-path');
-var path = require('path');
-var clean = require('gulp-clean');
 
 /**
  * Concat JS files
@@ -74,7 +71,6 @@ gulp.task('lint', ['pre-lint'], function() {
  */
 gulp.task('pre-lint', function() {
     return lint(src.payfields) && lint(src.payform) && lint(src.tokenizationform);
-    // return lintpayfields();
 });
 
 var src = {};
@@ -94,8 +90,6 @@ function lint(src) {
  */
 gulp.task('unit', function(done) {
     unit(done, unitConfigFile.payfields);
-    // unitpayform(done);
-    // unittokenizationform(done);
 });
 
 var unitConfigFile = {};
@@ -155,7 +149,7 @@ function e2e(callback, configFile) {
         .on('end', callback);
 }
 
-gulp.task('default', function(cb) {
+gulp.task('default', ['build'], function(cb) {
     runSequence('build', 'unit', cb);
 });
 
@@ -169,7 +163,6 @@ gulp.task('css', function() {
             browsers: ['last 2 versions'],
             cascade: false
         }))
-        //.pipe(gulp.dest('./tokenizationform/assets/css/build/'));
         .pipe(gulp.dest('./build/tokenizationform/css'));
 });
 

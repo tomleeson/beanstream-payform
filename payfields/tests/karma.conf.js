@@ -1,10 +1,23 @@
+
 module.exports = function(config) {
-    config.set({
+    var cfg = {
         browsers: ['Chrome'],
         frameworks: ['jasmine'],
         files: [
-            '../assets/js/build/**/*.js',
-            './unit/**/*.spec.js'
-        ]
-    });
+          '../../build/payfields/beanstream_payfields.js',
+          './unit/*.spec.js'
+        ],
+        customLaunchers: {
+            Chrome_travis_ci: {
+                base: 'Chrome',
+                flags: ['--no-sandbox']
+            }
+        }
+    };
+
+    if (process.env.TRAVIS) {
+        cfg.browsers = ['Chrome_travis_ci'];
+    }
+
+    config.set(cfg);
 };

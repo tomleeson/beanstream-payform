@@ -22,8 +22,6 @@
         },
         createQueryString: function() {
             var self = this;
-
-            console.log('self._view.readAttributes().host: ' + self._view.readAttributes().host);
             return self._view.readAttributes().host + '/tokenizationform/index.html?' +
                 self.serialize(self._view.readAttributes());
         },
