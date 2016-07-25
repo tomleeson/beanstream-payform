@@ -24,7 +24,7 @@
     window.addEventListener('message', function(event) {
         if (JSON.parse(event.data).type === 'beanstream_testMessage') {
             remoteCommunictionRecieved = true;
-            console.log('Communication verified.');
+            console.log('Beanstream Payform communication with iframe verified.');
         }
     }.bind(this), false);
 

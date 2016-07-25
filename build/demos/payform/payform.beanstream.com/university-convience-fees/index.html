@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="icon" href="../images/favicon.ico">
+        <title>Payform Demo</title>
+        <!-- Bootstrap core CSS -->
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+        <!-- Custom styles for this template -->
+        <link href="../css/style.css" rel="stylesheet">
+        <link href="../css/uni-style.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container">
+        <div class="header clearfix" style="display: flex;">
+            <div class="logo"></div>
+            <h3 style="display: inline-block; color: #2196F3;">University of Vancouver</h3>
+        </div>
+        <div class="row marketing" style="margin-bottom: 0;">
+            <h3>Pay Your Tuition Fees Online</h3>
+            <div class="block">
+                <h4 class="text-muted">Payment details</h4>
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label for="inputEmail3" class="control-label sr-only">Amount</label>
+                        <div class="col-sm-6">
+                            <div class="input-group">
+                                <div class="input-group-addon">$</div>
+                                <input type="text" class="form-control" id="exampleInputAmount" placeholder="Amount" value="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputPassword3" class="control-label sr-only">Student number</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="inputEmail3" placeholder="Student number" value="">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="block">
+                <h4 class="text-muted">Payment method</h4>
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#card">Credit or Debit Card</a></li>
+                    <li><a data-toggle="tab" href="#interac">Interac Online (Pay directly from your bank account)</a></li>
+                </ul>
+
+            <div class="tab-content">
+                <div id="card" class="tab-pane fade in active">
+                    <div class="sub-block" id="card-panel">
+                        <h5 class="text-muted">Price breakdown</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <td>Amount to pay university</td>
+                                    <td>$1000</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Payment fee (1%)</td>
+                                    <td>$10</td>
+                                </tr>
+                                <tr>
+                                    <th>Total to pay</th>
+                                    <th>$1010</th>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <form action="/charge" method="POST">
+                            <button type="button" class="btn  btn-lg btn-success pay" data-beanstream>Pay</button>
+                            <script 
+                                src="https://payform.beanstream.com/payform/beanstream_payform.js"
+                                data-image="https://s3-us-west-2.amazonaws.com/demos.beanstream.com/payform/production/color-range/images/university-blue.svg"
+                                data-name="Uni of Van"
+                                data-description="Tuition fee payment"
+                                data-amount="1010"
+                                data-currency="cad"
+                                data-billingAddress="true"
+                                data-shippingAddress="true"
+                                data-submitForm="false"
+                                data-primaryColor="#2196F3"></script>
+                        </form>
+                    </div>
+                </div>
+                <div id="interac" class="tab-pane fade">
+                    <div class="sub-block" id="interac-panel">
+                        <p>The INTERAC Online service is a new payment option that allows you to pay for goods and services on the Internet directly from your bank account. <a href="#">Learn more...</a></p>
+
+                        <p>NOTE: The INTERAC Online service is currently ONLY available to cardholders of these financial institutions (other financial institution may be added shortly):</p>
+
+                        <ul>
+                            <li>BMO Bank of Montreal</li>
+                            <li>RBC Royal Bank</li>
+                            <li>Scotiabank</li>
+                            <li>TD Canada Trust</li>
+                        </ul>
+
+                        <p>To continue, click on the 'Pay' button below. You will be asked to select your financial institution, then will be directed to your financial institution's website to complete your payment. Upon completing your payment, you will be redirected to back to our website to obtain your receipt.</p>
+
+                        <h5 class="text-muted" style="margin-top: 30px;">Price breakdown</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <td>Amount to pay university</td>
+                                    <td>$1000</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Payment fee</td>
+                                    <td>$0</td>
+                                </tr>
+                                <tr>
+                                    <th>Total to pay</th>
+                                    <th>$1000</th>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <button type="button" class="btn  btn-lg btn-success pay" data-beanstream style="margin-top: 20px">Pay</button>
+                </div>
+
+            </div>
+
+            <footer class="footer">
+                <p>&copy; 2016 Company, Inc.</p>
+            </footer>
+        </div>
+        <!-- /container -->
+<script>
+    /**
+    * Registered as callback function for 'beanstream_payform_complete' event
+    *
+    * @param {Event} e
+    */
+    if (document.addEventListener) {
+        document.addEventListener('beanstream_payform_complete', function(e) {
+            console.log('Payform response: ' + JSON.stringify(e));
+        }, false);
+    } else if (document.attachEvent) {
+        document.attachEvent('beanstream_payform_complete', function(e) {
+            console.log('Payform response: ' + JSON.stringify(e));
+        }, false);
+    }
+</script>
+    </body>
+</html>

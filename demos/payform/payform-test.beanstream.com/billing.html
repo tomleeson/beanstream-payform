@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="images/favicon.ico">
+
+    <title>Payform Demo</title>
+
+    <!-- Bootstrap core CSS -->
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <!-- Custom styles for this template -->
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header clearfix">
+            <nav>
+                <ul class="nav nav-pills pull-right">
+                    <li role="presentation"><a href="#">Shop</a>
+                    </li>
+                    <li role="presentation" class="active"><a href="#">Checkout</a>
+                    </li>
+                </ul>
+            </nav>
+            <h3 class="text-muted">Lollipop Shop</h3>
+        </div>
+
+        <div class="row marketing" style="margin-bottom: 0;">
+
+
+            <div>
+
+                <table class="table">
+                    <tr>
+                        <td style="border-top: none;">
+                            <h3 style="color: #337ab7;">Your shopping basket</h3>
+                        </td>
+                        <td style="border-top: none;"></td>
+                    </tr>
+                </table>
+
+                <table class="table">
+                    <tr>
+                        <th colspan="2">Item Description</th>
+                        <th>Quantity</th>
+                        <th>List price</th>
+                        <th>Item price</th>
+                        <th>Subtotal</th>
+                    </tr>
+                    <tr>
+                        <td><img src="http://placehold.it/100x100">
+                        </td>
+                        <td>Lorem Ipsum</td>
+                        <td>
+                            <input type="number" style="width: 30px" value="3">
+                        </td>
+                        <td>$100</td>
+                        <td>$100</td>
+                        <td>$300</td>
+                    </tr>
+                    <tr>
+                        <td><img src="http://placehold.it/100x100">
+                        </td>
+                        <td>Lorem Ipsum</td>
+                        <td>
+                            <input type="number" style="width: 30px" value="1">
+                        </td>
+                        <td>$100</td>
+                        <td>$100</td>
+                        <td>$100</td>
+                    </tr>
+                    <tr>
+                        <td><img src="http://placehold.it/100x100">
+                        </td>
+                        <td>Lorem Ipsum</td>
+                        <td>
+                            <input type="number" style="width: 30px" value="2">
+                        </td>
+                        <td>$100</td>
+                        <td>$100</td>
+                        <td>$200</td>
+                    </tr>
+                </table>
+
+            </div>
+        </div>
+
+
+
+        <div class="row marketing" style="margin-top: 0;">
+            <ul class="nav pull-right">
+                <tr>
+                    <li style="border-top: none;">
+                        <h3 class="" style="margin-top: 0;">Total: $600</h3>
+                    </li>
+                    <li style="border-top: none;">
+
+                        <form action="/charge" method="POST">
+                            <button type="button" class="btn  btn-lg btn-success" data-beanstream>Pay by card</button>
+                          <script 
+                            src="https://payform-test.beanstream.com/payform/beanstream_payform.js"
+                            data-image="https://s3-us-west-2.amazonaws.com/demos.beanstream.com/payform/staging/images/default.svg"
+                            data-name="Lollipop Shop"
+                            data-description="Item, Item, Item..."
+                            data-amount="600"
+                            data-currency="cad"
+                            data-billingAddress="true"
+                            data-submitForm="false">
+                          </script>
+                        </form>
+                    </li>
+            </ul>
+        </div>
+
+
+        <footer class="footer">
+            <p>&copy; 2016 Company, Inc.</p>
+        </footer>
+
+    </div>
+    <!-- /container -->
+
+<script>
+    /**
+    * Registered as callback function for 'beanstream_payform_complete' event
+    *
+    * @param {Event} e
+    */
+    if (document.addEventListener) {
+        document.addEventListener('beanstream_payform_complete', function(e) {
+            console.log('Payform response: ' + JSON.stringify(e));
+        }, false);
+    } else if (document.attachEvent) {
+        document.attachEvent('beanstream_payform_complete', function(e) {
+            console.log('Payform response: ' + JSON.stringify(e));
+        }, false);
+    }
+</script>
+
+</body>
+
+</html>
