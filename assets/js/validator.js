@@ -189,7 +189,7 @@
                 if (str === '') {
                     // Validate onBlur as required field
                     return {isValid: false, error: 'Please enter an expiry date.', fieldType: 'expiry'};
-                } else if (!month || !year || year.length != 4) {
+                } else if (!year || year.length != 4) {
                     return {isValid: false, error: 'Please enter a valid expiry date.', fieldType: 'expiry'};
                 } else if (new Date(year, month) < currentDate) {
                     return {isValid: false, error: 'Please enter a valid expiry date. The date entered is past.',

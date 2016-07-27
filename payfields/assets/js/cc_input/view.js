@@ -124,47 +124,87 @@
             this._domErrorElement = this._domParentElements.form.querySelector('[data-beanstream-id=' + id + '_error]');
         },
         attachDomListeners: function() {
-            var _this = this;
+            var self = this;
+            var el = self._domInputElement;
 
-            this._domInputElement.addEventListener('keydown', function(e) {
-                e = e || window.event;
-                if (e && !(e.ctrlKey || e.metaKey)) {
-                    var key = e.charCode || e.keyCode;
-                    var keychar = String.fromCharCode(key);
-                    var allowedControlKeyCodes = [null, 0, 8, 9, 13, 27, 37, 39];
-                    var allowedKeys = '0123456789. ';
+            if (el.addEventListener) {
+                el.addEventListener('keydown', self.handleKeydown, false);
+                el.addEventListener('blur', self.handleBlur.bind(self), false);
+                el.addEventListener('focus', self.handleFocus.bind(self), false);
 
-                    if (allowedControlKeyCodes.indexOf(key) > -1 ||
-                        allowedKeys.indexOf(keychar) > -1) {
-                        return true;
-                    } else {
-                        e.preventDefault();
-                        return false;
-                    }
-                } else {
-                    return true;
+                if (!document.body.classList.contains('lt-ie9')) {
+                    // IE 9 does not fire an input event when the user deletes characters from an input
+                    // https://developer.mozilla.org/en-US/docs/Web/Events/input#Browser_compatibility
+                    el.addEventListener('input', self.handleInput.bind(self), false);
                 }
-            }, false);
-            this._domInputElement.addEventListener('blur', function(e) {
-                // validation is updated onBlur
-                e = e || window.event;
-                _this.blur.notify(e);
-            }, false);
-            this._domInputElement.addEventListener('focus', function(e) {
-                // icon in cvc field is updated onFocus
-                e = e || window.event;
-                _this.focus.notify(e);
-            }, false);
 
-            this._domInputElement.addEventListener('input', function(e) {
-                e = e || window.event;
-                var caretAtEndOfStr = _this._domInputElement.value.length === this.selectionStart;
-                var args = {event: e,
-                            inputValue: _this._domInputElement.value,
-                            caretPos: this.selectionStart,
-                            caretAtEndOfStr: caretAtEndOfStr};
-                _this.input.notify(args);
-            }, false);
+            } else if (el.addEventListener && document.body.classList.contains('lt-ie9')) {
+                // IE 9 does not fire an input event when the user deletes characters from an input
+                // https://developer.mozilla.org/en-US/docs/Web/Events/input#Browser_compatibility
+                el.attachEvent('onpropertychange', self.handleInput.bind(self));
+            } else if (el.attachEvent) {
+                // < IE 9, use attachEvent rather than the standard addEventListener
+                el.attachEvent('onkeydown', self.handleKeydown);
+                el.attachEvent('onblur', self.handleBlur.bind(self));
+                el.attachEvent('onfocus', self.handleFocus.bind(self));
+                el.attachEvent('onpropertychange', self.handleInput.bind(self));
+            }
+        },
+        handleKeydown: function(e) {
+            e = e || window.event;
+            if (e && !(e.ctrlKey || e.metaKey)) {
+                var key = e.charCode || e.keyCode;
+                var keychar = String.fromCharCode(key);
+                var allowedControlKeyCodes = [null, 0, 8, 9, 13, 27, 37, 39];
+                var allowedKeys = '0123456789. ';
+
+                if (allowedControlKeyCodes.indexOf(key) > -1 ||
+                    allowedKeys.indexOf(keychar) > -1) {
+                    return true;
+                } else {
+                    e.preventDefault();
+                    return false;
+                }
+            } else {
+                return true;
+            }
+        },
+        handleBlur: function(e) {
+            // validation is updated onBlur
+            var self = this;
+            e = e || window.event;
+            self.blur.notify(e);
+        },
+        handleFocus: function(e) {
+            var self = this;
+            // icon in cvc field is updated onFocus
+            e = e || window.event;
+            self.focus.notify(e);
+        },
+        handleInput: function(e) {
+            var self = this;
+            e = e || window.event;
+            var caretPos = 0;
+            if ('selectionStart' in self._domInputElement) {
+                caretPos = self._domInputElement.selectionStart;
+            } else if (document.selection) {
+                // < IE 9 selectionStart not supported
+                // http://stackoverflow.com/a/2897229
+
+                // To get cursor position, get empty selection range
+                var oSel = document.selection.createRange();
+                // Move selection start to 0 position
+                oSel.moveStart('character', -oField.value.length);
+                // The caret position is selection length
+                caretPos = oSel.text.length;
+            }
+
+            var caretAtEndOfStr = self._domInputElement.value.length === caretPos;
+            var args = {event: e,
+                        inputValue: self._domInputElement.value,
+                        caretPos: caretPos,
+                        caretAtEndOfStr: caretAtEndOfStr};
+            self.input.notify(args);
         },
         createDocFrag: function(htmlStr) {
             // http://stackoverflow.com/questions/814564/inserting-html-elements-with-javascript
