@@ -27,7 +27,7 @@
             self.render('elements', {config: config, panels: panels});
             self.render('setCustomStyle', {primaryColor: config.primaryColor});
             self.attachPayfieldsListeners();
-            self.render('script');
+            self.render('script', {host: config.host});
             self.cacheDom(panels);
             self.attachListeners(panels);
 
@@ -50,13 +50,11 @@
                     self.body.appendChild(frag);
                 },
                 script: function() {
+                    // parameter.host
                     var script = document.createElement('script');
-
-                    // This path is update for production and staging by gulp script
-                    script.src =
-                        'http://localhost:8000/payfields/assets/js/build/beanstream_payfields.js';
-
+                    script.src = parameter.host + '/payfields/beanstream_payfields.js';
                     script.setAttribute('data-submitForm', 'false');
+
                     var form = document.getElementsByTagName('form')[0];
                     form.appendChild(script);
                 },

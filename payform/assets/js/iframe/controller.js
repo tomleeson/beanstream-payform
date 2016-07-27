@@ -22,9 +22,7 @@
         },
         createQueryString: function() {
             var self = this;
-
-            // This path is updated for production and staging by gulp script
-            return 'http://localhost:8000/tokenizationform/local.html?' +
+            return self._view.readAttributes().host + '/tokenizationform/index.html?' +
                 self.serialize(self._view.readAttributes());
         },
 

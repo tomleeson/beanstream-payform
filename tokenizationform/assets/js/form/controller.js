@@ -47,9 +47,6 @@
             }.bind(self));
 
             self._view.previousPanel.attach(function(sender, panel) {
-
-                console.log('previousPanel');
-
                 // If addresses are synced a click on 'card previous' will mimic a click on 'billing previous'
                 if (panel  === self.panels.card.name && self.panels.billing && self._model.getAddressSync()) {
                     panel = self.panels.billing.name;
@@ -73,8 +70,6 @@
                 data.billingAddress = self._model.getBillingAddress();
                 data.shippingAddress = self._model.getShippingAddress();
 
-                console.log('*** FormController sending message ' +
-                    'beanstream_toknizationForm_complete : ' + JSON.stringify(data));
                 window.parent.postMessage('{"type":"beanstream_toknizationForm_complete", "detail":' +
                     JSON.stringify(data) + '}', self.config.parentDomain);
 
@@ -193,6 +188,7 @@
             config.currency = self.getParameterByName('currency');
             config.primaryColor = self.getParameterByName('primaryColor');
             config.parentDomain = self.getParameterByName('parentDomain');
+            config.host = self.getParameterByName('host');
 
             return config;
         },
