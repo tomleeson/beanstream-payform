@@ -14,9 +14,6 @@
             this._domParentElement = domParentElements.form;
         }
 
-        this.keydown = new beanstream.Event(this);
-        this.keyup = new beanstream.Event(this);
-        this.paste = new beanstream.Event(this);
         this.blur = new beanstream.Event(this);
         this.focus = new beanstream.Event(this);
         this.input = new beanstream.Event(this);
@@ -68,11 +65,8 @@
                 value: function() {
                     _this._domInputElement.value = _this._model.getValue();
 
-                    // Do not reposition caret for date
-                    if (_this._model.getFieldType() !== 'cc-exp') {
-                        var pos =  _this._model.getCaretPos();
-                        _this._domInputElement.setSelectionRange(pos, pos);
-                    }
+                    var pos =  _this._model.getCaretPos();
+                    _this._domInputElement.setSelectionRange(pos, pos);
                 },
                 cardType: function() {
                     var fieldType = _this._model.getFieldType();
@@ -134,31 +128,41 @@
 
             this._domInputElement.addEventListener('keydown', function(e) {
                 e = e || window.event;
-                _this.keydown.notify(e);
-            }, false);
-            this._domInputElement.addEventListener('keyup', function(e) {
-                e = e || window.event;
-                var args = {event: e, inputValue: _this._domInputElement.value};
-                _this.keyup.notify(args);
-            }, false);
-            this._domInputElement.addEventListener('paste', function(e) {
-                e = e || window.event;
-                _this.paste.notify(e);
+                if (e && !(e.ctrlKey || e.metaKey)) {
+                    var key = e.charCode || e.keyCode;
+                    var keychar = String.fromCharCode(key);
+                    var allowedControlKeyCodes = [null, 0, 8, 9, 13, 27, 37, 39];
+                    var allowedKeys = '0123456789. ';
+
+                    if (allowedControlKeyCodes.indexOf(key) > -1 ||
+                        allowedKeys.indexOf(keychar) > -1) {
+                        return true;
+                    } else {
+                        e.preventDefault();
+                        return false;
+                    }
+                } else {
+                    return true;
+                }
             }, false);
             this._domInputElement.addEventListener('blur', function(e) {
+                // validation is updated onBlur
                 e = e || window.event;
                 _this.blur.notify(e);
             }, false);
             this._domInputElement.addEventListener('focus', function(e) {
+                // icon in cvc field is updated onFocus
                 e = e || window.event;
                 _this.focus.notify(e);
             }, false);
 
-            // workaround for Android's lack of conventional keydown/up events
-            // and auto-fill on most browsers
             this._domInputElement.addEventListener('input', function(e) {
                 e = e || window.event;
-                var args = {event: e, inputValue: _this._domInputElement.value};
+                var caretAtEndOfStr = _this._domInputElement.value.length === this.selectionStart;
+                var args = {event: e,
+                            inputValue: _this._domInputElement.value,
+                            caretPos: this.selectionStart,
+                            caretAtEndOfStr: caretAtEndOfStr};
                 _this.input.notify(args);
             }, false);
         },
@@ -171,25 +175,6 @@
                 frag.appendChild(temp.firstChild);
             }
             return frag;
-        },
-        getCaretOffset: function(el) {
-            // http://stackoverflow.com/a/2897229/6011159
-            var el = this._domInputElement;
-            var pos = 0;
-
-            // IE Support
-            if (document.selection) {
-                var sel = document.selection.createRange();
-                sel.moveStart('character', -el.value.length);
-                pos = sel.text.length;
-            }
-
-            // Firefox support
-            else if (el.selectionStart || el.selectionStart == '0') {
-                pos = el.selectionStart;
-            }
-
-            return pos;
         }
     };
 

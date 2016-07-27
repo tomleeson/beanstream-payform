@@ -170,52 +170,44 @@
         }
 
         function isValidExpiryDate(str, currentDate, onBlur) {
-            if (onBlur && str === '') {
-                // Validate onBlur as required field
-                return {isValid: false, error: 'Please enter an expiry date.', fieldType: 'expiry'};
-            }
 
-            // expects str in format 'mm/yyyy'
+            currentDate.setDate(0);
+
             var arr = str.split('/');
-            // JavaScript counts months from 0 to 11
             var month = arr[0];
-
             if (month) {
+                // JavaScript counts months from 0 to 11
                 month = month.trim() - 1;
             }
 
             var year = arr[1];
-
             if (year) {
                 year = year.trim();
+            }
 
-                if (year.length === 4) {
-
-                    var expiryDate = new Date(year, month);
-
-                    if (expiryDate < currentDate) {
-                        return {isValid: false, error: 'Please enter a valid expiry date. The date entered is past.',
-                            fieldType: 'expiry'};
-                    }
-                } else if (onBlur) {
+            if (onBlur) {
+                if (str === '') {
                     // Validate onBlur as required field
                     return {isValid: false, error: 'Please enter an expiry date.', fieldType: 'expiry'};
-                }
-            }
-            if (onBlur) {
-                if (!year) {
-                    year = 0;
-                }
-
-                var expiryDate = new Date(year, month);
-
-                if (expiryDate < currentDate) {
+                } else if (!month || !year || year.length != 4) {
+                    return {isValid: false, error: 'Please enter a valid expiry date.', fieldType: 'expiry'};
+                } else if (new Date(year, month) < currentDate) {
                     return {isValid: false, error: 'Please enter a valid expiry date. The date entered is past.',
-                        fieldType: 'expiry'};
+                      fieldType: 'expiry'};
+                } else {
+                    // valid
+                    return {isValid: true, error: '', fieldType: 'expiry'};
                 }
+            } else {
+              if (year && year.length === 4 && new Date(year, month) < currentDate) {
+                return {isValid: false, error: 'Please enter a valid expiry date. The date entered is past.',
+                    fieldType: 'expiry'};
+              } else {
+                // valid
+                return {isValid: true, error: '', fieldType: 'expiry'};
+              }
             }
 
-            return {isValid: true, error: '', fieldType: 'expiry'};
         }
 
         function getCardType(str) {
