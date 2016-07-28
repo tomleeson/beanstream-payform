@@ -128,7 +128,7 @@
             var el = self._domInputElement;
 
             if (el.addEventListener) {
-                el.addEventListener('keydown', self.handleKeydown, false);
+                el.addEventListener('keypress', self.handleKeydown, false);
                 el.addEventListener('blur', self.handleBlur.bind(self), false);
                 el.addEventListener('focus', self.handleFocus.bind(self), false);
 

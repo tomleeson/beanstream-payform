@@ -405,7 +405,6 @@
 
             for (var i = 0; i < inputs.length; i++) {
                 inputs[i].classList.add('u-full-width');
-                inputs[i].type = 'text';
 
                 if (self.isDescendant(numberPlaceholder, inputs[i])) {
                     self.cardInputs.number = inputs[i];
