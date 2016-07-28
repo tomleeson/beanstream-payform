@@ -19,87 +19,19 @@
         // notifier for view
         self._view.render('elements', self._config);
 
-        // listen to view events
-        self._view.keydown.attach(function(sender, e) {
-            // delete whole date str on delete any char
-            if ((self._model.getFieldType() === 'cc-exp') &&
-                    (e.keyCode === 8 || e.keyCode === 46)) {
-
-                self._model.setValue('');
-                return;
-            }
-
-            // Don't override default functionality except for input
-            if (beanstream.Helper.isNonInputKey(e)) {
-                return;
-            }
-            e.preventDefault();
-
-            var char;
-
-            // Handle keypad
-            if (e.keyCode >= 96 && e.keyCode <= 105) {
-                char = String.fromCharCode(e.keyCode - 48);
-            } else {
-                char = String.fromCharCode(e.keyCode);
-            }
-
-            var selectedText = {};
-            selectedText.start = e.target.selectionStart;
-            selectedText.end = e.target.selectionEnd;
-
-            self.limitInput(char, selectedText);
-        });
-
-        self._view.keyup.attach(function(sender, args) {
-            if (args.event.keyCode === 8 || args.event.keyCode === 46) {
-                // Update model directly from UI on delete
-                // keyup is only needed for deletion
-
-                var pos = self._view.getCaretOffset();
-                self._model.setCaretPos(pos);
-
-                self._model.setValue(args.inputValue);
-
-                var onBlur = false;
-                var value = self._model.getValue();
-                self.validate(onBlur, value);
-            }
+        self._model.cardTypeChanged.attach(function(sender, args) {
+            var cardType = self._model.getCardType();
+            // emit event for form to rely to cvv field
+            self.cardTypeChanged.notify(cardType);
         });
 
         self._view.input.attach(function(sender, args) {
-
-            // Android only
-
-            var pos = self._view.getCaretOffset();
-            self._model.setCaretPos(pos);
-
-            //self._model.setValue(args.inputValue);
-            var selectedText = {start: 0, end: args.inputValue.length};
-            self.limitInput(args.inputValue, selectedText);
-
-            var onBlur = false;
-            var value = self._model.getValue();
-            self.validate(onBlur, value);
-        });
-
-        self._view.paste.attach(function(sender, e) {
-            e.preventDefault();
-
-            var pastedStr = e.clipboardData.getData('text/plain');
-
-            var selectedText = {};
-            selectedText.start = e.target.selectionStart;
-            selectedText.end = e.target.selectionEnd;
-
-            self.limitInput(pastedStr, selectedText);
+            self.formatInput(args.inputValue, args.caretAtEndOfStr, args.caretPos);
         });
 
         self._view.blur.attach(function(sender, e) {
             var onBlur = true;
-            var value = self._model.getValue();
-            self.validate(onBlur, value);
-
+            self.validate(onBlur);
         });
 
         self._view.focus.attach(function(sender, e) {
@@ -113,42 +45,21 @@
     }
 
     InputController.prototype = {
-        limitInput: function(str, selectedText) {
+        formatInput: function(str, caretAtEndOfStr, caretPos) {
             var self = this;
 
-            str = str.replace(/\D/g, ''); // remove non ints from string
-
-            if (!str.length) {
-                return;
-            }
-
-            // Remove any text selected in ui
-            var currentStr = self._model.getValue();
-            currentStr =  currentStr.replace(
-                currentStr.substring(
-                    selectedText.start,
-                    selectedText.end
-                ), '');
-
-            // insert new char at cursor position
-            var inputStr = [currentStr.slice(0,
-                selectedText.start),
-                str,
-                currentStr.slice(selectedText.start)].join('');
-
-            var newStr = inputStr;
-
+            // 1. format input string
             switch (self._model.getFieldType()) {
                 case 'cc-number': {
-                    newStr = beanstream.Validator.formatCardNumber(newStr);
+                    str = beanstream.Validator.formatCardNumber(str);
                     break;
                 }
                 case 'cc-csc': {
-                    newStr = beanstream.Validator.limitLength(newStr, 'cvcLength', self._model.getCardType());
+                    str = beanstream.Validator.limitLength(str, 'cvcLength', self._model.getCardType());
                     break;
                 }
                 case 'cc-exp': {
-                    newStr = beanstream.Validator.formatExpiry(newStr);
+                    str = beanstream.Validator.formatExpiry(str);
                     break;
                 }
                 default: {
@@ -156,49 +67,39 @@
                 }
             }
 
-            var onBlur = false;
-            self.validate(onBlur, newStr);
-
-            // Calculate new caret position
-            var caretPos = selectedText.start + str.length; // get caret pos on original string
-            inputStr = inputStr.substring(0, caretPos); // remove white spacing
-            inputStr = inputStr.replace(/\s+/g, '');
-            var match = inputStr.split('').join('\\s*'); // create string for RegEx insensitive to white spacing
-            match = new RegExp(match);
-            var res = newStr.match(match);
-
-            if (res) {
-                res = res[0].toString(); // find unformatted substring in formatted string
-                var caretPos = res.length;
-                self._model.setCaretPos(caretPos);
+            // 2. set the updated caret position on the UI
+            if (caretAtEndOfStr) {
+                caretPos = str.length;
+            } else {
+                caretPos = self.incrementCaretPos(str, caretPos);
             }
+            self._model.setCaretPos(caretPos);
 
-            self._model.setValue(newStr);
+            // 3. set the formatted string to the UI
+            self._model.setValue(str);
 
+            // 4. validate the input
+            var onBlur = false;
+            self.validate(onBlur);
+
+            // 5. move focus to next element if current element is valid
             if (self._model.getIsValid()) {
                 var cardType = self._model.getCardType();
                 if (cardType !== '' || self._model.getFieldType() === 'cc-exp') {
-                    self.updateFocus(newStr, self._model.getCardType());
+                    self.updateFocus(str, self._model.getCardType());
                 }
             }
         },
-        setCardType: function(cardType) {
+        incrementCaretPos: function(str, caretPos) {
             var self = this;
-            var currentType = self._model.setCardType(cardType);
 
-            if (cardType !== currentType) {
-                self._model.setCardType(cardType); // update model for view
-                self.cardTypeChanged.notify(cardType); // emit event for form
+            if (str.substring(caretPos - 1, caretPos) === ' ' ||
+            str.substring(caretPos - 1, caretPos) === '/') {
+                caretPos += 1;
+                caretPos = self.incrementCaretPos(str, caretPos);
             }
 
-            // limit and validate csc input if present
-            if (self._model.getFieldType() === 'cc-csc') {
-                var onBlur = false;
-                var value = self._model.getValue();
-                value = beanstream.Validator.limitLength(value, 'cvcLength', self._model.getCardType());
-                self._model.setValue(value);
-                self.validate(onBlur, value);
-            }
+            return caretPos;
         },
         setInputValidity: function(args) {
             var self = this;
@@ -234,16 +135,14 @@
                 self.inputComplete.notify();
             }
         },
-        validate: function(onBlur, value) {
+        validate: function(onBlur) {
             var self = this;
-            if (value === undefined) {
-                value = self._model.getValue();
-            }
+            var value = self._model.getValue();
 
             switch (self._model.getFieldType()) {
                 case 'cc-number': {
                     var cardType = beanstream.Validator.getCardType(value);
-                    self.setCardType(cardType);
+                    self._model.setCardType(cardType);
                     var isValid = beanstream.Validator.isValidCardNumber(value, onBlur);
                     self.setInputValidity(isValid);
                     break;

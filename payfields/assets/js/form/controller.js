@@ -139,8 +139,9 @@
             field = field[0];
 
             if (field) {
-                field.controller.setCardType(cardType);
+                field.model.setCardType(cardType);
             }
+
         },
         inputValidityChanged: function(args) {
             beanstream.Helper.fireEvent('beanstream_payfields_inputValidityChanged', args, document);
@@ -175,7 +176,11 @@
                             var str = this.fieldObjs[i].controller._model.getValue();
                             var arr = str.split('/');
                             data.expiryMonth = arr[0].trim();
-                            data.expiryYear = arr[1].trim().substring(2,4);
+                            data.expiryYear = arr[1].trim();
+                            if (data.expiryYear.length === 4) {
+                                data.expiryYear = data.expiryYear.substring(2,4);
+
+                            }
                             break;
                         }
                         default: {
