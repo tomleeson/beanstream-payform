@@ -85,21 +85,6 @@
 
                 this.iframe.contentWindow.postMessage(
                     '{"type":"beanstream_openPayform", "detail":""}', this.host);
-                /*
-                var production;
-                if (production) {
-                    // Ensure postmessage goes to production
-                    this.iframe.contentWindow.postMessage(
-                        '{"type":"beanstream_openPayform", "detail":""}', 'https://payform.beanstream.com');
-                } else if ('localhost' === document.domain) {
-                    this.iframe.contentWindow.postMessage(
-                    '{"type":"beanstream_openPayform", "detail":""}', 'http://localhost:8000');
-                } else {
-                    // staging
-                    this.iframe.contentWindow.postMessage(
-                        '{"type":"beanstream_openPayform", "detail":""}', 'https://s3-us-west-2.amazonaws.com');
-                }
-                */
             }.bind(self), false);
 
             window.addEventListener('message', function(event) {
