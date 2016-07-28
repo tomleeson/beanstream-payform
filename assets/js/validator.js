@@ -88,7 +88,7 @@
         }
 
         function formatCardNumber(str) {
-            str = str.replace(/\s+/g, '');
+            str = str.replace(/\D/g,'');
             var cardType = getCardType(str);
 
             var card = cards.filter(function(c) {
