@@ -69,6 +69,7 @@
                 data.cardInfo = self._model.getCardInfo();
                 data.billingAddress = self._model.getBillingAddress();
                 data.shippingAddress = self._model.getShippingAddress();
+                data.payfieldsResponse = self._model.getPayfieldsResponse();
 
                 window.parent.postMessage('{"type":"beanstream_toknizationForm_complete", "detail":' +
                     JSON.stringify(data) + '}', self.config.parentDomain);

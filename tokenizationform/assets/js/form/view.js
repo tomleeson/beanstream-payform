@@ -348,16 +348,14 @@
 
             return false;
         },
-        onTokenUpdated: function() {
+        onTokenUpdated: function(e) {
             var self = this;
-            var blob = {};
+            self._model.setPayfieldsResponse(e.eventDetail);
 
-            var token = document.getElementsByName('singleUseToken')[0].value;
-            var name = self._domPanels.card.querySelector('input[name="name"]').value;
-            var email = self._domPanels.card.querySelector('input[name="email"]').value;
-            blob.code = token;
-            blob.name = name;
-            blob.email = email;
+            var blob = {};
+            blob.code = e.eventDetail.token;
+            blob.name = self._domPanels.card.querySelector('input[name="name"]').value;
+            blob.email = self._domPanels.card.querySelector('input[name="email"]').value;
             self._model.setCardInfo(blob);
 
             if ('payform.beanstream.com' === document.domain) {
