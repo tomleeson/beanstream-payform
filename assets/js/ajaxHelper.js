@@ -37,7 +37,18 @@
                     }
                 }.bind(self);
 
+                xhttp.ontimeout = function (e) {
+                    console.log('Error: tokenisation request timed out');
+                    var response = new self.formattedResponse();
+                    response.code = 0;
+                    response.message = 'Timeout';
+                    self._listener(response);
+                }.bind(self);
+
                 xhttp.open('POST', url, true);
+                // header required for ios safari support: http://stackoverflow.com/a/30296149
+                xhttp.setRequestHeader("Content-Type", "text/plain");
+                xhttp.timeout = 10000;
                 xhttp.send(data);
             } else if (window.XDomainRequest) {
 
