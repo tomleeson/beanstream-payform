@@ -69,6 +69,7 @@
                 data.cardInfo = self._model.getCardInfo();
                 data.billingAddress = self._model.getBillingAddress();
                 data.shippingAddress = self._model.getShippingAddress();
+                data.payfieldsResponse = self._model.getPayfieldsResponse();
 
                 window.parent.postMessage('{"type":"beanstream_toknizationForm_complete", "detail":' +
                     JSON.stringify(data) + '}', self.config.parentDomain);
@@ -80,7 +81,7 @@
             self._view.tokenize.attach(function(sender, e) {
                 // Do not move tokenize if fields not valid
                 self._view.validateFields('card');
-                if (self._model.getNonCardErrors().length) {
+                if (self._model.getNonCardErrors().length || self._model.getCardErrors().length) {
                     return;
                 }
 
@@ -123,7 +124,6 @@
                 self._view.render('errorBlock', {errorMessages: errorMessages, panel: self._model.getCurrentPanel()});
             }.bind(self));
 
-            //aengus
             window.parent.postMessage('{"type":"beanstream_testMessage", "detail":""}', self.config.parentDomain);
         },
 

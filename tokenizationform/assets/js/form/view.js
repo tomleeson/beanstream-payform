@@ -348,21 +348,25 @@
 
             return false;
         },
-        onTokenUpdated: function() {
+        onTokenUpdated: function(e) {
             var self = this;
-            var blob = {};
+            self._model.setPayfieldsResponse(e.eventDetail);
 
-            var token = document.getElementsByName('singleUseToken')[0].value;
-            var name = self._domPanels.card.querySelector('input[name="name"]').value;
-            var email = self._domPanels.card.querySelector('input[name="email"]').value;
-            blob.code = token;
-            blob.name = name;
-            blob.email = email;
+            var blob = {};
+            blob.code = e.eventDetail.token;
+            blob.name = self._domPanels.card.querySelector('input[name="name"]').value;
+            blob.email = self._domPanels.card.querySelector('input[name="email"]').value;
             self._model.setCardInfo(blob);
 
             if ('payform.beanstream.com' === document.domain) {
-                window.mixpanel.track('Form completed');
+
+                window.mixpanel.track('Form completed', {
+                    "success": e.eventDetail.success,
+                    "error-code": e.eventDetail.code,
+                    "error-message": e.eventDetail.message
+                });
             }
+
 
             // ensure processign screen is displayed for min 3 seconds
             if (!(self._model.getDelayProcessing() === 'true')) {
@@ -405,7 +409,6 @@
 
             for (var i = 0; i < inputs.length; i++) {
                 inputs[i].classList.add('u-full-width');
-                inputs[i].type = 'text';
 
                 if (self.isDescendant(numberPlaceholder, inputs[i])) {
                     self.cardInputs.number = inputs[i];

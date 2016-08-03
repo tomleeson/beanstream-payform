@@ -22,10 +22,9 @@
             return this._value;
         },
         setValue: function(value) {
-            if (value !== this._value) {
-                this._value = value;
-                this.valueChanged.notify();
-            }
+            // fires event every time to bring ui back in sync with formating
+            this._value = value;
+            this.valueChanged.notify();
         },
         getIsValid: function() {
             return this._isValid;

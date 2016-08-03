@@ -15,6 +15,7 @@
         this._cardErrors = [];
         this._nonCardErrors = [];
         this._delayProcessing = false;
+        this._payfieldsResponse = {};
     }
 
     FormModel.prototype = {
@@ -94,6 +95,14 @@
             if (value != this._delayProcessing) {
                 this._delayProcessing = value;
             }
+        },
+        setPayfieldsResponse: function(value) {
+            if (value != this._payfieldsResponse) {
+                this._payfieldsResponse = value;
+            }
+        },
+        getPayfieldsResponse: function() {
+            return this._payfieldsResponse;
         }
     };
 

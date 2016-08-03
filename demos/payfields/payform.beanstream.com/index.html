@@ -19,14 +19,19 @@
              * For this demo this method reads token from hiden field appended by Payforms and displays it in UI
              * @param {Event} e
              */
-            function onSubmit(e) {
-                e.preventDefault();
+             function onSubmit(e) {
+                 e.preventDefault();
 
-                var responsePanel = document.getElementById('response');
-                var responsePanel_token = document.getElementById('token');
-                responsePanel_token.innerText = document.getElementsByName('singleUseToken')[0].value;
-                responsePanel.style.display = 'block';
-            }
+                 var responsePanel = document.getElementById('response');
+                 var responsePanel_token = document.getElementById('token');
+
+                 // token returned in event object and appended to form
+                 // responsePanel_token.innerText = document.getElementsByName('singleUseToken')[0].value;
+                 responsePanel_token.innerText = e.eventDetail.token;
+
+                 responsePanel.style.display = 'block';
+                 console.log('Token: ' + e.eventDetail.token);
+             }
 
             /**
              * Registered as callback function for 'beanstream_loaded' event
@@ -46,13 +51,13 @@
             function onValidityChanged(args) {
                 var isValid = (args.eventDetail.isValid === 'true');
                 if (!isValid){
-                    console.log('onValidityChanged. isValid: ' + args.eventDetail.isValid + ', error: ' + args.eventDetail.error);
+                    // console.log('onValidityChanged. isValid: ' + args.eventDetail.isValid + ', error: ' + args.eventDetail.error);
                 }
             }
 
             document.addEventListener('beanstream_payfields_loaded', styeInjectedInputs);
             document.addEventListener('beanstream_payfields_tokenUpdated', onSubmit);
-            document.addEventListener('beanstream_payfields_inputValidityChanged', onValidityChanged); 
+            document.addEventListener('beanstream_payfields_inputValidityChanged', onValidityChanged);
 
         </script>
         <div class='container'>
@@ -79,10 +84,9 @@
         </div>
         <div class='container' id='response' style='display:none;'>
             <h2>Success!</h2>
-            <p>Token: 
+            <p>Token:
                 <span id='token'></span>
             </p>
         </div>
     </body>
 </html>
-
