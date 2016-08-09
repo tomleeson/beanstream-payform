@@ -361,12 +361,11 @@
             if ('payform.beanstream.com' === document.domain) {
 
                 window.mixpanel.track('Form completed', {
-                    "success": e.eventDetail.success,
-                    "error-code": e.eventDetail.code,
-                    "error-message": e.eventDetail.message
+                    'success': e.eventDetail.success,
+                    'error-code': e.eventDetail.code,
+                    'error-message': e.eventDetail.message
                 });
             }
-
 
             // ensure processign screen is displayed for min 3 seconds
             if (!(self._model.getDelayProcessing() === 'true')) {
