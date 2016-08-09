@@ -89,12 +89,10 @@
 
             window.addEventListener('message', function(event) {
 
-                var production;
-                if (production) {
-                    // Ensure postmessage came from production
-                    if (event.origin !== 'https://payform.beanstream.com') {
-                        return;
-                    }
+                // Ensure postmessage came from expected source
+                var origin = event.origin || event.originalEvent.origin;
+                if (origin !== this.host) {
+                    return;
                 }
 
                 var obj = JSON.parse(event.data);
