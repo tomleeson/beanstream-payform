@@ -90,7 +90,8 @@
             window.addEventListener('message', function(event) {
 
                 // Ensure postmessage came from expected source
-                if (event.origin !== this.host) {
+                var origin = event.origin || event.originalEvent.origin;
+                if (origin !== this.host) {
                     return;
                 }
 

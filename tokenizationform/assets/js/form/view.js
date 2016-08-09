@@ -263,7 +263,8 @@
             // listen for dialog open event for analytics
             window.addEventListener('message', function(event) {
                 // Do we trust the sender of this message?
-                if (event.origin !== self.config.parentDomain) {
+                var origin = event.origin || event.originalEvent.origin;
+                if (origin !== self.config.parentDomain) {
                     return;
                 }
 
