@@ -1,5 +1,8 @@
 <img src="http://www.beanstream.com/wp-content/uploads/2015/08/Beanstream-logo.png" />
+
 # PayForm & PayFields for web
+
+[![Build Status](https://travis-ci.org/Beanstream/beanstream-payform.svg?branch=master)](https://travis-ci.org/Beanstream/beanstream-payform)
 
 ##### Table of Contents  
 

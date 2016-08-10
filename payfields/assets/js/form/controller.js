@@ -178,7 +178,7 @@
                             data.expiryMonth = arr[0].trim();
                             data.expiryYear = arr[1].trim();
                             if (data.expiryYear.length === 4) {
-                                data.expiryYear = data.expiryYear.substring(2,4);
+                                data.expiryYear = data.expiryYear.substring(2, 4);
 
                             }
                             break;

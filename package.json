@@ -1,33 +1,31 @@
 {
-  "name": "gulp-karma",
+  "name": "beanstream-payform",
   "version": "0.0.1",
-  "description": "",
+  "description": "Tokenizes a customer's credit card input within a merchant's web page.",
+  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/karma-runner/gulp-karma"
+    "url": "https://github.com/Beanstream/beanstream-payform"
   },
   "bugs": {
-    "url": "https://github.com/karma-runner/gulp-karma/issues"
+    "url": "https://github.com/Beanstream/beanstream-payform/issues"
   },
   "scripts": {
     "test": "gulp test"
   },
-  "homepage": "https://github.com/karma-runner/gulp-karma",
+  "homepage": "https://github.com/Beanstream/beanstream-payform",
   "devDependencies": {
-    "gulp": "^3.9.0",
-    "gulp-angular-protractor": "^0.1.1",
+    "gulp": "^3.9.1",
     "gulp-autoprefixer": "^3.1.0",
-    "gulp-clean": "^0.3.2",
     "gulp-concat": "^2.6.0",
-    "gulp-jscs": "^3.0.2",
-    "gulp-protractor": "0.0.12",
-    "gulp-replace-path": "^0.4.0",
-    "gulp-run-sequence": "^0.3.2",
+    "gulp-jscs": "^4.0.0",
     "jasmine": "^2.4.1",
-    "karma": "^0.13.0",
-    "karma-chrome-launcher": "^0.2.0",
-    "karma-jasmine": "^0.3.6",
-    "protractor": "2.0.0",
-    "selenium-webdriver": "^2.53.2"
+    "jasmine-core": "^2.4.1",
+    "karma": "^1.1.2",
+    "karma-chrome-launcher": "^1.0.1",
+    "karma-jasmine": "^1.0.2",
+    "protractor": "^4.0.3",
+    "run-sequence": "^1.2.2",
+    "selenium-webdriver": "^2.53.3"
   }
 }

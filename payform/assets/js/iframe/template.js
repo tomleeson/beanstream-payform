@@ -14,13 +14,13 @@
                 'overflow-x: hidden; overflow-y: auto;' +
                 'position: fixed; ' +
                 'left: 0px; top: 0px; width: 100%; height: 100vh; -webkit-overflow-scrolling: touch;">' +
-			'<iframe frameborder="0"' +
-				'allowtransparency="true"' +
-				'src="{{path}}"' +
-				'style="border: 0px none transparent;' +
+            '<iframe frameborder="0"' +
+            'allowtransparency="true"' +
+            'src="{{path}}"' +
+            'style="border: 0px none transparent;' +
                         'overflow-x: hidden; overflow-y: auto; visibility: visible; margin: ' +
                         '0px; padding: 0px; -webkit-tap-highlight-color: transparent; width: 100%; height: 100%">' +
-			'</iframe>' +
+            '</iframe>' +
             '</div>';
 
         self.template.cardInfo =
