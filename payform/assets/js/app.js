@@ -19,7 +19,7 @@
             console.log('Error: Unable to communicate with remote page. Please check your server settings.');
             console.log('*************************************************');
         }
-    }.bind(this),7000);
+    }.bind(this), 7000);
 
     window.addEventListener('message', function(event) {
         if (JSON.parse(event.data).type === 'beanstream_testMessage') {

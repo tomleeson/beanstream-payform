@@ -1,10 +1,9 @@
-var gulp = require('gulp');
-var Server = require('karma').Server;
-var concat = require('gulp-concat');
-var gulpProtractorAngular = require('gulp-angular-protractor');
+const gulp = require('gulp');
+const Server = require('karma').Server;
+const concat = require('gulp-concat');
 const jscs = require('gulp-jscs');
-var runSequence = require('gulp-run-sequence');
-var autoprefixer = require('gulp-autoprefixer');
+const runSequence = require('run-sequence');
+const autoprefixer = require('gulp-autoprefixer');
 
 /**
  * Concat JS files
@@ -53,7 +52,6 @@ function concattokenizationform() {
     .pipe(concat('script.js'))
     .pipe(gulp.dest('build/tokenizationform/js'));
 }
-
 
 /**
  * Checks for formatting consistency as set in ./.jssrc file
@@ -113,46 +111,9 @@ gulp.task('tdd', function(done) {
     }, done).start();
 });
 
-/**
- * Run e2e test (protractor) once and exit
- */
-gulp.task('e2e', function(callback) {
-    gulp
-        .src(['./payfields/tests/e2e/spec.js'])
-        .pipe(gulpProtractorAngular({
-            'configFile': './payfields/tests/protractor.conf.js',
-            'debug': false,
-            'autoStartStopServer': true
-        }))
-        .on('error', function(e) {
-            console.log(e);
-        })
-        .on('end', callback);
-});
-
-var e2eConfigFile = {};
-e2eConfigFile.payfields = {src: ['./payfields/tests/e2e/spec.js'], configFile: './payfields/tests/protractor.conf.js'};
-e2eConfigFile.payform = __dirname + '/payform/tests/karma.conf.js';
-e2eConfigFile.tokenizationform = __dirname + '/tokenizationform/tests/karma.conf.js';
-
-function e2e(callback, configFile) {
-    gulp
-        .src(configFile.src)
-        .pipe(gulpProtractorAngular({
-            'configFile': configFile.configFile,
-            'debug': false,
-            'autoStartStopServer': true
-        }))
-        .on('error', function(e) {
-            console.log(e);
-        })
-        .on('end', callback);
-}
-
 gulp.task('default', ['build'], function(cb) {
     runSequence('build', 'unit', cb);
 });
-
 
 /**
  * autoprefixe CSS for cfoss browser support
@@ -166,24 +127,23 @@ gulp.task('css', function() {
         .pipe(gulp.dest('./build/tokenizationform/css'));
 });
 
-
 /**
  * copy files to build output
  */
 gulp.task('copy', function() {
-  // payfields
-  gulp.src(['./payfields/assets/css/beanstream_payfields_style.css'])
-    . pipe(gulp.dest('./build/payfields'));
-  // tokenizationform
-  gulp.src(['./tokenizationform/index.html'])
-    .pipe(gulp.dest('./build/tokenizationform'));
-  gulp.src(['./tokenizationform/assets/css/spinner.css'])
-    .pipe(gulp.dest('./build/tokenizationform/css'));
-  gulp.src(['./tokenizationform/assets/css/images/*'])
-    .pipe(gulp.dest('./build/tokenizationform/css/images'));
-  // demos
-  gulp.src(['./demos/**/*'])
-    .pipe(gulp.dest('./build/demos'));
+    // payfields
+    gulp.src(['./payfields/assets/css/beanstream_payfields_style.css'])
+      . pipe(gulp.dest('./build/payfields'));
+    // tokenizationform
+    gulp.src(['./tokenizationform/index.html'])
+      .pipe(gulp.dest('./build/tokenizationform'));
+    gulp.src(['./tokenizationform/assets/css/spinner.css'])
+      .pipe(gulp.dest('./build/tokenizationform/css'));
+    gulp.src(['./tokenizationform/assets/css/images/*'])
+      .pipe(gulp.dest('./build/tokenizationform/css/images'));
+    // demos
+    gulp.src(['./demos/**/*'])
+      .pipe(gulp.dest('./build/demos'));
 });
 
 gulp.task('build', function(cb) {
