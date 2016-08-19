@@ -12,7 +12,7 @@ input[data-beanstream-id]{
     background-repeat: no-repeat;
     background-size: contain;
     background-origin: content-box;
-    background-image: url("http://downloads.beanstream.com/images/payform/card.png");
+    background-image: url("https://downloads.beanstream.com/images/payform/card.png");
 }
 
 [data-beanstream-id="ccCvv"] {
@@ -20,15 +20,15 @@ input[data-beanstream-id]{
     background-repeat: no-repeat;
     background-size: contain;
     background-origin: content-box;
-    background-image: url("http://downloads.beanstream.com/images/payform/cvc_lock_outline.png");
+    background-image: url("https://downloads.beanstream.com/images/payform/cvc_lock_outline.png");
 }
 
 [data-beanstream-id="ccCvv"]:focus {
-    background-image: url("http://downloads.beanstream.com/images/payform/cvc_hint_color.png");
+    background-image: url("https://downloads.beanstream.com/images/payform/cvc_hint_color.png");
 }
 
 [data-beanstream-id="ccCvv"].amex:focus {
-    background-image: url("http://downloads.beanstream.com/images/payform/cvc_hint_color_amex.png");
+    background-image: url("https://downloads.beanstream.com/images/payform/cvc_hint_color_amex.png");
 }
 
 [data-beanstream-id="ccExp"] {
@@ -36,7 +36,7 @@ input[data-beanstream-id]{
     background-repeat: no-repeat;
     background-size: contain;
     background-origin: content-box;
-    background-image: url("http://downloads.beanstream.com/images/payform/date.png");
+    background-image: url("https://downloads.beanstream.com/images/payform/date.png");
 }
 
 input[type=text].beanstream_invalid{

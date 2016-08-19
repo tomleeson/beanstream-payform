@@ -82,10 +82,10 @@
                                 cardType = 'visa';
                             }
                             _this._domInputElement.style.backgroundImage =
-                                'url(http://downloads.beanstream.com/images/payform/' + cardType + '.png)';
+                                'url(https://downloads.beanstream.com/images/payform/' + cardType + '.png)';
                         } else {
                             _this._domInputElement.style.backgroundImage =
-                                'url(http://downloads.beanstream.com/images/payform/card.png)';
+                                'url(https://downloads.beanstream.com/images/payform/card.png)';
                         }
                     }
                 },

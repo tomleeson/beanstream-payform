@@ -61,7 +61,7 @@ The first step is to create an HTML form that will submit the payment data to yo
 <form action="/charge" method="POST">
     <script
         src="https://payform.beanstream.com/payform/beanstream_payform.js"
-        data-image="http://downloads.beanstream.com/images/payform/cc_placeholder.png"
+        data-image="https://downloads.beanstream.com/images/payform/cc_placeholder.png"
         data-name="foo.com"
         data-description="2 widgets"
         data-amount="2000"
