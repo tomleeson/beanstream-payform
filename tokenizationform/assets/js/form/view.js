@@ -432,11 +432,11 @@
                         if (self.cardType === 'amex') {
                             cvvPrompt.innerHTML =
                                 '<div class="text">4 digits above card #<br> on front of your card</div>' +
-                                '<img src="http://downloads.beanstream.com/images/payform/cvc_hint_color_amex.png"/>';
+                                '<img src="https://downloads.beanstream.com/images/payform/cvc_hint_color_amex.png"/>';
                         } else {
                             cvvPrompt.innerHTML =
                                 '<div class="text">The last 3 digits on<br> the back of your card</div>' +
-                                '<img src="http://downloads.beanstream.com/images/payform/cvc_hint_color.png"/>';
+                                '<img src="https://downloads.beanstream.com/images/payform/cvc_hint_color.png"/>';
                         }
 
                         cvvPrompt.classList.remove('hidden');
