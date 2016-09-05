@@ -26,10 +26,10 @@
 
             self.render('elements', {config: config, panels: panels});
             self.render('setCustomStyle', {primaryColor: config.primaryColor});
-            self.attachPayfieldsListeners();
-            self.render('script', {host: config.host});
             self.cacheDom(panels);
             self.attachListeners(panels);
+            self.render('script', {host: config.host});
+            self.attachPayfieldsListeners();
 
             if (panels.shipping && panels.billing) {
                 self.render('navigationRelativeToAddressSync', {sync: true, panels: panels});
@@ -51,12 +51,11 @@
                 },
                 script: function() {
                     // parameter.host
-                    var script = document.createElement('script');
-                    script.src = parameter.host + '/payfields/beanstream_payfields.js';
-                    script.setAttribute('data-submitForm', 'false');
+                    self.script = document.createElement('script');
+                    self.script.src = parameter.host + '/payfields/beanstream_payfields.js';
+                    self.script.setAttribute('async', true);
 
-                    var form = document.getElementsByTagName('form')[0];
-                    form.appendChild(script);
+                    self.form.appendChild(self.script);
                 },
                 currentPanel: function() {
                     // parameter.panels, parameter.old, arameter.new
@@ -332,8 +331,13 @@
         },
         attachPayfieldsListeners: function() {
             var self = this;
-            document.addEventListener('beanstream_payfields_loaded', this.addStylingToPayfields.bind(self));
+            //toDo: listen on form
+            //document.addEventListener('beanstream_payfields_loaded', this.addStylingToPayfields.bind(self));
+            //document.addEventListener('beanstream_payfields_tokenUpdated', this.onTokenUpdated.bind(self));
+
+            self.script.addEventListener('load', this.addStylingToPayfields.bind(self));
             document.addEventListener('beanstream_payfields_tokenUpdated', this.onTokenUpdated.bind(self));
+
             document.addEventListener('beanstream_payfields_inputValidityChanged',
                 this.onCardValidityChanged.bind(self));
             document.addEventListener('beanstream_payfields_cardTypeChanged', this.onCardTypeUpdated.bind(self));

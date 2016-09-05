@@ -2,22 +2,27 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="../images/favicon.ico">
-
     <title>Payform Demo</title>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
+    <link rel="icon" href="images/favicon.ico">
 
-    <!-- Bootstrap core CSS -->
-    <!-- Bootstrap -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link href="css/style.css" rel="stylesheet">
 
-    <!-- Custom styles for this template -->
-    <link href="../css/style.css" rel="stylesheet">
+    <script>
+      /*
+      * https://localhost:8000/payfields/beanstream_payfields.js
+      * https://payfields-dev.beanstream.com/payfields/beanstream_payfields.js
+      * https://payfields-test.beanstream.com/payfields/beanstream_payfields.js
+      * https://payfields-master.beanstream.com/payfields/beanstream_payfields.js
+      * https://payfields.beanstream.com/payfields/beanstream_payfields.js
+      */
+      var domain = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+      var base = document.createElement('base');
+      base.href = domain;
+      document.getElementsByTagName('head')[0].appendChild(base);
+    </script>
 </head>
 
 <body>
@@ -26,13 +31,13 @@
         <div class="header clearfix">
             <nav>
                 <ul class="nav nav-pills pull-right">
-                    <li role="presentation"><a href="#" style="color: #E91E63;">Shop</a>
+                    <li role="presentation"><a href="#">Shop</a>
                     </li>
-                    <li role="presentation" class="active"><a href="#" style="background-color: #E91E63;">Checkout</a>
+                    <li role="presentation" class="active"><a href="#">Checkout</a>
                     </li>
                 </ul>
             </nav>
-            <h3 class="text-muted">Jelly Bean</h3>
+            <h3 class="text-muted">Shop Front Demo</h3>
         </div>
 
         <div class="row marketing" style="margin-bottom: 0;">
@@ -43,7 +48,7 @@
                 <table class="table">
                     <tr>
                         <td style="border-top: none;">
-                            <h3 style="color: #E91E63;">Your shopping basket</h3>
+                            <h3 style="color: #337ab7;">Your shopping basket</h3>
                         </td>
                         <td style="border-top: none;"></td>
                     </tr>
@@ -105,20 +110,17 @@
                     </li>
                     <li style="border-top: none;">
 
-                        <form action="/charge" method="POST">
+                        <form id="form" action="/charge" method="POST">
                             <button type="button" class="btn  btn-lg btn-success" data-beanstream>Pay by card</button>
-                          <script 
-                            src="https://payform-master.beanstream.com/payform/beanstream_payform.js"
-                            data-image="https://s3-us-west-2.amazonaws.com/demos.beanstream.com/payform/production/images/pink.svg"
-                            data-name="Jelly Bean"
-                            data-description="Item, Item, Item..."
-                            data-amount="600"
-                            data-currency="cad"
-                            data-billingAddress="true"
-                            data-shippingAddress="true"
-                            data-submitForm="false"
-                            data-primaryColor="#E91E63">
-                          </script>
+                            <script
+                                src="payform/beanstream_payform.js"
+                                data-image="https://downloads.beanstream.com/images/payform/cc_placeholder.png"
+                                data-name="lollipop Shop"
+                                data-description="Item, Item, Item..."
+                                data-amount="600"
+                                data-currency="cad"
+                                data-submitForm="false">
+                            </script>
                         </form>
                     </li>
             </ul>
@@ -126,14 +128,12 @@
 
 
         <footer class="footer">
-            <p>&copy; 2016 Company, Inc.</p>
+            <p>&copy; 2015 Company, Inc.</p>
         </footer>
 
     </div>
-    <!-- /container -->
 
 <script>
-
     /**
     * Registered as callback function for 'beanstream_payform_complete' event
     *
@@ -148,7 +148,6 @@
             console.log('Payform response: ' + JSON.stringify(e));
         }, false);
     }
-
 </script>
 
 </body>

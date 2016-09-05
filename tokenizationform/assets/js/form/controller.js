@@ -162,9 +162,7 @@
             if (!url) {
                 url = window.location.href;
             }
-            url = url.toLowerCase(); // This is just to avoid case sensitiveness
-            // This is just to avoid case sensitiveness for query parameter name
-            name = name.replace(/[\[\]]/g, '\\$&').toLowerCase();
+            name = name.replace(/[\[\]]/g, '\\$&');
             var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
             var results = regex.exec(url);
             if (!results) {
@@ -180,7 +178,7 @@
             var self = this;
             var config = {};
             config.image = self.getParameterByName('image');
-            config.name = beanstream.Helper.toTitleCase(self.getParameterByName('name'));
+            config.name = self.getParameterByName('name');
             config.description = self.getParameterByName('description');
             config.amount = self.getParameterByName('amount');
             config.billing = (self.getParameterByName('billingAddress') === 'true');
