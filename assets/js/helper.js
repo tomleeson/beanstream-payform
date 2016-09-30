@@ -97,13 +97,24 @@
                 txt.substr(1).toLowerCase();});
         }
 
+        function getParentForm(child) {
+            var parent = child;
+            while (parent.nodeName != "FORM" && parent.parentNode) {
+                parent = parent.parentNode;
+            }
+            if(parent.nodeName === "FORM") return parent;
+            else return child;
+        }
+
+
         return {
             isNonInputKey: isNonInputKey,
             createDocFrag: createDocFrag,
             isEmpty: isEmpty,
             fireEvent: fireEvent,
             toSentenceCase: toSentenceCase,
-            toTitleCase: toTitleCase
+            toTitleCase: toTitleCase,
+            getParentForm: getParentForm
         };
     })();
 
@@ -111,3 +122,4 @@
     window.beanstream = window.beanstream || {};
     window.beanstream.Helper = Helper;
 })(window);
+

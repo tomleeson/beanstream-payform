@@ -2,7 +2,7 @@
     'use strict';
 
     function InputTemplate() {
-        this.inputTemplate =    '<input type="tel" pattern="[0-9]*" novalidate data-beanstream-id="{{id}}" ' +
+        this.inputTemplate =    '<input type="tel" novalidate data-beanstream-id="{{id}}" ' +
                                 'placeholder="{{placeholder}}" autocomplete="{{autocomplete}}">';
         this.labelTemplate =    '<label data-beanstream-id="" for="{{id}}">{{labelText}}</label>';
         this.errorTemplate =    '<div data-beanstream-id="{{id}}_error"></div>';
