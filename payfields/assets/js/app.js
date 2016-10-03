@@ -1,4 +1,4 @@
-(function() {
+(function(window) {
     'use strict';
 
     /**
@@ -16,5 +16,12 @@
     form.view = new beanstream.FormView(form.model);
     form.controller = new beanstream.FormController(form.model, form.view);
 
-    form.controller.init();
-})();
+    if (document.currentScript.hasAttribute('async')) {
+        form.controller.init();
+    } else {
+        document.addEventListener('DOMContentLoaded', function(event) {
+            form.controller.init();
+        });
+    }
+
+})(window);

@@ -5,7 +5,7 @@ describe('Payform Demo App', function() {
   beforeAll(function() {
         isAngularSite(false);
 
-        browser.driver.get('http://localhost:8000/demos/payform/localhost/');
+        browser.driver.get('http://localhost:8000/demos/payform/');
         browser.sleep(2000);
     });
 

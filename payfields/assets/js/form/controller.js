@@ -28,6 +28,7 @@
             beanstream.Helper.fireEvent('beanstream_payfields_loaded', {}, document);
         },
         onSubmit: function(e) {
+            console.log('onSubmit');
             var self = this;
 
             self.validateFields();
