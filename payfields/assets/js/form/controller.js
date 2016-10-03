@@ -24,11 +24,12 @@
 
             self.injectFields();
 
+            // firing custom event to support legacy intigrations. script.load is equivalent
             beanstream.Helper.fireEvent('beanstream_payfields_loaded', {}, document);
         },
         onSubmit: function(e) {
+            console.log('onSubmit');
             var self = this;
-            e.preventDefault();
 
             self.validateFields();
             var fields = self.getFieldValues();
@@ -41,6 +42,8 @@
                         'expiry_year': fields.expiryYear,
                         'cvd': fields.cvd};
 
+                beanstream.Helper.fireEvent('beanstream_payfields_tokenRequested', {}, document);
+
                 var ajaxHelper = new beanstream.AjaxHelper();
                 ajaxHelper.getToken(data, function(args) {
                     if (args.success) {
@@ -49,28 +52,13 @@
                         console.log('Warning: tokenisation failed. Code: ' + args.code + ', message: ' + args.message);
                     }
 
-                    if (this._model.getSubmitForm()) {
-                        self._view.form.submit();
-                    } else {
-                        beanstream.Helper.fireEvent('beanstream_payfields_tokenUpdated', args, document);
-                    }
+                    // firing custom event to support legacy intigrations. form.submit is equivalent
+                    beanstream.Helper.fireEvent('beanstream_payfields_tokenUpdated', args, document);
                     self._view.render('enableSubmitButton', 'true');
                 }.bind(self));
             } else {
+                e.preventDefault();
                 self._view.render('enableSubmitButton', 'true');
-            }
-        },
-        appendToken: function(form, value) {
-            var input = form.querySelector('input[name=singleUseToken]');
-
-            if (input) {
-                input.value = value;
-            } else {
-                input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'singleUseToken';
-                input.value = value;
-                form.appendChild(input);
             }
         },
         injectFields: function(filename) {
@@ -117,6 +105,7 @@
             if (field) {
                 field.controller.cardTypeChanged.attach(function(sender, cardType) {
                     self.setCardType(cardType);
+                    // toDo: event should be fired on form, not document
                     beanstream.Helper.fireEvent('beanstream_payfields_cardTypeChanged',
                         {'cardType': cardType}, document);
                 }.bind(self));
@@ -144,6 +133,8 @@
 
         },
         inputValidityChanged: function(args) {
+            // toDo: we should support native validation with element.setCustomValidity()
+            // toDo: event should be fired on element or form, not document
             beanstream.Helper.fireEvent('beanstream_payfields_inputValidityChanged', args, document);
         },
         /**
@@ -187,8 +178,6 @@
                             break;
                         }
                     }
-
-                    this.fieldObjs[i].controller._model.setValue('');
                 }
             }
 

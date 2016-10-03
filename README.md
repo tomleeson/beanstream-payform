@@ -62,7 +62,7 @@ The first step is to create an HTML form that will submit the payment data to yo
     <script
         src="https://payform.beanstream.com/payform/beanstream_payform.js"
         data-image="https://downloads.beanstream.com/images/payform/cc_placeholder.png"
-        data-name="foo.com"
+        data-name="ACME Corp."
         data-description="2 widgets"
         data-amount="2000"
         data-currency="cad"
@@ -137,12 +137,12 @@ PayFields is very similar to PayForm, but it allows you to design your own form.
 #### Integration <a name="payfields-integration-guide"/>   
 The minimal integration involves adding the script tag to a webpage within a form containing a submit button.
 ```javascript
-<form action='foo.php'>
-  <script src='https://s3-us-west-2.amazonaws.com/payform-staging/payform/payfields/beanstream_payfields.js'></script>
+<form action='pay.php'>
+  <script src='https://payform.beanstream.com/payfields/beanstream_payfields.js'></script>
   <button type='submit'>Submit</button>
 </form>
 ```
-`foo.php` is an example of your server's API endpoint where you want to handle a payment being processed.
+`pay.php` is an example of your server's API endpoint where you want to handle a payment being processed.
 
 The above example uses PayField's default display and behaviour, but it is also possible to configure it:
  * Placeholders can be added to the HTML markup to specify where the fields are injected.  
@@ -151,7 +151,7 @@ The above example uses PayField's default display and behaviour, but it is also 
 
 The integration below shows placeholders and the data attribute in use. It shows PayFields placeholders within the markup of a Bootstrap styled form.
 ```html
-<form action='foo.php'>
+<form action='pay.php'>
   <div class='form-group'>
     <label>Card Number</label>
     <div data-beanstream-target='ccNumber_input'></div>
@@ -167,7 +167,7 @@ The integration below shows placeholders and the data attribute in use. It shows
     <div data-beanstream-target='ccCvv_input'></div>
     <div data-beanstream-target='ccCvv_error' class='help-block'></div>
   </div>
-  <script src='https://s3-us-west-2.amazonaws.com/payform-staging/payform/payfields/beanstream_payfields.js'     
+  <script src='https://payform.beanstream.com/payfields/beanstream_payfields.js'     
           data-submit-form='false'></script>
   <button type='submit' class='btn btn-default'>Submit</button>
 </form>
@@ -178,27 +178,35 @@ The integration below shows placeholders and the data attribute in use. It shows
 
 <a name="contributing"/>
 ## Building Locally and Contributing
- * Check out repo: `$ git clone git@github.com:Beanstream/beanstream-payform.git`
- * Navigate to sub-project:  `$ cd /beanstream-payform/payFields`
- * Run local server: `$ python -m SimpleHTTPServer 8000`
- * Open page in browser: `localhost:8000/demos/test.html`
-   * Note: test.html loads locally hosted script. Other demo pages load remotely hosted script
+ 1. Setup local build env
+  * Check out repo: `$ git clone git@github.com:Beanstream/beanstream-payform.git`
+  * Install dependencies: `$ npm install`
+ 2. Build the project
+  * Navigate to sub-project:  `$ cd /beanstream-payform/payFields`
+  * Build project: `$ python -m SimpleHTTPServer 8000`
+ 3. Launch local server
+  * Navigate to build dir:  `$ cd /beanstream-payform/build`
+  * Run local server: `$ python -m SimpleHTTPServer 8000`
 
-##### Commit process
- 1 `$ git rebase`       
- 2 `$ gulp` Runs runs JSCS linting task, concatenates scripts, and runs unit tests.      
- 3 `$ git push`         
+##### Running automation (Protractor)
+ 1. Launch local server (see above)
+ 2. Start Webdriver (in second tab)
+  * `$ webdriver-manager start`
+ 3. Run tests (in third tab)
+  * `$ protractor tests/localhost/conf.js`
+
 
 ---
 
 # Demo <a name="demo"/>
-* [PayForm](https://s3-us-west-2.amazonaws.com/demos.beanstream.com/payform/production/index.html)
-* [PayFields](https://s3-us-west-2.amazonaws.com/demos.beanstream.com/payfields/production/index.html)
+* [PayForm](https://payform.beanstream.com/demos/payform/)
+* [PayFields](https://payform.beanstream.com/demos/payfields/)
 
 You can view the page source of either of the above demos to see how PayForm and PayFields were integrated. Feel free to copy-paste the code into your site.
 
 ## Hosted Script
-* [PayFields](https://s3-us-west-2.amazonaws.com/payform-staging/payform/payfields/beanstream_payfields.js)
+* [PayForm](https://payform.beanstream.com/payform/beanstream_payform.js)
+* [PayFields](https://payform.beanstream.com/payfields/beanstream_payfields.js)
 
 # API References
 * [REST API](http://developer.beanstream.com/documentation/rest-api-reference/)

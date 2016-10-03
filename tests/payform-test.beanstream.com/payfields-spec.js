@@ -3,7 +3,7 @@ describe('Payfields Demo App', function() {
   beforeAll(function() {
         isAngularSite(false);
 
-        browser.driver.get('https://payform-test.beanstream.com/demos/payfields/payform-test.beanstream.com/');
+        browser.driver.get('https://payform-test.beanstream.com/demos/payfields/');
         browser.sleep(2000);
     });
 

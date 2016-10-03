@@ -3,7 +3,7 @@ describe('Payfields Demo App', function() {
   beforeAll(function() {
         isAngularSite(false);
 
-        browser.driver.get('http://localhost:8000/demos/payfields/localhost/');
+        browser.driver.get('http://localhost:8000/demos/payfields/');
         browser.sleep(2000);
     });
 
