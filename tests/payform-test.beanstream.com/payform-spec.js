@@ -5,7 +5,7 @@ describe('Payform Demo App', function() {
   beforeAll(function() {
         isAngularSite(false);
 
-        browser.driver.get('https://payform-test.beanstream.com/demos/payform/payform-test.beanstream.com/default.html');
+        browser.driver.get('https://payform-test.beanstream.com/demos/payform/');
         browser.sleep(2000);
     });
 
