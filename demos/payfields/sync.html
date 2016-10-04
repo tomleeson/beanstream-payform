@@ -56,7 +56,6 @@
             <p>Token: <span id='token'></span></p>
         </div>
         <script>
-
             /**
              * Registered as callback function for 'beanstream_tokenUpdated' event
              * Note: You need to register with custom event as form's native onSubmit event will not be called
@@ -98,9 +97,8 @@
             } else if (document.attachEvent) {
                 document.getElementById('myScript').attachEvent('onload', styeInjectedInputs);
                 document.getElementById('myForm').attachEvent('onSubmit', preventDefault);
-                document.getElementById('myForm').attachEvent('beanstream_payfields_tokenUpdated', onSubmit);
+                document.attachEvent('beanstream_payfields_tokenUpdated', onSubmit);
             }
-
         </script>
 
     </body>

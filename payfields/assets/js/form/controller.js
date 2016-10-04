@@ -8,16 +8,16 @@
         var self = this;
         self._model = model;
         self._view = view;
-
-        self._view.init();
-        self._view.submit.attach(function(sender, e) {
-            self.onSubmit(e);
-        });
     }
 
     FormController.prototype = {
         init: function() {
             var self = this;
+
+            self._view.init();
+            self._view.submit.attach(function(sender, e) {
+                self.onSubmit(e);
+            });
 
             self._view.host;
             self._view.render('injectStyles', self._view.host + '/payfields/beanstream_payfields_style.css');
@@ -28,7 +28,6 @@
             beanstream.Helper.fireEvent('beanstream_payfields_loaded', {}, document);
         },
         onSubmit: function(e) {
-            console.log('onSubmit');
             var self = this;
 
             self.validateFields();

@@ -4,9 +4,10 @@
     /**
      * The View presents the model and notifies the Controller of UI events.
      */
-    function FormView(model) {
+    function FormView(model, currentScript) {
         this._model = model;
         this.submit = new beanstream.Event(this);
+        this.currentScript = currentScript;
     }
 
     FormView.prototype = {
@@ -18,15 +19,14 @@
         },
         cacheDom: function(id) {
 
-            this.script = document.currentScript;
-            this.form = window.beanstream.Helper.getParentForm(this.script);
+            this.form = window.beanstream.Helper.getParentForm(this.currentScript);
             this.head = document.getElementsByTagName('head')[0];
             this.submitBtn = this.form.querySelector('input[type=submit]');
             if (!this.submitBtn) {
                 this.submitBtn = this.form.querySelector('button[type=submit]');
             }
 
-            var urlArray = this.script.src.split('/');
+            var urlArray = this.currentScript.src.split('/');
             this.host = urlArray[0] + '//' + urlArray[2];
 
             this.domTargets = {};
@@ -58,7 +58,7 @@
         readAttributes: function() {
             var self = this;
             var submit = true;
-            var submitProp = self.script.getAttribute('data-submitForm');
+            var submitProp = self.currentScript.getAttribute('data-submitForm');
             if (submitProp) {
                 submit = !(submitProp.toLowerCase() === 'false');
             }

@@ -122,4 +122,3 @@
     window.beanstream = window.beanstream || {};
     window.beanstream.Helper = Helper;
 })(window);
-
