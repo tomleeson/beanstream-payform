@@ -67,12 +67,9 @@
                 submit = true;
             }
 
-            console.log('submit 123: ', self.currentScript.getAttribute('data-submitForm'));
-            console.log('submit: ', submit);
             this._model.setSubmitForm(submit);
         },
         submitParentForm: function() {
-            console.log('submitParentForm');
             var self = this;
             self.form.submit();
         },
