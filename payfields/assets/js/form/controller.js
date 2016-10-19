@@ -54,6 +54,10 @@
                     // firing custom event to support legacy intigrations. form.submit is equivalent
                     beanstream.Helper.fireEvent('beanstream_payfields_tokenUpdated', args, document);
                     self._view.render('enableSubmitButton', 'true');
+
+                    if (self._model.getSubmitForm()) {
+                        self._view.submitParentForm();
+                    }
                 }.bind(self));
             } else {
                 e.preventDefault();
