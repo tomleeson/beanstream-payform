@@ -57,12 +57,21 @@
         },
         readAttributes: function() {
             var self = this;
-            var submit = true;
+
+            // Note: Preferred behaviour is to submit by default,
+            // not fixing bug until versioning server implemented to avoid breaking legacy integrations
+
+            var submit = false;
             var submitProp = self.currentScript.getAttribute('data-submitForm');
-            if (submitProp) {
-                submit = !(submitProp.toLowerCase() === 'false');
+            if (submitProp && submitProp.toLowerCase() === 'true') {
+                submit = true;
             }
+
             this._model.setSubmitForm(submit);
+        },
+        submitParentForm: function() {
+            var self = this;
+            self.form.submit();
         },
         attachDomListeners: function() {
             var self = this;
