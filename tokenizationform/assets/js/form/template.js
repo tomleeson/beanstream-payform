@@ -55,72 +55,56 @@
 
         self.template.card =
             '<div class="row email">' +
-                '<div class="twelve columns">' +
                     '<label for="{{panelId}}_email" class="hidden">Email</label>' +
-                    '<input class="u-full-width" type="text" placeholder="email" name="email" id="{{panelId}}_email">' +
-                '</div>' +
+                    '<input style="width: calc(100% - 1px)" type="text" placeholder="email" name="email"' +
+                    'id="{{panelId}}_email">' +
             '</div>' +
             '<div class="row">' +
-                '<div class="twelve columns">' +
                     '<label for="{{panelId}}_name" class="hidden">Name</label>' +
-                    '<input class="u-full-width" type="text" placeholder="name" name="name" id="{{panelId}}_name">' +
-                '</div>' +
+                    '<input style="width: calc(100% - 1px)" type="text" placeholder="name"' +
+                    ' name="name" id="{{panelId}}_name">' +
             '</div>' +
             '<div class="row">' +
-                '<div class="twelve columns">' +
                     '<label for="{{panelId}}_number" class="hidden">Credit card number</label>' +
-                    '<div data-beanstream-target="ccNumber_input" id="{{panelId}}_number"' +
-                        'class="no-top-border"></div>' +
-                '</div>' +
+                    '<div style="width: calc(100% - 1px); position:relative; top:-1px;"' +
+                    ' data-beanstream-target="ccNumber_input"' +
+                    ' id="{{panelId}}_number"></div>' +
             '</div>' +
-            '<div class="row">' +
-                '<div class="six columns">' +
+            '<div class="row" style="display:flex;">' +
                     '<label for="{{panelId}}_expiry" class="hidden">Expiry MM/YYYY</label>' +
-                    '<div data-beanstream-target="ccExp_input" id="{{panelId}}_expiry"' +
-                        'class="no-right-border no-top-border"></div>' +
-                '</div>' +
-                '<div class="six columns">' +
+                    '<div style="width: 50%; position:relative; top:-2px;"' +
+                    ' data-beanstream-target="ccExp_input" id="{{panelId}}_expiry"></div>' +
                     '<label for="{{panelId}}_cvv" class="hidden">CVV</label>' +
-                    '<div data-beanstream-target="ccCvv_input" id="{{panelId}}_cvv" class="no-top-border"></div>' +
-                '</div>' +
+                    '<div style="width: 50%; position:relative; top:-2px; left:-1px;"' +
+                    ' data-beanstream-target="ccCvv_input" id="{{panelId}}_cvv"></div>' +
             '</div>';
 
         self.template.address =
             '<div class="row">' +
-                '<div class="twelve columns">' +
                     '<label for="{{panelId}}_name" class="hidden">Name</label>' +
-                    '<input class="u-full-width" type="text" placeholder="name" name="name" id="{{panelId}}_name">' +
-                '</div>' +
+                    '<input style="width: calc(100% - 1px)" type="text" placeholder="name" name="name"' +
+                    'id="{{panelId}}_name">' +
             '</div>' +
             '<div class="row">' +
-                '<div class="twelve columns no-top-border">' +
                     '<label for="{{panelId}}_address_line1" class="hidden">Street Address</label>' +
-                    '<input class="u-full-width" type="text"' +
+                    '<input style="width: calc(100% - 1px); position:relative; top:-1px;" type="text"' +
                         'placeholder="street address" name="address_line1" id="{{panelId}}_address_line1">' +
-                '</div>' +
             '</div>' +
             '<div class="row">' +
-                '<div class="six columns no-right-border no-top-border">' +
                     '<label for="{{panelId}}_postal_code" class="hidden">Postal Code</label>' +
-                    '<input class="u-full-width" type="text"' +
+                    '<input style="width: 50%; position:relative; top:-2px;" type="text"' +
                         'placeholder="zip" name="postal_code" id="{{panelId}}_postal_code">' +
-                '</div>' +
-                '<div class="six columns no-top-border">' +
                     '<label for="{{panelId}}_city" class="hidden">City</label>' +
-                    '<input class="u-full-width" type="text" placeholder="city" name="city" id="{{panelId}}_city">' +
-                '</div>' +
+                    '<input style="width: 50%; position:relative; top:-2px; left:-1px;" type="text"' +
+                    'placeholder="city" name="city" id="{{panelId}}_city">' +
             '</div>' +
             '<div class="row">' +
-                '<div class="six columns no-right-border no-top-border">' +
                     '<label for="{{panelId}}_province" class="hidden">{{province}}</label>' +
-                    '<input class="u-full-width" type="text"' +
+                    '<input style="width: 50%; position:relative; top:-3px;" type="text"' +
                         'placeholder="{{province}}" name="province" id="{{panelId}}_province">' +
-                '</div>' +
-                '<div class="six columns no-top-border">' +
                     '<label for="{{panelId}}_country" class="hidden">Country</label>' +
-                    '<input class="u-full-width" type="text"' +
+                    '<input style="width: 50%; position:relative; top:-3px; left:-1px;" type="text"' +
                         'placeholder="country" name="country" id="{{panelId}}_country">' +
-                '</div>' +
             '</div>' +
             '{{checkbox}}';
 
@@ -182,7 +166,8 @@
                             '50% {stroke: {{primaryColor}};}' +
                             '75% {stroke: {{primaryColor}};}' +
                             '100% {stroke: {{primaryColor}};}}' +
-                            '#processing h1, h3{color: {{primaryColor}};}';
+                            '#processing h1, h3{color: {{primaryColor}};}' +
+                            'input:focus { border-color: {{primaryColor}} !important;}';
 
         self.template.processing =
             '<div class="hidden" id="processing">' +
