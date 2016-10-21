@@ -195,11 +195,6 @@ p,h4,h5,h6{
 .main-heading h5{
     min-height: 36px;
 }
-/*
-input{
-    margin-bottom: 0;
-}
-*/
 
 .back-button .icon{
     position: absolute;
@@ -467,7 +462,7 @@ input[type=checkbox]{
     margin-right: 10px;
 }
 
-/* Larger than mobile */
+/* Inputs */
 
 input{
   margin-bottom: 0;
