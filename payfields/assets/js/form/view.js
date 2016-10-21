@@ -4,9 +4,10 @@
     /**
      * The View presents the model and notifies the Controller of UI events.
      */
-    function FormView(model) {
+    function FormView(model, currentScript) {
         this._model = model;
         this.submit = new beanstream.Event(this);
+        this.currentScript = currentScript;
     }
 
     FormView.prototype = {
@@ -17,20 +18,16 @@
             self.attachDomListeners();
         },
         cacheDom: function(id) {
-            // http://stackoverflow.com/a/22745553
-            // there may be multiple forms in a page, get ref to current form
-            var scripts = document.getElementsByTagName('script');
-            this.script = scripts[scripts.length - 1];
-            this.form = this.script.parentNode;
+
+            this.form = window.beanstream.Helper.getParentForm(this.currentScript);
             this.head = document.getElementsByTagName('head')[0];
             this.submitBtn = this.form.querySelector('input[type=submit]');
-
-            var urlArray = this.script.src.split('/');
-            this.host = urlArray[0] + '//' + urlArray[2];
-
             if (!this.submitBtn) {
                 this.submitBtn = this.form.querySelector('button[type=submit]');
             }
+
+            var urlArray = this.currentScript.src.split('/');
+            this.host = urlArray[0] + '//' + urlArray[2];
 
             this.domTargets = {};
 
@@ -60,33 +57,51 @@
         },
         readAttributes: function() {
             var self = this;
-            var submit = self.script.getAttribute('data-submitForm') === 'true';
+
+            // Note: Preferred behaviour is to submit by default,
+            // not fixing bug until versioning server implemented to avoid breaking legacy integrations
+
+            var submit = false;
+            var submitProp = self.currentScript.getAttribute('data-submitForm');
+            if (submitProp && submitProp.toLowerCase() === 'true') {
+                submit = true;
+            }
+
             this._model.setSubmitForm(submit);
+        },
+        submitParentForm: function() {
+            var self = this;
+            self.form.submit();
         },
         attachDomListeners: function() {
             var self = this;
-            window.onload = function(e) {
-                // validate and get token before submit event
-                // button is below script tag, so we wait until it loads
-                // toDo: change put button above script tag. drop onload event???
-                self.submitBtn = self.form.querySelector('input[type=submit]');
-                if (!self.submitBtn) {
-                    self.submitBtn = self.form.querySelector('button[type=submit]');
-                }
 
-                // if there is no submit button don't submit
-                if (self.submitBtn) {
-                    self.submitBtn.addEventListener('click', function(e) {
-                        self.submit.notify(e);
-                    }, false);
-                }
+            /*
+            // toDo: listen to submit event rather than click and custom events (breaking change)
+            self.form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    self.submit.notify(e);
+                }.bind(self), false);
+            */
 
-                self.form.addEventListener('beanstream_payfields_tokenize', function(e) {
+            // listening for custom event to support legacy intigrations
+            self.form.addEventListener('beanstream_payfields_tokenize', function(e) {
                     self.submit.notify(e);
                 }.bind(self), false);
 
-            }.bind(self);
+            // listening to click event to support legacy intigrations
+            if (self.submitBtn) {
+                self.submitBtn.addEventListener('click', function(e) {
+                    self.submit.notify(e);
+
+                    // preventing default if prop set support legacy intigrations
+                    if (!this._model.getSubmitForm()) {
+                        e.preventDefault();
+                    }
+                }.bind(self), false);
+            }
         },
+
         render: function(viewCmd, parameter) {
             var self = this;
             var viewCommands = {

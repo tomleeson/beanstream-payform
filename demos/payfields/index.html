@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang='en'>
+    <head>
+        <title>Payfields Demo</title>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width, initial-scale=1'>
+        <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
+
+        <script>
+          /*
+          * https://localhost:8000/payfields/beanstream_payfields.js
+          * https://payform-dev.beanstream.com/payfields/beanstream_payfields.js
+          * https://payform-test.beanstream.com/payfields/beanstream_payfields.js
+          * https://payform-master.beanstream.com/payfields/beanstream_payfields.js
+          * https://payform.beanstream.com/payfields/beanstream_payfields.js
+          */
+          var domain = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+          var base = document.createElement('base');
+          base.href = domain;
+          document.getElementsByTagName('head')[0].appendChild(base);
+        </script>
+
+    </head>
+    <body>
+
+        <div class='container'>
+            <h2>Payfields in a Bootstrap styled form</h2>
+            <form action="/charge" method="POST" id="myForm">
+                <div class='form-group'>
+                    <label>Card Number</label>
+                    <div data-beanstream-target='ccNumber_input'></div>
+                    <div data-beanstream-target='ccNumber_error' class='help-block'></div>
+                </div>
+                <div class='form-group'>
+                    <label>Expiry (MM/YYYY)</label>
+                    <div data-beanstream-target='ccExp_input'></div>
+                    <div data-beanstream-target='ccExp_error' class='help-block'></div>
+                </div>
+                <div class='form-group'>
+                    <label>CVV</label>
+                    <div data-beanstream-target='ccCvv_input'></div>
+                    <div data-beanstream-target='ccCvv_error' class='help-block'></div>
+                </div>
+
+                <!--
+                Path set relative to host for demo. In production use absolute path:
+                https://payform.beanstream.com/payfields/beanstream_payfields.js
+                -->
+                <script async src='payfields/beanstream_payfields.js' id="myScript"></script>
+
+                <button type='submit' class='btn btn-default' id="myButton">Submit</button>
+            </form>
+        </div>
+        <div class='container' id='response' style='display:none;'>
+            <h2>Success!</h2>
+            <p>Token: <span id='token'></span></p>
+        </div>
+        <script>
+
+            /**
+             * Registered as callback function for 'beanstream_tokenUpdated' event
+             * Note: You need to register with custom event as form's native onSubmit event will not be called
+             * For this demo this method reads token from hiden field appended by Payforms and displays it in UI
+             *
+             * @param {Event} e
+             */
+            function onSubmit(e) {
+                var responsePanel = document.getElementById('response');
+                var responsePanelToken = document.getElementById('token');
+
+                // token returned in event object and appended to form
+                // responsePanelToken.innerText = document.getElementsByName('singleUseToken')[0].value;
+                responsePanelToken.innerText = e.eventDetail.token;
+
+                responsePanel.style.display = 'block';
+                console.log('Token: ' + e.eventDetail.token);
+            }
+
+            function preventDefault(e) {
+                e.preventDefault();
+            }
+
+            /**
+             * Adds class to inputs for CSS styling
+             */
+            function styeInjectedInputs() {
+                var inputs = document.getElementsByTagName('input');
+                for (var i = 0; i < inputs.length; i++) {
+                    inputs[i].className += ' form-control';
+                }
+            }
+
+            if (document.addEventListener) {
+                document.getElementById('myScript').addEventListener('load', styeInjectedInputs);
+                document.getElementById('myForm').addEventListener('submit', preventDefault);
+                document.addEventListener('beanstream_payfields_tokenUpdated', onSubmit);
+                /*document.addEventListener('beanstream_payfields_inputValidityChanged', onValidityChanged);*/
+            } else if (document.attachEvent) {
+                document.getElementById('myScript').attachEvent('onload', styeInjectedInputs);
+                document.getElementById('myForm').attachEvent('onSubmit', preventDefault);
+                document.getElementById('myForm').attachEvent('beanstream_payfields_tokenUpdated', onSubmit);
+            }
+
+        </script>
+
+    </body>
+</html>

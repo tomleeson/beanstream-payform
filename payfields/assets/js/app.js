@@ -1,4 +1,4 @@
-(function() {
+(function(window) {
     'use strict';
 
     /**
@@ -11,10 +11,24 @@
 
     console.log('Starting Beanstream Payfields...');
 
-    var form = {};
-    form.model = new beanstream.FormModel();
-    form.view = new beanstream.FormView(form.model);
-    form.controller = new beanstream.FormController(form.model, form.view);
+    function Form() {
+        var self = this;
+        var currentScript = document.currentScript;
+        self.model = new beanstream.FormModel();
+        self.view = new beanstream.FormView(self.model, currentScript);
+        self.controller = new beanstream.FormController(self.model, self.view);
 
-    form.controller.init();
-})();
+        if (document.currentScript.hasAttribute('async')) {
+            self.controller.init();
+        } else {
+            // toDo: listen to load event rather than binding to window.onload prop (breaking change)
+
+            window.onload = function() {
+                self.controller.init();
+            };
+        }
+    };
+
+    var form = new Form();
+
+})(window);
