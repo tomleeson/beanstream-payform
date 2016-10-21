@@ -195,10 +195,11 @@ p,h4,h5,h6{
 .main-heading h5{
     min-height: 36px;
 }
-
+/*
 input{
     margin-bottom: 0;
 }
+*/
 
 .back-button .icon{
     position: absolute;
@@ -232,89 +233,6 @@ input{
     display: none !important;
 }
 
-.no-top-border {
-    position: relative;
-}
-
-.no-top-border input[type=text]{
-    border-top: 0;
-}
-
-.no-top-border::before{
-    background-color: #D1D1D1;
-    height:1px;
-    width: 100%;
-    left: 0;
-    top: -1px;
-    position: absolute;
-    content: '';
-    display: none;
-}
-
-.invalid.no-top-border::before {
-    background-color: #F44336;
-    display: block;
-}
-
-.focused.no-top-border::before {
-    background-color: #212121;
-    display: block;
-}
-
-.focused.invalid.no-top-border::before {
-    background-color: #FFCDD2;
-    display: block;
-}
-
-.no-right-border input[type=text]{
-    border-right: 0;
-}
-
-.no-right-border {
-    position: relative;
-}
-
-.no-right-border::after {
-    background-color: #D1D1D1;
-    width:1px;
-    height: 100%;
-    left: 100%;
-    top: 0;
-    position: absolute;
-    content: '';
-    display: none;
-    z-index: 2;
-}
-
-.invalid.no-right-border::after {
-    background-color: #F44336;
-    display: block;
-}
-
-.focused.no-right-border::after {
-    background-color: #212121;
-    display: block;
-}
-
-.focused.invalid.no-right-border::after {
-    background-color: #FFCDD2;
-    display: block;
-}
-
-
-
-input{
-    border-radius: 0 !important;
-}
-
-input[type=text]:focus {
-    border-color: #212121;
-}
-
-input[type=text]::after:focus {
-    background-color: #212121;
-}
-
 button{
     border-radius: 0 !important;
     margin-top: 10px;
@@ -332,14 +250,6 @@ label{
 
 .beanstream_invalid{
     border-color: inherit !important;
-}
-
-.invalid input[type=text]{
-    border-color: #F44336 !important;
-}
-
-.invalid input[type=text]:focus {
-    border-color: #FFCDD2 !important;
 }
 
 .error{
@@ -413,7 +323,6 @@ button.button:active {
 }
 
 
-/*
 button.button:after {
     content: "";
     background: #E3F2FD;
@@ -461,7 +370,7 @@ button.button:active:after {
 .button:hover .label-inner:after {
     background: transparent url('../images/arrow_right_white_24px.svg') no-repeat center;
 }
-*/
+
 
 .checkbox{
     display: flex;
@@ -559,3 +468,31 @@ input[type=checkbox]{
 }
 
 /* Larger than mobile */
+
+input{
+  margin-bottom: 0;
+  border-radius: 0 !important;
+  z-index: 1;
+  position: relative;
+}
+
+input:focus {
+outline: 0;
+z-index: 3;
+/*border-color: #212121 !important;*/
+border-color: #067aed !important;
+}
+
+.invalid input[type=text], .invalid input[type=tel] {
+z-index: 2;
+border-color: #F44336 !important;
+}
+
+.invalid input[type=text]:focus, .invalid input[type=tel]:focus {
+border-color: #FFCDD2 !important;
+z-index: 3;
+}
+
+.row.focused {
+z-index: 3;
+}
