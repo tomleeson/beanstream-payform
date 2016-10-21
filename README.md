@@ -7,36 +7,27 @@
 ##### Table of Contents  
 
 * [Overview](#overview)
-* [Browser Support](#browser-support)
 * [PayForm](#payform)
  * [How It Works](#payform-functionality)
  * [Integration Guide](#payform-integration-guide)
 * [PayFields](#payfields)
  * [Integration Guide](#payfields-integration-guide)
+* [Hosted Scripts](#hosted-scripts)
 * [Building Locally and Contributing](#contributing)
 * [Demo](#demo)
+* [Browser Support](#browser-support)
+* [API References](#api-references)
 
 ## Overview <a name="overview"/>
-The PayForm project umbrella covers two related products: PayForm and PayFields.
+This project includes two related products: PayForm and PayFields.
 
-These products are Beanstream client-side JavaScript libraries that handle a customer's credit card input within the merchant's web page. They limit the scope of the merchant's PCI compliance by removing the need for them to pass the sensitive information (credit card number, CVD, or expiry) through their servers and from having to write and store code that comes in contact with that sensitive information.
-
-Both products provide an easy way to accept payments in a web page. They provide some client-side validation, smart field data formatting, and responsive design.
-
-
-## Browser Support <a name="browser-support"/>
- * Internet Explorer 8+ (via XDomainRequest and XMLHttpRequest) - **still in testing**
- * Chrome 6.0+          
- * Firefox 3.6+         
- * Opera 12.1+          
- * Safari 4.0+          
+Both are Beanstream client-side JavaScript libraries that handle a customer's credit card input within the merchant's web page. They limit the scope of your PCI compliance by removing the need for you to pass credit card information through your servers.
 
 # PayForm <a name="payform"/>
-
 PayForm is a small Javascript library that injects a payment button and an iframe into your web page. When the user clicks the button a payment form is rendered into the iframe with an appearance similar to that of a popover dialog.
 
 ## How It Works <a name="payform-functionality"/>
-The PayForm script is read and executed as your page loads. It injects a payment button and an iframe into your web page. When the user clicks the button a payment form is rendered into the iframe. The payment form may contain input fields for a shipping address, for a billing address and for credit card details.
+The PayForm script is read and executed as your page loads. It injects a payment button and an iframe into your web page. When the user clicks the button a payment form is rendered into the iframe. The payment form may contain input fields for a shipping address, for a billing address and for credit card details. PayForm provides some client-side validation, smart field data formatting, and responsive design.
 
 Once the user has completed all fields with valid input the iframe is removed from the UI and a 'beanstream_payform_complete' event is fired containing the address information and a token for the credit card details.
 
@@ -98,24 +89,24 @@ If `data-submitForm="true"` then the data collected is injected into hidden fiel
   "eventDetail":{
     "cardInfo":{
       "code":"a01-ae366cb9-3efa-4c82-b955-0bf59e2df359",
-      "name":"Joe",
-      "email":"aa@test.com"
+      "name":"Joe Smith",
+      "email":"joe@example.com"
     },
     "billingAddress":{
-      "name":"Joe",
+      "name":"Joe Smith",
       "address_line1":"123 Fake St",
-      "postal_code":"aa",
-      "city":"aa",
-      "province":"aa",
-      "country":"aa"
+      "postal_code":"123 456",
+      "city":"Victoria",
+      "province":"BC",
+      "country":"Canada"
     },
     "shippingAddress":{
-      "name":"Joe",
+      "name":"Joe Smith",
       "address_line1":"123 Fake St",
-      "postal_code":"aa",
-      "city":"aa",
-      "province":"aa",
-      "country":"aa"
+      "postal_code":"123 456",
+      "city":"Victoria",
+      "province":"BC",
+      "country":"Canada"
     }
 }}
  ```
@@ -132,7 +123,8 @@ PayFields is very similar to PayForm, but it allows you to design your own form.
  * Injects input fields into page. (credit card number, CVD, or expiry).
  * Recognizes card type (Mastercard, Visa, etc.) and restricts, formats and validates input accordingly.   
  * Tokenizes card data, clears fields, and appends hidden field containing token to form.
- * Fires event `onLoad` to allow custom styling. Fires event `onValidationChange` to allow custom error messaging. Fires event `onTokenUpdated` to allow merchant to control form submission flow. (By default the form is submitted when the token is appended).
+ * Fires events on document. Fires event `beanstream_payfields_loaded` to allow custom styling. Fires event `beanstream_payfields_inputValidityChanged` to allow custom error messaging. Fires event `beanstream_payfields_tokenRequested` to allow merchant to update UI if desired. Fires event `beanstream_payfields_tokenUpdated` to allow merchant to control form submission flow. (By default the form is submitted when the token is appended).
+
 
 #### Integration <a name="payfields-integration-guide"/>   
 The minimal integration involves adding the script tag to a webpage within a form containing a submit button.
@@ -173,30 +165,31 @@ The integration below shows placeholders and the data attribute in use. It shows
 </form>
 ```
 
+## Building Locally and Contributing <a name="contributing"/>
+##### Build and serve
+```
+git clone https://github.com/Beanstream/beanstream-payform.git
+cd beanstream-payform/
+git checkout dev
+npm install
+gulp
 
----
-
-<a name="contributing"/>
-## Building Locally and Contributing
- 1. Setup local build env
-  * Check out repo: `$ git clone git@github.com:Beanstream/beanstream-payform.git`
-  * Install dependencies: `$ npm install`
- 2. Build the project
-  * Navigate to sub-project:  `$ cd /beanstream-payform/payFields`
-  * Build project: `$ python -m SimpleHTTPServer 8000`
- 3. Launch local server
-  * Navigate to build dir:  `$ cd /beanstream-payform/build`
-  * Run local server: `$ python -m SimpleHTTPServer 8000`
+cd build/
+python -m SimpleHTTPServer 8000
+```
 
 ##### Running automation (Protractor)
- 1. Launch local server (see above)
- 2. Start Webdriver (in second tab)
-  * `$ webdriver-manager start`
- 3. Run tests (in third tab)
-  * `$ protractor tests/localhost/conf.js`
+```
+# Build and serve. See steps above
 
+# Open new tab and run:
+webdriver-manager start
 
----
+# Open new tab and run:
+protractor tests/localhost/conf.js
+protractor tests/payform-dev.beanstream.com/conf.js
+```
+
 
 # Demo <a name="demo"/>
 * [PayForm](https://payform.beanstream.com/demos/payform/)
@@ -204,11 +197,20 @@ The integration below shows placeholders and the data attribute in use. It shows
 
 You can view the page source of either of the above demos to see how PayForm and PayFields were integrated. Feel free to copy-paste the code into your site.
 
-## Hosted Script
+## Hosted Scripts <a name="hosted-scripts"/>
 * [PayForm](https://payform.beanstream.com/payform/beanstream_payform.js)
 * [PayFields](https://payform.beanstream.com/payfields/beanstream_payfields.js)
 
-# API References
+
+## Browser Support <a name="browser-support"/>
+ * Internet Explorer 8+ (via XDomainRequest and XMLHttpRequest) - **still in testing**
+ * Chrome 6.0+          
+ * Firefox 3.6+         
+ * Opera 12.1+          
+ * Safari 4.0+   
+
+
+# API References <a name="api-references"/>
 * [REST API](http://developer.beanstream.com/documentation/rest-api-reference/)
 * [Tokenization](http://developer.beanstream.com/documentation/take-payments/purchases/take-payment-legato-token/)
 * [Payment](http://developer.beanstream.com/documentation/take-payments/purchases/card/)
