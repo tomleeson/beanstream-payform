@@ -1,169 +1,39 @@
-/*************************************
- * `document.currentScript` polyfill *
- * Source: https://gist.github.com/JamesMGreene/fb4a71e060da6e26511d
- *************************************/
-
-(function() {
-
-  // Inspect the polyfill-ability of this browser
-  var needsPolyfill = !("currentScript" in document);
-  var canDefineGetter = document.__defineGetter__;
-  var canDefineProp = typeof Object.defineProperty === "function" &&
-    (function() {
-      var result;
-      try {
-        Object.defineProperty(document, "_xyz", {
-          value: "blah",
-          enumerable: true,
-          writable: false,
-          configurable: false
-        });
-        result = document._xyz === "blah";
-        delete document._xyz;
-      }
-      catch (e) {
-        result = false;
-      }
-      return result;
-    })();
-
-  var hasStack = (function() {
-    var result = false;
-    try {
-      throw new Error();
-    }
-    catch (err) {
-      result = typeof err.stack === "string" && !!err.stack;
-    }
-    return result;
-  })();
-
-
-  // This page's URL
-  var pageUrl = window.location.href;
-
-  // Live NodeList collection
-  var scripts = document.getElementsByTagName("script");
-
-  // Get script object based on the `src` URL
-  function getScriptFromUrl(url) {
-    if (typeof url === "string" && url) {
-      for (var i = 0, len = scripts.length; i < len; i++) {
-        if (scripts[i].src === url) {
-          return scripts[i];
-        }
-      }
-    }
-    //return undefined;
-  }
-
-  // If there is only a single inline script on the page, return it; otherwise `undefined`
-  function getSoleInlineScript() {
-    var script;
-    for (var i = 0, len = scripts.length; i < len; i++) {
-      if (!scripts[i].src) {
-        if (script) {
-          return undefined;
-        }
-        script = scripts[i];
-      }
-    }
-    return script;
-  }
-
-  // Get the currently executing script URL from an Error stack trace
-  function getScriptUrlFromStack(stack, skipStackDepth) {
-    var url, matches, remainingStack,
-        ignoreMessage = typeof skipStackDepth === "number";
-    skipStackDepth = ignoreMessage ? skipStackDepth : (typeof _currentScript.skipStackDepth === "number" ? _currentScript.skipStackDepth : 0);
-    if (typeof stack === "string" && stack) {
-      if (ignoreMessage) {
-          matches = stack.match(/((?:http[s]?|file):\/\/[\/]?.+?\/[^:\)]*?)(?::\d+)(?::\d+)?/);
-      }
-      else {
-        matches = stack.match(/^(?:|[^:@]*@|.+\)@(?=http[s]?|file)|.+?\s+(?: at |@)(?:[^:\(]+ )*[\(]?)((?:http[s]?|file):\/\/[\/]?.+?\/[^:\)]*?)(?::\d+)(?::\d+)?/);
-        if (!(matches && matches[1])) {
-          matches = stack.match(/\)@((?:http[s]?|file):\/\/[\/]?.+?\/[^:\)]*?)(?::\d+)(?::\d+)?/);
-          if (matches && matches[1]) {
-            url = matches[1];
-          }
-        }
-      }
-
-      if (matches && matches[1]) {
-        if (skipStackDepth > 0) {
-          remainingStack = stack.slice(stack.indexOf(matches[0]) + matches[0].length);
-          url = getScriptUrlFromStack(remainingStack, (skipStackDepth - 1));
-        }
-        else {
-          url = matches[1];
-        }
-      }
-    }
-    return url;
-  }
-
-  // Get the currently executing `script` DOM element
-  function _currentScript() {
-    // Yes, this IS actually possible
-    if (scripts.length === 0) {
-      return;  //return undefined;
-    }
-
-    if (scripts.length === 1) {
-      return scripts[0];
-    }
-
-    if ("readyState" in scripts[0]) {
-      for (var i = scripts.length; i--; ) {
-        if (scripts[i].readyState === "interactive") {
-          return scripts[i];
-        }
-      }
-    }
-
-    if (document.readyState === "loading") {
-      return scripts[scripts.length - 1];
-    }
-
-    if (hasStack) {
-      try {
-        throw new Error();
-      }
-      catch (err) {
-        // NOTE: Cannot use `err.sourceURL` or `err.fileName` as they will always be THIS script
-        var url = getScriptUrlFromStack(err.stack);
-        var script = getScriptFromUrl(url);
-        if (!script && url === pageUrl) {
-          script = getSoleInlineScript();
-        }
-        return script;
-      }
-    }
-
-    //return undefined;
-  }
-
-  // Configuration
-  _currentScript.skipStackDepth = 1;
-
-
-
-  // Add the "private" property for testing, even if the real property can be polyfilled
-  document._currentScript = _currentScript;
-
-  // Polyfill it!
-  if (needsPolyfill) {
-    if (canDefineProp) {
-      Object.defineProperty(document, "currentScript", {
-        get: _currentScript,
-        enumerable: true,
-        configurable: false
-      });
-    }
-    else if (canDefineGetter) {
-      document.__defineGetter__("currentScript", _currentScript);
-    }
-  }
-
-})();
+/*!
+ * document.currentScript
+ * Polyfill for `document.currentScript`.
+ * Copyright (c) 2016 James M. Greene
+ * Licensed MIT
+ * https://github.com/JamesMGreene/document.currentScript
+ * v1.1.0
+ */
+!function(){
+// Top-level API (compliant with `document.currentScript` specifications)
+//
+// Get the currently "executing" (i.e. EVALUATING) `script` DOM
+// element, per the spec requirements for `document.currentScript`.
+//
+// IMPORTANT: This polyfill CANNOT achieve 100% accurate results
+//            cross-browser. ;_;
+function a(){
+// Yes, this IS possible, i.e. if a script removes other scripts (or itself)
+if(0===b.length)return null;
+// Guaranteed accurate in IE 6-10.
+// Not supported in any other browsers. =(
+if(e)for(var c=b.length;c--;)if(b[c]&&"interactive"===b[c].readyState)return b[c];
+// If the native method exists, defer to that as a last-ditch effort
+// If the native method exists, defer to that as a last-ditch effort
+return"function"==typeof f&&a.doNotDeferToNativeMethod!==!0?f.call(document)||null:null}
+// Live NodeList collection
+var b=document.getElementsByTagName("script"),c="readyState"in(b[0]||document.createElement("script")),d=!window.opera||"[object Opera]"!==window.opera.toString(),e=c&&d,f=function(b){function c(){var c,d=!0;
+// Potentially dangerous hack...
+return f&&(c=Object.getOwnPropertyDescriptor(b,"currentScript")||void 0,c&&"function"==typeof c.get&&c.get===a&&(d=!1)),d?b.currentScript:null}function d(a){var b;return null!=a&&(b=g?Object.getPrototypeOf(a):h?a.__proto__:null!=a.constructor?a.constructor.prototype:void 0),b}/*jshint proto:true */
+var e="currentScript"in b,f="function"==typeof Object.getOwnPropertyDescriptor,g="function"==typeof Object.getPrototypeOf,h="object"==typeof"test".__proto__,i=function j(b,g){var h,i;return e&&f&&b&&b!==Object.prototype&&g&&g!==Object.prototype&&(f&&(h=Object.getOwnPropertyDescriptor(b,"currentScript")||void 0,h&&"function"==typeof h.get&&(i=h.get)),i||(i=j(d(b),g))),i?i===a&&(i=void 0):i=c,i}(b,b);return i}(document);
+// Allow a last-ditch effort to use the native `document.currentScript` accessor
+// method (if it exists and can be retrieved)?
+a.doNotDeferToNativeMethod=!1;
+// Inspect the polyfill-ability of this browser
+var g=!("currentScript"in document),h="function"==typeof Object.defineProperty&&function(){var a;try{Object.defineProperty(document,"_xyz",{get:function(){return"blah"},configurable:!0}),a="blah"===document._xyz,delete document._xyz}catch(b){a=!1}return a}();
+// Add the "private" property for testing, even if the real property can be polyfilled
+document._currentScript=a,
+// Polyfill it!
+g&&h&&"undefined"!=typeof e&&e&&Object.defineProperty(document,"currentScript",{get:a})}();
