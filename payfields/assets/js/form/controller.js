@@ -59,6 +59,10 @@
                         self._view.submitParentForm();
                     }
                 }.bind(self));
+
+                if (self._model.getSubmitForm()) {
+                    e.preventDefault();
+                }
             } else {
                 e.preventDefault();
                 self._view.render('enableSubmitButton', 'true');
