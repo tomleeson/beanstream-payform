@@ -26,7 +26,7 @@
         self.view = new beanstream.FormView(self.model, currentScript);
         self.controller = new beanstream.FormController(self.model, self.view);
 
-        if (document.currentScript.hasAttribute('async')) {
+        if (currentScript.hasAttribute('async')) {
             self.controller.init();
         } else {
             // toDo: listen to load event rather than binding to window.onload prop (breaking change)
