@@ -14,6 +14,11 @@
     function Form() {
         var self = this;
 
+        if (document.documentMode && document.documentMode <= 9) {
+            console.log('ERROR: Unsupported browser. Payform only supports Internet Explorer versions 10+.');
+            return;
+        }
+
         // Work around for browsers that do not support document.currentScript
         // source: http://www.2ality.com/2014/05/current-script.html
         // This will not work for if script is loaded async, so we cannot support async in IE8 or 9
