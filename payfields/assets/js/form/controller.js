@@ -34,6 +34,7 @@
             var fields = self.getFieldValues();
 
             if (!beanstream.Helper.isEmpty(fields)) {
+                e.preventDefault();
                 self._view.render('enableSubmitButton', 'false');
 
                 var data = {'number': fields.number,
@@ -59,10 +60,6 @@
                         self._view.submitParentForm();
                     }
                 }.bind(self));
-
-                if (self._model.getSubmitForm()) {
-                    e.preventDefault();
-                }
             } else {
                 e.preventDefault();
                 self._view.render('enableSubmitButton', 'true');
