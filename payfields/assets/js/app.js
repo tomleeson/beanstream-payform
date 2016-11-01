@@ -13,7 +13,15 @@
 
     function Form() {
         var self = this;
-        var currentScript = document.currentScript;
+
+        // Work around for browsers that do not support document.currentScript
+        // source: http://www.2ality.com/2014/05/current-script.html
+        // This will not work for if script is loaded async, so we cannot support async in IE8 or 9
+        var currentScript = document.currentScript || (function() {
+            var scripts = document.getElementsByTagName('script');
+            return scripts[scripts.length - 1];
+        })();
+
         self.model = new beanstream.FormModel();
         self.view = new beanstream.FormView(self.model, currentScript);
         self.controller = new beanstream.FormController(self.model, self.view);
