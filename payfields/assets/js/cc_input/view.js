@@ -127,21 +127,15 @@
             var self = this;
             var el = self._domInputElement;
 
-            if (el.addEventListener) {
-                el.addEventListener('keypress', self.handleKeydown, false);
-                el.addEventListener('blur', self.handleBlur.bind(self), false);
-                el.addEventListener('focus', self.handleFocus.bind(self), false);
-
-                if (!document.body.classList.contains('lt-ie9')) {
-                    // IE 9 does not fire an input event when the user deletes characters from an input
-                    // https://developer.mozilla.org/en-US/docs/Web/Events/input#Browser_compatibility
-                    el.addEventListener('input', self.handleInput.bind(self), false);
-                }
-
-            } else if (el.addEventListener && document.body.classList.contains('lt-ie9')) {
+            if (el.addEventListener && document.documentMode && document.documentMode === 9) {
                 // IE 9 does not fire an input event when the user deletes characters from an input
                 // https://developer.mozilla.org/en-US/docs/Web/Events/input#Browser_compatibility
                 el.attachEvent('onpropertychange', self.handleInput.bind(self));
+            } else if (el.addEventListener) {
+                el.addEventListener('keypress', self.handleKeydown, false);
+                el.addEventListener('blur', self.handleBlur.bind(self), false);
+                el.addEventListener('focus', self.handleFocus.bind(self), false);
+                el.addEventListener('input', self.handleInput.bind(self), false);
             } else if (el.attachEvent) {
                 // < IE 9, use attachEvent rather than the standard addEventListener
                 el.attachEvent('onkeydown', self.handleKeydown);
