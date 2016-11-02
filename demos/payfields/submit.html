@@ -1,0 +1,37 @@
+
+<html>
+  <head>
+    <title>Auto Submit</title>
+  </head>
+  <body>
+    <form id="frmPayment" action="/demos/payfields/charge.php" method="post">
+      <div data-beanstream-target="ccNumber_input"></div>
+      <span class="error" data-beanstream-target="ccNumber_error"></span>
+
+      <div data-beanstream-target="ccExp_input"></div>
+      <span class="error" data-beanstream-target="ccExp_error"></span>
+
+      <div data-beanstream-target="ccCvv_input"></div>
+      <span class="error" data-beanstream-target="ccCvv_error"></span>
+
+      <input id="submitButton" type="submit" value="Get Token & Use Payfields Submit" />
+
+      <script src="/payfields/beanstream_payfields.js" data-submitForm="true"></script>
+
+      <script>
+        document.addEventListener('beanstream_payfields_tokenUpdated', function(args) {
+          alert(document.getElementsByName('singleUseToken')[0].value);
+        });
+      </script>
+    </form>
+
+    <p>Expected actions on form submit</p>
+    <ol>
+      <li>Callbacks triggers alert</li>
+      <li>Hidden field with token appended</li>
+      <li>Form submitted to php script</li>
+    </ol>
+    <p>Note: Server must support PHP for test. On OSx start PHP server with '$ php -S localhost:8000'</p>
+
+  </body>
+</html>

@@ -34,6 +34,7 @@
             var fields = self.getFieldValues();
 
             if (!beanstream.Helper.isEmpty(fields)) {
+                e.preventDefault();
                 self._view.render('enableSubmitButton', 'false');
 
                 var data = {'number': fields.number,

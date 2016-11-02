@@ -13,8 +13,7 @@ gulp.task('concat', function() {
 });
 
 function concatpayfields() {
-    return gulp.src(['./assets/js/vendor/document.currentScript-polyfill.js',
-                    './assets/js/helper.js',
+    return gulp.src(['./assets/js/helper.js',
                     './assets/js/validator.js',
                     './assets/js/ajaxHelper.js',
                     './payfields/assets/js/cc_input/model.js',

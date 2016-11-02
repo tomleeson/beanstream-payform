@@ -130,7 +130,7 @@ PayFields is very similar to PayForm, but it allows you to design your own form.
 The minimal integration involves adding the script tag to a webpage within a form containing a submit button.
 ```javascript
 <form action='pay.php'>
-  <script async src='https://payform.beanstream.com/payfields/beanstream_payfields.js'></script>
+  <script src='https://payform.beanstream.com/payfields/beanstream_payfields.js'></script>
   <button type='submit'>Submit</button>
 </form>
 ```
@@ -176,6 +176,7 @@ gulp
 
 cd build/
 python -m SimpleHTTPServer 8000
+# or php -S localhost:8000
 ```
 
 ##### Running automation (Protractor)
@@ -203,7 +204,7 @@ You can view the page source of either of the above demos to see how PayForm and
 
 
 ## Browser Support <a name="browser-support"/>
- * Internet Explorer 8+ (via XDomainRequest and XMLHttpRequest) - **still in testing**
+ * Internet Explorer 10+ (we are considering extending IE support back to version 8)
  * Chrome 6.0+          
  * Firefox 3.6+         
  * Opera 12.1+          

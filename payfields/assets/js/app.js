@@ -13,12 +13,25 @@
 
     function Form() {
         var self = this;
-        var currentScript = document.currentScript;
+
+        if (document.documentMode && document.documentMode <= 9) {
+            console.log('ERROR: Unsupported browser. Payform only supports Internet Explorer versions 10+.');
+            return;
+        }
+
+        // Work around for browsers that do not support document.currentScript
+        // source: http://www.2ality.com/2014/05/current-script.html
+        // This will not work for if script is loaded async, so we cannot support async in IE8 or 9
+        var currentScript = document.currentScript || (function() {
+            var scripts = document.getElementsByTagName('script');
+            return scripts[scripts.length - 1];
+        })();
+
         self.model = new beanstream.FormModel();
         self.view = new beanstream.FormView(self.model, currentScript);
         self.controller = new beanstream.FormController(self.model, self.view);
 
-        if (document.currentScript.hasAttribute('async')) {
+        if (currentScript.hasAttribute('async')) {
             self.controller.init();
         } else {
             // toDo: listen to load event rather than binding to window.onload prop (breaking change)
