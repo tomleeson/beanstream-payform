@@ -33,7 +33,7 @@
 
             var fields = this._model.getFields();
 
-            for (var field in fields) {
+            for (var field of fields) {
                 var input = field + '_input';
                 var error = field + '_error';
 

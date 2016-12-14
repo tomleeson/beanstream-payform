@@ -70,7 +70,7 @@
 
             var fields = this._model.getFields();
 
-            for (var field in fields) {
+            for (var field of fields) {
                 var domTargets = {};
                 if (this._model.getDomTargetsFound('inputs')) {
                     domTargets.input = this._view.domTargets[field + '_input'];
@@ -115,7 +115,7 @@
                 }.bind(self));
             }
 
-            for (field in this.fieldObjs) {
+            for (field of this.fieldObjs) {
                 this.fieldObjs[field].controller.inputComplete.attach(function(sender) {
                     self._view.render('setFocusNext', sender);
                 }.bind(self));

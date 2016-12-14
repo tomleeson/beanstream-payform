@@ -29,7 +29,7 @@
         serialize: function(obj) {
             // source: http://stackoverflow.com/a/1714899
             var str = [];
-            for (var p in obj) {
+            for (var p of obj) {
                 if (obj.hasOwnProperty(p)) {
                     str.push(encodeURIComponent(p) + '=' + encodeURIComponent(obj[p]));
                 }
