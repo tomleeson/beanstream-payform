@@ -105,7 +105,7 @@
 
                     if (detail.billingAddress) {
                         var billing = detail.billingAddress;
-                        for (var key of billing) {
+                        for (var key in billing) {
 
                             if (billing.hasOwnProperty(key)) {
                                 var name = 'billingAddress_' + key;
@@ -115,7 +115,7 @@
                     }
                     if (detail.shippingAddress) {
                         var shipping = detail.shippingAddress;
-                        for (var key of shipping) {
+                        for (var key in shipping) {
                             if (shipping.hasOwnProperty(key)) {
                                 var name = 'shippingAddress_' + key;
                                 this.appendValue(name, billing[key]);
@@ -124,7 +124,7 @@
                     }
                     if (detail.cardInfo) {
                         var card = detail.cardInfo;
-                        for (var key of card) {
+                        for (var key in card) {
                             if (card.hasOwnProperty(key)) {
                                 var name = 'cardInfo_' + key;
                                 this.appendValue(name, card[key]);

@@ -70,7 +70,8 @@
 
             var fields = this._model.getFields();
 
-            for (var field of fields) {
+            for (var x = 0; x < fields.length; x++) {
+                field = fields[x];
                 var domTargets = {};
                 if (this._model.getDomTargetsFound('inputs')) {
                     domTargets.input = this._view.domTargets[field + '_input'];
@@ -115,12 +116,13 @@
                 }.bind(self));
             }
 
-            for (field of this.fieldObjs) {
-                this.fieldObjs[field].controller.inputComplete.attach(function(sender) {
+            for (var x=0; x < this.fieldObjs.length; x++){
+                
+                this.fieldObjs[x].controller.inputComplete.attach(function(sender) {
                     self._view.render('setFocusNext', sender);
                 }.bind(self));
 
-                this.fieldObjs[field].controller.inputValidityChanged.attach(function(sender, args) {
+                this.fieldObjs[x].controller.inputValidityChanged.attach(function(sender, args) {
                     self.inputValidityChanged(args);
                 }.bind(self));
             }
